@@ -174,6 +174,36 @@ const Home = () => {
                   </Text>
                   <RxCaretRight fontSize={"24px"} />
                 </HStack>
+                <HStack
+                  width={"full"}
+                  justifyContent={"space-between"}
+                  alignItems={"center"}
+                  py={"10px"}
+                  borderBottom={"1px solid #eae8e8"}
+                  onClick={() => {
+                    navigate("/login");
+                  }}
+                >
+                  <Text sx={navStyle} _hover={navHoverStyle}>
+                    Login
+                  </Text>
+                  <RxCaretRight fontSize={"24px"} />
+                </HStack>
+                <HStack
+                  width={"full"}
+                  justifyContent={"space-between"}
+                  alignItems={"center"}
+                  py={"10px"}
+                  borderBottom={"1px solid #eae8e8"}
+                  onClick={() => {
+                    scrollToSection("/register");
+                  }}
+                >
+                  <Text sx={navStyle} _hover={navHoverStyle}>
+                    Sign Up
+                  </Text>
+                  <RxCaretRight fontSize={"24px"} />
+                </HStack>
               </VStack>
             </VStack>
           )}
@@ -236,7 +266,7 @@ const Home = () => {
                   borderStyle={"solid"}
                   _hover={{ color: "brand.700" }}
                 >
-                  SignUp
+                  Sign Up
                 </Button>
                 {/* <Text fontSize={"64px"} fontWeight={700}>
                   SEND THE GIFT OF CRYPTO WITH EASE
