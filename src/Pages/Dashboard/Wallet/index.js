@@ -550,6 +550,7 @@ const WalletModal = (props) => {
             status: "success",
           });
           props.refresh();
+          props.onClose();
         })
         .catch(function (error) {
           console.log(error);
@@ -587,11 +588,44 @@ const WalletModal = (props) => {
             status: "success",
           });
           props.refresh();
+          props.onClose();
         })
         .catch(function (error) {
           console.log(error);
           console.log(floatAmount);
           console.log(withdrawAmount);
+          setIsLoading(false);
+          toast({
+            title: "An error occured",
+            status: "warning",
+          });
+        });
+    }
+  };
+  const WithdrawCrypto = async (data) => {
+    console.log(data);
+    data.amount = floatAmount;
+    data.network = props.network;
+    if (errors.length > 0) {
+    } else {
+      setIsLoading(true);
+      await axios
+        .post(`${process.env.REACT_APP_BASE_URL}withdraw/`, data, {
+          headers: {
+            Authorization: `Token ${localStorage.getItem("token")}`,
+          },
+        })
+        .then(function (response) {
+          setIsLoading(false);
+          toast({
+            title: "Withdrawal Successful",
+            status: "success",
+          });
+          props.refresh();
+          props.onClose();
+        })
+        .catch(function (error) {
+          console.log(error);
           setIsLoading(false);
           toast({
             title: "An error occured",
@@ -857,43 +891,7 @@ const WalletModal = (props) => {
                 )}
                 {props.type === "crypto" ? (
                   <form
-                    onSubmit={handleSubmit(async (data) => {
-                      console.log(data);
-                      data.amount = floatAmount;
-                      data.network = props.network;
-                      if (errors.length > 0) {
-                      } else {
-                        setIsLoading(true);
-                        await axios
-                          .post(
-                            `${process.env.REACT_APP_BASE_URL}withdraw/`,
-                            data,
-                            {
-                              headers: {
-                                Authorization: `Token ${localStorage.getItem(
-                                  "token"
-                                )}`,
-                              },
-                            }
-                          )
-                          .then(function (response) {
-                            setIsLoading(false);
-                            toast({
-                              title: "Withdrawal Successful",
-                              status: "success",
-                            });
-                            props.refresh();
-                          })
-                          .catch(function (error) {
-                            console.log(error);
-                            setIsLoading(false);
-                            toast({
-                              title: "An error occured",
-                              status: "warning",
-                            });
-                          });
-                      }
-                    })}
+                    onSubmit={handleSubmit(WithdrawCrypto)}
                     style={{ width: "100%" }}
                   >
                     <VStack gap={"20px"}>

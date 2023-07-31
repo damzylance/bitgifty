@@ -35,12 +35,10 @@ function Signup() {
   const [success, setSuccess] = useState(false);
   const toast = useToast();
   const onSubmit = async (data) => {
-    console.log(data);
     setIsLoading(true);
     await axios
       .post(`${process.env.REACT_APP_BASE_URL}auth/registration/`, data)
       .then(function (response) {
-        console.log(response);
         setIsLoading(false);
         toast({
           title:
@@ -62,10 +60,8 @@ function Signup() {
           }
         }
 
-        console.log(error);
         setIsLoading(false);
       });
-    console.log(data);
   };
   const password = useRef({});
   password.current = watch("password1", "");

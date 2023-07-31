@@ -45,7 +45,8 @@ function Create() {
 
   const [fee, setFee] = useState(0);
   const [amountMin, setAmountMin] = useState(0.0003);
-  const [balance, setBalance] = useState();
+  const [balance, setBalance] = useState(0);
+  const [showBalance, setShowBalance] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [templatesLoading, setTemplatesLoading] = useState(true);
   const [templates, setTemplates] = useState([]);
@@ -66,24 +67,24 @@ function Create() {
           console.log(entries);
           setIsLoading(false);
 
-          if (entries[0][0] === "Celo") {
-            setBalance(entries[0][1].info.celo);
-            setFee(2);
-          } else if (entries[0][0] === "Ethereum") {
-            setBalance(entries[0][1].info.balance);
-            setFee(0.0004);
-          } else if (entries[0][0] === "Tron") {
-            setBalance(entries[0][1].info.balance);
-            setFee(2);
-          } else if (entries[0][0] === "Bitcoin") {
-            setBalance(
-              entries[0][1].info.incoming - entries[0][1].info.outgoing
-            );
-            setFee(0.0008);
-          } else if (entries[0][0] === "Bnb") {
-            setBalance(0);
-            setFee(0.0005);
-          }
+          // if (entries[0][0] === "Celo") {
+          //   // setBalance(entries[0][1].info.celo);
+          //   // setFee(2);
+          // } else if (entries[0][0] === "Ethereum") {
+          //   // setBalance(entries[0][1].info.balance);
+          //   // setFee(0.0004);
+          // } else if (entries[0][0] === "Tron") {
+          //   // setBalance(entries[0][1].info.balance);
+          //   // setFee(2);
+          // } else if (entries[0][0] === "Bitcoin") {
+          //   // setBalance(
+          //   //   entries[0][1].info.incoming - entries[0][1].info.outgoing
+          //   // );
+          //   setFee(0.0008);
+          // } else if (entries[0][0] === "Bnb") {
+          //   setBalance(0);
+          //   setFee(0.0005);
+          // }
           setWallets(entries);
           localStorage.setItem("wallets", JSON.stringify(entries));
         }
@@ -295,6 +296,7 @@ function Create() {
                 name="currency"
                 {...register("currency", { onChange: handleCurrencyChange })}
               >
+                <option>Select Coin</option>;
                 {wallets.map((wallet, index) => {
                   return (
                     <option value={wallet[0].toLowerCase()} key={index}>

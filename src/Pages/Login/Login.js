@@ -26,14 +26,12 @@ function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
   const onSubmit = async (data) => {
-    console.log(data);
     setIsLoading(true);
     await axios
       .post(`${process.env.REACT_APP_BASE_URL}auth/login/`, data)
 
       .then(function (response) {
         localStorage.setItem("token", response.data.key);
-        console.log(response);
         setIsLoading(false);
         toast({ title: "Login Successful", status: "success" });
         const busStop = localStorage.getItem("busStop");
@@ -59,7 +57,6 @@ function Login() {
         //   });
         // }
 
-        console.log(error);
         setIsLoading(false);
       });
   };
