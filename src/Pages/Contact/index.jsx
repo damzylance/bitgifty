@@ -15,6 +15,7 @@ import {
 import React, { useRef, useState } from "react";
 import {
   AiFillFacebook,
+  AiFillInstagram,
   AiFillLinkedin,
   AiFillTwitterSquare,
 } from "react-icons/ai";
@@ -290,7 +291,7 @@ const ContactUs = () => {
                 <Text fontSize={["16px", "16px", "24px"]} fontWeight={"700"}>
                   Legal
                 </Text>
-                <Link style={{ fontSize: "14px" }}>Privacy Policy</Link>
+                <Text style={{ fontSize: "14px" }}>Privacy Policy</Text>
                 <Link style={{ fontSize: "14px" }}>Help Center</Link>
                 <Link style={{ fontSize: "14px" }}>Terms and Condition</Link>
               </VStack>
@@ -299,7 +300,14 @@ const ContactUs = () => {
                   Company
                 </Text>
                 <Link>FAQ</Link>
-                <Link>About Us</Link>
+                <Text
+                  onClick={() => {
+                    scrollToSection(about);
+                  }}
+                  cursor={"pointer"}
+                >
+                  About Us
+                </Text>
                 <Link to={"/contact-us"}>Contact Us</Link>
               </VStack>
               <VStack width={"full"} alignItems={"center"}>
@@ -310,7 +318,7 @@ const ContactUs = () => {
                   <AiFillTwitterSquare fontSize={"24px"} />
                 </a>
                 <a href={"https://www.instagram.com/bitgifty/"}>
-                  <AiFillFacebook fontSize={"24px"} />
+                  <AiFillInstagram fontSize={"24px"} />
                 </a>
                 <a href={"https://www.linkedin.com/company/bitgifty/"}>
                   <AiFillLinkedin fontSize={"24px"} />
