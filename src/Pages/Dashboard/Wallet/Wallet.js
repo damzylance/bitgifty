@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import DashboardLayout from "../../../Components/DashboardLayout";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { ArrowBackIcon } from "@chakra-ui/icons";
 const mobileStyle = {
   boxShadow: "0px 5px 7px rgb(234, 234, 234)",
   borderRadius: "10px",
@@ -19,6 +20,7 @@ const Wallet = () => {
   };
 
   const [page, setPage] = useState("deposits");
+  const [wallets, setWallets] = useState([]);
   const { currency } = useParams();
   const currencies = [
     "bitcoin",
@@ -29,39 +31,64 @@ const Wallet = () => {
     "tron",
     "ethereum",
   ];
-  const wallets = JSON.parse(localStorage.getItem("wallets"));
   const paramsMatch = currencies.includes(currency);
   const [transactions, setTransactions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  console.log(wallets);
+  const fetchWallets = async () => {
+    await axios
+      .get(`${process.env.REACT_APP_BASE_URL}wallets/`, {
+        headers: {
+          Authorization: `Token ${localStorage.getItem("token")}`,
+        },
+      })
+      .then((response) => {
+        if (response.data) {
+          const entries = Object.entries(response.data);
+          setWallets(entries);
+
+          axios
+            .get(`${process.env.REACT_APP_BASE_URL}transactions/${currency}`, {
+              headers: {
+                Authorization: `Token ${localStorage.getItem("token")}`,
+              },
+            })
+            .then(function (response) {
+              if (response.data) {
+                setIsLoading(false);
+
+                setTransactions(response.data);
+              }
+            })
+            .catch(function (error) {});
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   useEffect(() => {
     if (!paramsMatch) {
       navigate("/wallet");
     }
-    axios
-      .get(`${process.env.REACT_APP_BASE_URL}transactions/${currency}`, {
-        headers: {
-          Authorization: `Token ${localStorage.getItem("token")}`,
-        },
-      })
-      .then(function (response) {
-        console.log(response.data);
-        if (response.data) {
-          setIsLoading(false);
-
-          setTransactions(response.data);
-        }
-      })
-      .catch(function (error) {
-        console.log(error.tron);
-      });
+    fetchWallets();
   }, []);
   return (
     <>
       <DashboardLayout>
         <VStack>
+          <HStack
+            color={"brand.600"}
+            _hover={{ color: "brand.500" }}
+            cursor={"pointer"}
+            onClick={() => navigate(-1)}
+            justifyContent={"flex-start"}
+            width={"full"}
+          >
+            <ArrowBackIcon fontSize={"24px"} />
+            <Text>Back</Text>
+          </HStack>
           <VStack alignItems={"flex-start"} width="full" gap={"2"}>
             <Box
               width={"full"}
@@ -149,7 +176,7 @@ const Wallet = () => {
                           "https://live.blockcypher.com/btc-testnet/tx/";
                         if (
                           transaction.inputs[0].coin.address ===
-                          wallets[1][1].address
+                          wallets[5][1].address
                         ) {
                           type = "Withdrawal";
                           for (let i = 0; i < transaction.inputs.length; i++) {
@@ -192,9 +219,9 @@ const Wallet = () => {
                         date = `${day} ${time}`;
                       }
                       if (currency === "celo") {
-                        scanner = "https://alfajores.celoscan.io/tx/";
+                        scanner = "https://celoscan.io/tx/";
                         coin = "CELO";
-                        if (transaction.from === wallets[2][1].address) {
+                        if (transaction.from === wallets[0][1].address) {
                           type = "Withdrawal";
                           wallet = `${transaction.to.slice(
                             0,
@@ -209,7 +236,7 @@ const Wallet = () => {
                         }
                         txid = transaction.hash;
                         amount = transaction.value / 1000000000000000000;
-                        date = new Date(transaction.timestamp);
+                        date = new Date(transaction.timestamp * 1000);
                         day = date
                           .toLocaleDateString("en-NG")
                           .toString()
@@ -257,8 +284,7 @@ const Wallet = () => {
                         transaction.rawData.contract[0].parameter.value.amount /
                         1000000;
                       let date = new Date(transaction.rawData.timestamp);
-                      let scanner =
-                        "https://shasta.tronscan.org/#/transaction/";
+                      let scanner = "https://tronscan.org/#/transaction/";
                       let day = date
                         .toLocaleDateString("en-NG")
                         .toString()
@@ -268,14 +294,14 @@ const Wallet = () => {
                         minute: "2-digit",
                       });
                       date = `${day} ${time}`;
-                      let coin = "USDT";
+                      let coin = "TRON";
                       let type;
                       let wallet;
                       let viewWallet;
 
                       if (
                         transaction.rawData.contract[0].parameter.value
-                          .ownerAddressBase58 === wallets[4][1].address
+                          .ownerAddressBase58 === wallets[2][1].address
                       ) {
                         type = "Withdrawal";
                         viewWallet =
@@ -303,6 +329,7 @@ const Wallet = () => {
                             wallet={wallet}
                             txid={txid}
                             scanner={scanner}
+                            status={"Completed"}
                           />
                           <MobileTransactionRow
                             time={date}

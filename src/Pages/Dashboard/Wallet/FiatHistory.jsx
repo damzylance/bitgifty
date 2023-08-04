@@ -7,6 +7,19 @@ const FiatHistory = () => {
   const [transactions, setTransactions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const toTimeDate = (date) => {
+    const day = date
+      .toLocaleDateString("en-NG")
+      .toString()
+      .replaceAll("/", "-");
+    const time = date.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+    return `${day} ${time}`;
+  };
+
   useEffect(() => {
     axios
       .get(`${process.env.REACT_APP_BASE_URL}transactions/fiat/`, {
@@ -49,12 +62,7 @@ const FiatHistory = () => {
             <Text fontSize={["xs", "xs", "sm", "sm"]} flex={2}>
               Time
             </Text>
-            <Text fontSize={["xs", "xs", "sm", "sm"]} flex={1.5}>
-              From
-            </Text>
-            <Text fontSize={["xs", "xs", "sm", "sm"]} flex={1.5}>
-              To
-            </Text>
+
             <Text fontSize={["xs", "xs", "sm", "sm"]} flex={1.5}>
               Amount
             </Text>
@@ -72,7 +80,7 @@ const FiatHistory = () => {
               transactions[3][1].map((transaction) => {
                 return (
                   <TransactionRow
-                    time={transaction.time.split("T")[0]}
+                    time={toTimeDate(new Date(transaction.time))}
                     amount={transaction.amount}
                     status={transaction.status}
                   />
@@ -109,22 +117,9 @@ function TransactionRow(props) {
       <Text fontSize={["xx-small", "xs", "sm", "sm"]} flex={2}>
         {props.time}
       </Text>
-      <Text
-        fontSize={["xs", "xs", "sm", "sm"]}
-        flex={1.5}
-        textTransform={"capitalize"}
-      >
-        {props.from}
-      </Text>
-      <Text
-        fontSize={["xs", "xs", "sm", "sm"]}
-        flex={1.5}
-        textTransform={"capitalize"}
-      >
-        {props.to}
-      </Text>
+
       <Text fontSize={["xs", "xs", "sm", "sm"]} flex={1.5}>
-        {props.amount}
+        &#8358;{props.amount}
       </Text>
       <Text
         fontSize={["xs", "xs", "sm", "sm"]}

@@ -26,7 +26,7 @@ import React, { useEffect, useState } from "react";
 import DashboardLayout from "../../../Components/DashboardLayout";
 import Authenticate from "../../../Helpers/Auth";
 import { set, useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
 import { MdSwapVert } from "react-icons/md";
@@ -426,6 +426,7 @@ function CoinRow(props) {
             setPage("withdraw");
             onOpen();
           }}
+          disabled={props.currency === "ETHEREUM" ? true : false}
         >
           Withdraw
         </Button>
@@ -437,6 +438,11 @@ function CoinRow(props) {
             }
           }}
           variant={"outline"}
+          disabled={
+            props.currency === "NAIRA" || props.currency === "ETHEREUM"
+              ? true
+              : false
+          }
         >
           Deposit
         </Button>
@@ -448,6 +454,11 @@ function CoinRow(props) {
             }
           }}
           variant={"outline"}
+          disabled={
+            props.currency === "NAIRA" || props.currency === "ETHEREUM"
+              ? true
+              : false
+          }
         >
           Swap
         </Button>
@@ -460,6 +471,7 @@ function CoinRow(props) {
             }
           }}
           variant={"outline"}
+          disabled={props.currency === "ETHEREUM" ? true : false}
         >
           History
         </Button>
@@ -1302,6 +1314,12 @@ const WalletModal = (props) => {
                     >
                       Swap
                     </Button>
+                    <Link
+                      to={"/swap-history"}
+                      style={{ textDecoration: "underline", color: "GrayText" }}
+                    >
+                      View History
+                    </Link>
                   </VStack>
                 </form>
                 {/* <Input
