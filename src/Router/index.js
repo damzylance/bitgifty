@@ -17,12 +17,14 @@ import ContactUs from "../Pages/Contact";
 import Payout from "../Pages/UserSetting/Payout";
 import SwapHistory from "../Pages/Dashboard/Wallet/SwapHistory";
 import FiatHistory from "../Pages/Dashboard/Wallet/FiatHistory";
+import Privacy from "../Pages/Privacy";
 function Router() {
   return (
     <BrowserRouter>
       <Routes>
         <Route exact path="/" element={<Home />} />
         <Route exact path="/contact-us" element={<ContactUs />} />
+        <Route exact path="/privacy-policy" element={<Privacy />} />
         <Route exact path="/login" element={<Login />} />
         <Route exact path="/register" element={<Signup />} />
         <Route

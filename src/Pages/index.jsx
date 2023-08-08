@@ -870,7 +870,9 @@ const Home = () => {
                 <Text fontSize={["16px", "16px", "24px"]} fontWeight={"700"}>
                   Legal
                 </Text>
-                <Text style={{ fontSize: "14px" }}>Privacy Policy</Text>
+                <Link to={"/privacy-policy"} style={{ fontSize: "14px" }}>
+                  Privacy Policy
+                </Link>{" "}
                 <Link style={{ fontSize: "14px" }}>Help Center</Link>
                 <Link style={{ fontSize: "14px" }}>Terms and Condition</Link>
               </VStack>
