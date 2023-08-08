@@ -31,6 +31,7 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
 import { MdSwapVert } from "react-icons/md";
 import { AiFillPlusSquare } from "react-icons/ai";
+import { PayoutModal } from "../../UserSetting/Payout";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -492,6 +493,11 @@ function CoinRow(props) {
 }
 const WalletModal = (props) => {
   const btnRef = React.useRef();
+  const {
+    onOpen: bankModalOpen,
+    onClose: bankModalClose,
+    isOpen: bankModalisOpen,
+  } = useDisclosure();
   const { register, handleSubmit } = useForm();
   const [withdrawAmount, setWithdrawAmount] = useState("");
   const [floatAmount, setFloatAmount] = useState("");
@@ -826,7 +832,8 @@ const WalletModal = (props) => {
                               borderRadius={"xl"}
                               cursor={"pointer"}
                               onClick={() => {
-                                navigate("/setting/payout");
+                                bankModalOpen();
+                                fetchBankAccounts();
                               }}
                             >
                               <Text
@@ -890,9 +897,6 @@ const WalletModal = (props) => {
                             color={"#103D96"}
                             fontSize={"24px"}
                             cursor={"pointer"}
-                            onClick={() => {
-                              navigate("/setting/payout");
-                            }}
                           />
                         </HStack>
                       </VStack>
@@ -1068,6 +1072,7 @@ const WalletModal = (props) => {
                   }}
                 /> */}
               </Box>
+              <PayoutModal isOpen={bankModalisOpen} onClose={bankModalClose} />
             </DrawerBody>
           </>
         )}

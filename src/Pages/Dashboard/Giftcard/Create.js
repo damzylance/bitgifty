@@ -122,7 +122,7 @@ function Create() {
             });
         } else if (network === "Celo") {
           setBalance(wallets[index][1].info.celo);
-          setFee(2);
+          setFee(1);
           setAmountMin(10);
           setTotalAmount(parseFloat(getValues("amount")) + fee);
         } else if (network === "Ethereum") {
@@ -132,7 +132,7 @@ function Create() {
           setTotalAmount(parseFloat(getValues("amount")) + fee);
         } else if (network === "Tron") {
           const tronBalance = wallets[index][1].info.balance / 1000000;
-          setFee(2);
+          setFee(1);
           setBalance(isNaN(tronBalance) ? 0 : tronBalance);
           setAmountMin(5);
           setTotalAmount(parseFloat(getValues("amount")) + fee);
@@ -189,7 +189,7 @@ function Create() {
         setTimeout(() => {
           setConfitti(false);
         }, 5000);
-        navigate("/giftcard/cards");
+        fetchWallets();
       })
       .catch(function (error) {
         if (error.response?.status === 400) {

@@ -2,11 +2,13 @@ import { Box, Flex, HStack, Text, VStack } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import DashboardLayout from "../../../Components/DashboardLayout";
 import axios from "axios";
+import { ArrowBackIcon } from "@chakra-ui/icons";
+import { useNavigate } from "react-router-dom";
 
 const FiatHistory = () => {
   const [transactions, setTransactions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-
+  const navigate = useNavigate();
   const toTimeDate = (date) => {
     const day = date
       .toLocaleDateString("en-NG")
@@ -43,6 +45,17 @@ const FiatHistory = () => {
     <DashboardLayout>
       <VStack width={"full"}>
         <VStack width={"full"}>
+          <HStack
+            color={"brand.600"}
+            _hover={{ color: "brand.500" }}
+            cursor={"pointer"}
+            onClick={() => navigate(-1)}
+            justifyContent={"flex-start"}
+            width={"full"}
+          >
+            <ArrowBackIcon fontSize={"24px"} />
+            <Text>Back</Text>
+          </HStack>
           <Box
             width={"full"}
             visibility={["visible", "visible", "visible", "visible"]}
@@ -66,7 +79,9 @@ const FiatHistory = () => {
             <Text fontSize={["xs", "xs", "sm", "sm"]} flex={1.5}>
               Amount
             </Text>
-
+            <Text fontSize={["xs", "xs", "sm", "sm"]} flex={2}>
+              To
+            </Text>
             <Text
               textAlign={"right"}
               fontSize={["xs", "xs", "sm", "sm"]}
@@ -77,12 +92,13 @@ const FiatHistory = () => {
           </Flex>
           <VStack width={"full"}>
             {transactions.length > 0 ? (
-              transactions[3][1].map((transaction) => {
+              transactions[3][1].reverse().map((transaction) => {
                 return (
                   <TransactionRow
                     time={toTimeDate(new Date(transaction.time))}
                     amount={transaction.amount}
                     status={transaction.status}
+                    bankName={transaction.bank_name}
                   />
                 );
               })
@@ -120,6 +136,9 @@ function TransactionRow(props) {
 
       <Text fontSize={["xs", "xs", "sm", "sm"]} flex={1.5}>
         &#8358;{props.amount}
+      </Text>
+      <Text fontSize={["xs", "xs", "sm", "sm"]} flex={2}>
+        {props.bankName}
       </Text>
       <Text
         fontSize={["xs", "xs", "sm", "sm"]}

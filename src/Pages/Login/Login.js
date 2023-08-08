@@ -7,6 +7,8 @@ import {
   Flex,
   useToast,
   Box,
+  InputGroup,
+  InputRightElement,
 } from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
@@ -15,6 +17,7 @@ import { useForm } from "react-hook-form";
 import axios from "axios";
 
 import React, { useState } from "react";
+import { RxEyeClosed, RxEyeOpen } from "react-icons/rx";
 
 function Login() {
   const navigate = useNavigate();
@@ -23,6 +26,8 @@ function Login() {
     handleSubmit,
     formState: { errors },
   } = useForm();
+  const [showPassword, setShowPassword] = useState(false);
+
   const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
   const onSubmit = async (data) => {
@@ -98,15 +103,40 @@ function Login() {
                 </Text>
               </Box>
 
-              <Input
-                minLength={8}
-                size={"md"}
-                required
-                name={"password"}
-                placeholder="Password"
-                type={"password"}
-                {...register("password")}
-              />
+              <Box width={"full"}>
+                <InputGroup>
+                  <Input
+                    size={"md"}
+                    name="password"
+                    placeholder="Password"
+                    {...register("password", {
+                      minLength: {
+                        value: 8,
+                        message: "Must contain at least 8 characters",
+                      },
+                    })}
+                    type={showPassword ? "text" : "password"}
+                    required
+                    error={errors.password}
+                  />
+
+                  <InputRightElement
+                    onClick={() => {
+                      setShowPassword(!showPassword);
+                    }}
+                  >
+                    {showPassword ? (
+                      <RxEyeClosed color="blue" cursor={"pointer"} />
+                    ) : (
+                      <RxEyeOpen color="blue" cursor={"pointer"} />
+                    )}
+                  </InputRightElement>
+                </InputGroup>
+
+                <Text color={"red.400"} fontSize={"xs"}>
+                  {errors.showPassword?.message}
+                </Text>
+              </Box>
             </VStack>
 
             <VStack width={"full"}>

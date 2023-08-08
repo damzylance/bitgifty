@@ -146,7 +146,7 @@ const Payout = () => {
   );
 };
 
-const PayoutModal = (props) => {
+export const PayoutModal = (props) => {
   const { register, handleSubmit } = useForm();
   const toast = useToast();
   const [isloading, setIsLoading] = useState(false);
