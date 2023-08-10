@@ -571,7 +571,6 @@ const WalletModal = (props) => {
           props.onClose();
         })
         .catch(function (error) {
-          console.log(error);
           setIsLoading(false);
           if (error.response.data.error.includes("Insufficient funds")) {
             toast({
@@ -609,9 +608,6 @@ const WalletModal = (props) => {
           props.onClose();
         })
         .catch(function (error) {
-          console.log(error);
-          console.log(floatAmount);
-          console.log(withdrawAmount);
           setIsLoading(false);
           toast({
             title: "An error occured",
@@ -621,7 +617,6 @@ const WalletModal = (props) => {
     }
   };
   const WithdrawCrypto = async (data) => {
-    console.log(data);
     data.amount = floatAmount;
     data.network = props.network;
     if (errors.length > 0) {
@@ -643,7 +638,6 @@ const WalletModal = (props) => {
           props.onClose();
         })
         .catch(function (error) {
-          console.log(error);
           setIsLoading(false);
           toast({
             title: "An error occured",
@@ -1165,7 +1159,6 @@ const WalletModal = (props) => {
                               let balanceError = [];
                               if (toFloatAmount > parseFloat(props.balance)) {
                                 balanceError.push("Insufficient balance");
-                                console.log(balanceError);
                                 setErrors(balanceError);
                               } else {
                                 //  setExchangeRate(rate * toFloatAmount);

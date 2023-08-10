@@ -157,14 +157,14 @@ function Create() {
         });
       })
       .catch((error) => {
-        console.log(error);
+        toast({ title: "Error fetching templates" });
       });
   };
   const onSubmit = async (data) => {
     data.image = template.id;
     data.amount = parseFloat(data.amount);
     data.quantity = 1;
-    console.log(data);
+
     setIsLoading(true);
     await axios
       .post(`${process.env.REACT_APP_BASE_URL}gift_cards/create/`, data, {
@@ -173,7 +173,6 @@ function Create() {
         },
       })
       .then(function (response) {
-        console.log(response);
         setIsLoading(false);
         navigate("/giftcard/cards");
         toast({
@@ -194,7 +193,6 @@ function Create() {
           toast({ title: "Error", status: "error" });
         }
 
-        console.log(error);
         setIsLoading(false);
       });
   };

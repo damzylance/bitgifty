@@ -1,4 +1,12 @@
-import { Box, Flex, HStack, Text, VStack, Spinner } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  HStack,
+  Text,
+  VStack,
+  Spinner,
+  Toast,
+} from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import DashboardLayout from "../../../Components/DashboardLayout";
@@ -64,7 +72,7 @@ const Wallet = () => {
         }
       })
       .catch((error) => {
-        console.log(error);
+        Toast({ title: "An error occured", status: "warning" });
       });
   };
 

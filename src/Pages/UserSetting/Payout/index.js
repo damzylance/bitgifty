@@ -44,13 +44,10 @@ const Payout = () => {
         },
       })
       .then((response) => {
-        console.log(response);
         setBankAccounts(response.data.results);
         setLoading(false);
       })
-      .catch((error) => {
-        console.log(error);
-      });
+      .catch((error) => {});
   };
   useEffect(() => {
     fetchBankAccounts();
@@ -152,7 +149,6 @@ export const PayoutModal = (props) => {
   const [isloading, setIsLoading] = useState(false);
 
   const onSubmit = async (data) => {
-    console.log(data);
     setIsLoading(true);
     await axios
       .post(`${process.env.REACT_APP_BASE_URL}payouts/`, data, {
@@ -161,7 +157,6 @@ export const PayoutModal = (props) => {
         },
       })
       .then(function (response) {
-        console.log(response);
         setIsLoading(false);
         toast({
           title: "Bank added successfully",
@@ -176,10 +171,8 @@ export const PayoutModal = (props) => {
           }
         }
 
-        console.log(error);
         setIsLoading(false);
       });
-    console.log(data);
   };
 
   return (

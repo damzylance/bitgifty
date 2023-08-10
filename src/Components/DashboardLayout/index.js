@@ -38,9 +38,7 @@ function DashboardLayout(props) {
 
         navigate("/login");
       })
-      .catch((error) => {
-        console.log(error);
-      });
+      .catch((error) => {});
   };
   return (
     <Box width={"full"}>

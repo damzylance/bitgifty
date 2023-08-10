@@ -20,9 +20,11 @@ import {
   VStack,
   useDisclosure,
   Button,
+  useToast,
 } from "@chakra-ui/react";
 
 function MyCards() {
+  const toast = useToast();
   const [cards, setCards] = useState([]);
   const [templates, setTemplates] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -35,12 +37,11 @@ function MyCards() {
         },
       })
       .then((response) => {
-        console.log(response);
         setLoading(false);
         setCards(response.data.results);
       })
       .catch((error) => {
-        console.log(error);
+        toast({ title: "Error fetching cards", status: "warning" });
       });
   };
 
@@ -52,18 +53,16 @@ function MyCards() {
         },
       })
       .then((response) => {
-        console.log(response.data.results);
         setTemplates(response.data.results);
       })
       .catch((error) => {
-        console.log(error);
+        toast({ title: "Error fetching templates", status: "warning" });
       });
   };
   useEffect(() => {
     fetchCards();
     fetchCardTemplates();
   }, []);
-  console.log(cards);
   return (
     <Box mt={"30px"} cursor={"pointer"}>
       <SimpleGrid columns={[2, 2, 4]} spacing="4">

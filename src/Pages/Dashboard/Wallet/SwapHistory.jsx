@@ -1,4 +1,4 @@
-import { Box, Flex, HStack, Text, VStack } from "@chakra-ui/react";
+import { Box, Flex, HStack, Text, Toast, VStack } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import DashboardLayout from "../../../Components/DashboardLayout";
 import axios from "axios";
@@ -15,7 +15,6 @@ const SwapHistory = () => {
         },
       })
       .then(function (response) {
-        console.log(Object.entries(response.data));
         if (response.data) {
           setIsLoading(false);
 
@@ -23,7 +22,7 @@ const SwapHistory = () => {
         }
       })
       .catch(function (error) {
-        console.log(error.tron);
+        Toast({ title: "An error occured", status: "warning" });
       });
   }, []);
   return (
