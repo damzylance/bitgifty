@@ -20,7 +20,6 @@ import {
   VStack,
   useDisclosure,
   Button,
-  useToast,
 } from "@chakra-ui/react";
 
 function MyCards() {
