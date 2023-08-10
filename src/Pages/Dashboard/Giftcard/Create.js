@@ -52,7 +52,22 @@ function Create() {
   const [templates, setTemplates] = useState([]);
   const [template, setTemplate] = useState();
   const [checkEmail, setCheckEmail] = useState(false);
+  const [dollarAmount, setDollarAmount] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
+  const [rate, setRate] = useState(0);
+
+  const fetchRate = async (network) => {
+    await axios
+      .get(`${process.env.REACT_APP_BASE_URL}swap/get_usdt/${network}`, {
+        headers: {
+          Authorization: `Token ${localStorage.getItem("token")}`,
+        },
+      })
+      .then((response) => {
+        setRate(response.data);
+      })
+      .catch((error) => {});
+  };
   const fetchWallets = async () => {
     await axios
       .get(`${process.env.REACT_APP_BASE_URL}wallets/`, {
@@ -61,43 +76,22 @@ function Create() {
         },
       })
       .then(function (response) {
-        console.log(response.data);
         if (response.data) {
           const entries = Object.entries(response.data);
-          console.log(entries);
           setIsLoading(false);
 
-          // if (entries[0][0] === "Celo") {
-          //   // setBalance(entries[0][1].info.celo);
-          //   // setFee(2);
-          // } else if (entries[0][0] === "Ethereum") {
-          //   // setBalance(entries[0][1].info.balance);
-          //   // setFee(0.0004);
-          // } else if (entries[0][0] === "Tron") {
-          //   // setBalance(entries[0][1].info.balance);
-          //   // setFee(2);
-          // } else if (entries[0][0] === "Bitcoin") {
-          //   // setBalance(
-          //   //   entries[0][1].info.incoming - entries[0][1].info.outgoing
-          //   // );
-          //   setFee(0.0008);
-          // } else if (entries[0][0] === "Bnb") {
-          //   setBalance(0);
-          //   setFee(0.0005);
-          // }
           setWallets(entries);
           localStorage.setItem("wallets", JSON.stringify(entries));
         }
       })
-      .catch(function (error) {
-        console.log(error);
-      });
+      .catch(function (error) {});
   };
 
   const handleCurrencyChange = async (e) => {
     const network = `${e.target.value
       .slice(0, 1)
       .toUpperCase()}${e.target.value.slice(1, e.target.value.length)}`;
+
     for (let index = 0; index < wallets.length; index++) {
       if (wallets[index][0] === network) {
         const btcBalance =
@@ -118,7 +112,7 @@ function Create() {
               setTotalAmount(parseFloat(getValues("amount")) + 0.0008);
             })
             .catch((errors) => {
-              console.log(errors);
+              toast({ title: "Error Fetching Fees", status: "warning" });
             });
         } else if (network === "Celo") {
           setBalance(wallets[index][1].info.celo);
@@ -145,6 +139,7 @@ function Create() {
       }
       setTotalAmount(parseFloat(getValues("amount")) + fee);
     }
+    await fetchRate(e.target.value);
   };
   const fetchCardTemplates = async () => {
     await axios
@@ -180,6 +175,7 @@ function Create() {
       .then(function (response) {
         console.log(response);
         setIsLoading(false);
+        navigate("/giftcard/cards");
         toast({
           title: "Giftcard created, check `My cards to view giftcard`",
           position: "top",
@@ -235,9 +231,9 @@ function Create() {
             >
               <Image
                 src={`${template.link}`}
-                width={["full", "full", "300px"]}
+                width={["full", "full", "400px"]}
                 height={"300px"}
-                objectFit={"cover"}
+                objectFit={"contain"}
                 borderRadius={"10px"}
               />
             </Box>
@@ -314,8 +310,10 @@ function Create() {
                   name="amount"
                   type={"number"}
                   {...register("amount", {
-                    onChange: (e) =>
-                      setTotalAmount(parseFloat(e.target.value) + fee),
+                    onChange: (e) => {
+                      setTotalAmount(parseFloat(e.target.value) + fee);
+                      setDollarAmount(parseFloat(e.target.value) * rate);
+                    },
                     max: { value: balance, message: "Insufficient funds" },
                     min: {
                       value: amountMin,
@@ -323,6 +321,9 @@ function Create() {
                     },
                   })}
                 />
+                <Text mt={"20px"} fontSize={"sm"}>
+                  ${isNaN(dollarAmount) ? 0 : dollarAmount.toFixed(2)}
+                </Text>
                 <FormErrorMessage>
                   {errors.amount && errors.amount.message}
                 </FormErrorMessage>
