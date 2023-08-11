@@ -8,7 +8,9 @@ function App() {
   useEffect(() => {
     ReactGA.send({
       hitType: "pageview",
-      page: window.location.pathname + window.location.search,
+      page: window.location.search
+        ? window.location.pathname + window.location.search
+        : window.location.pathname,
     });
   });
   return <Router />;
