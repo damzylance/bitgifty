@@ -2,9 +2,9 @@ import { useEffect } from "react";
 import Router from "./Router";
 import TagManager from "react-gtm-module";
 import ReactGA from "react-ga4";
+ReactGA.initialize("G-YV1233VJ3E");
 
 function App() {
-  ReactGA.initialize("G-YV1233VJ3E");
   useEffect(() => {
     ReactGA.send({
       hitType: "pageview",
