@@ -1,11 +1,16 @@
 import { useEffect } from "react";
 import Router from "./Router";
 import TagManager from "react-gtm-module";
+import ReactGA from "react-ga4";
 
 function App() {
+  ReactGA.initialize("G-YV1233VJ3E");
   useEffect(() => {
-    TagManager.initialize({ gtmId: "G-6ZQR8Z4P23" });
-  }, []);
+    ReactGA.send({
+      hitType: "pageview",
+      page: window.location.pathname + window.location.search,
+    });
+  });
   return <Router />;
 }
 
