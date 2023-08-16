@@ -419,7 +419,7 @@ function CoinRow(props) {
 
       <HStack
         width={"full"}
-        gap={["0", "0", "4"]}
+        gap={["0", "0", "0"]}
         justifyContent={["space-between", "space-between", "flex-end"]}
       >
         <Button
@@ -462,6 +462,22 @@ function CoinRow(props) {
           }
         >
           Swap
+        </Button>
+        <Button
+          onClick={() => {
+            if (props.type !== "fiat") {
+              setPage("swap");
+              onOpen();
+            }
+          }}
+          variant={"outline"}
+          disabled={
+            props.currency === "NAIRA" || props.currency === "ETHEREUM"
+              ? true
+              : false
+          }
+        >
+          Spend
         </Button>
         <Button
           onClick={() => {

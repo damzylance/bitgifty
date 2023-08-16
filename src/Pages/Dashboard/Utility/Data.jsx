@@ -98,7 +98,7 @@ const DataForm = (props) => {
         console.log(error);
         setIsLoading(false);
         toast({
-          title: "An error occured",
+          title: error.response.data.error,
           status: "warning",
         });
       });

@@ -17,6 +17,7 @@ import {
   useToast,
   Spinner,
   Checkbox,
+  HStack,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
@@ -302,7 +303,18 @@ function Create() {
             </FormControl>
             <VStack gap={"2"} width="full" alignItems="flex-start">
               <FormControl isInvalid={errors.amount}>
-                <FormLabel>Enter Amount</FormLabel>
+                <HStack
+                  width={"full"}
+                  alignItems={"center"}
+                  justifyContent={"space-between"}
+                  my={"2"}
+                >
+                  <FormLabel>Enter Amount</FormLabel>
+                  <Text mt={"20px"} fontSize={"sm"}>
+                    ${isNaN(dollarAmount) ? 0 : dollarAmount.toFixed(2)}
+                  </Text>
+                </HStack>
+
                 <Input
                   required
                   name="amount"
@@ -319,9 +331,7 @@ function Create() {
                     },
                   })}
                 />
-                <Text mt={"20px"} fontSize={"sm"}>
-                  ${isNaN(dollarAmount) ? 0 : dollarAmount.toFixed(2)}
-                </Text>
+
                 <FormErrorMessage>
                   {errors.amount && errors.amount.message}
                 </FormErrorMessage>

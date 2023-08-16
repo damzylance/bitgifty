@@ -92,6 +92,20 @@ function DashboardLayout(props) {
                       <RxCaretRight fontSize={"24px"} />
                     </HStack>
                   </Link>
+                  <Link to={"/utilities"} style={{ width: "100%" }}>
+                    <HStack
+                      width={"full"}
+                      justifyContent={"space-between"}
+                      alignItems={"center"}
+                      py={"10px"}
+                      borderBottom={"1px solid #eae8e8"}
+                    >
+                      <Text fontWeight={"500"} fontSize={"lg"}>
+                        Utilities
+                      </Text>
+                      <RxCaretRight fontSize={"24px"} />
+                    </HStack>
+                  </Link>
                   <Link to={"/wallet"} style={{ width: "100%" }}>
                     <HStack
                       width={"full"}
@@ -164,6 +178,9 @@ function DashboardLayout(props) {
               </Link>
               <Link to="/giftcard">
                 <Text>Giftcard</Text>
+              </Link>
+              <Link to="/utilities">
+                <Text>Utilities</Text>
               </Link>
               <Link to="/wallet">
                 <Text>Wallet</Text>

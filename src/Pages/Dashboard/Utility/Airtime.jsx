@@ -98,7 +98,6 @@ const AirtimeForm = (props) => {
   const [wallets, setWallets] = useState([]);
   const buyAirtime = async (data) => {
     data.network = props.networkId;
-    data.token_amount = tokenAmount;
     console.log(data);
     setIsLoading(true);
     await axios
@@ -113,7 +112,10 @@ const AirtimeForm = (props) => {
       .catch((error) => {
         console.log(error);
         setIsLoading(false);
-        toast({ title: "An error occured", status: "warning" });
+        toast({
+          title: error.response.data.error,
+          status: "warning",
+        });
       });
   };
   const fetchWallets = async () => {
