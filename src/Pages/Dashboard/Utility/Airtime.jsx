@@ -109,20 +109,17 @@ const AirtimeForm = (props) => {
   const buyAirtime = async (data) => {
     data.network = props.networkId;
     // data.token_amount = tokenAmount;
-    console.log(data);
     setIsLoading(true);
     await axios
       .post(`${process.env.REACT_APP_BASE_URL}utilities/buy-airtime/`, data, {
         headers: { Authorization: `Token ${localStorage.getItem("token")}` },
       })
       .then((response) => {
-        console.log(response);
         setIsLoading(false);
         toast({ title: "Airtime purchase successful", status: "success" });
         props.onClose();
       })
       .catch((error) => {
-        console.log(error);
         setIsLoading(false);
         toast({
           title: error.response.data.error,
@@ -160,21 +157,17 @@ const AirtimeForm = (props) => {
         headers: { Authorization: `Token ${localStorage.getItem("token")}` },
       })
       .then((response) => {
-        console.log(response);
         setTokenToNairaRate(response.data);
         setIsLoading(false);
         rate = response.data;
       })
-      .catch((error) => {
-        console.log(error);
-      });
+      .catch((error) => {});
     return rate;
   };
   //   const handleCurrencyChange = (e) =>
   const handleCurrencyChange = async (e) => {
     const network = e.target.value;
     setCurrency(e.target.value);
-    console.log(network);
     for (let index = 0; index < wallets.length; index++) {
       if (wallets[index][0] === network) {
         if (wallets[index][0] === "Celo") {

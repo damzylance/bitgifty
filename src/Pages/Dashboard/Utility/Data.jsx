@@ -85,7 +85,6 @@ const DataForm = (props) => {
     // data.token_amount = data.data.split(",")[1];
     delete data.network;
     delete data.data;
-    console.log(data);
 
     if (tokenAmount >= walletBalance) {
       toast({ title: "insufficient balance", status: "warning" });
@@ -98,7 +97,6 @@ const DataForm = (props) => {
           },
         })
         .then((response) => {
-          console.log(response);
           setIsLoading(false);
           toast({
             title: "Airtime purchase successful",
@@ -107,7 +105,6 @@ const DataForm = (props) => {
           props.onClose();
         })
         .catch((error) => {
-          console.log(error);
           setIsLoading(false);
           toast({
             title: error.response.data.error,
@@ -128,11 +125,8 @@ const DataForm = (props) => {
       )
       .then((response) => {
         setPlans(response.data.results);
-        console.log(response);
       })
-      .catch((error) => {
-        console.log(error);
-      });
+      .catch((error) => {});
   };
   const fetchWallets = async () => {
     await axios
@@ -160,21 +154,17 @@ const DataForm = (props) => {
         headers: { Authorization: `Token ${localStorage.getItem("token")}` },
       })
       .then((response) => {
-        console.log(response);
         setTokenToNairaRate(response.data);
         rate = response.data;
         setIsLoading(false);
       })
-      .catch((error) => {
-        console.log(error);
-      });
+      .catch((error) => {});
 
     return rate;
   };
   const handleCurrencyChange = async (e) => {
     const network = e.target.value;
     setCurrency(e.target.value);
-    console.log(network);
     for (let index = 0; index < wallets.length; index++) {
       if (wallets[index][0] === network) {
         if (wallets[index][0] === "Celo") {
@@ -185,7 +175,6 @@ const DataForm = (props) => {
       }
     }
     const rate = await fetchRate(e.target.value.toLowerCase());
-    console.log(rate);
     // alert(currency);
 
     setTokenAmount(rate * nairaAmount);
