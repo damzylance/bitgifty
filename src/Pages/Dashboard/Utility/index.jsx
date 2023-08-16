@@ -112,8 +112,8 @@ const UtilityModal = (props) => {
         <ModalBody>
           <VStack width={"full"}>
             {" "}
-            {props.type === "airtime" && <Airtime />}
-            {props.type === "data" && <Data />}
+            {props.type === "airtime" && <Airtime action={props.onClose} />}
+            {props.type === "data" && <Data action={props.onClose} />}
           </VStack>
         </ModalBody>
       </ModalContent>

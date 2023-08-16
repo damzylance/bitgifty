@@ -423,6 +423,7 @@ function CoinRow(props) {
         justifyContent={["space-between", "space-between", "flex-end"]}
       >
         <Button
+          size={["sm", "sm", "md"]}
           onClick={() => {
             setPage("withdraw");
             onOpen();
@@ -432,6 +433,7 @@ function CoinRow(props) {
           Withdraw
         </Button>
         <Button
+          size={["sm", "sm", "md"]}
           onClick={() => {
             if (props.type !== "fiat") {
               setPage("deposit");
@@ -448,6 +450,7 @@ function CoinRow(props) {
           Deposit
         </Button>
         <Button
+          size={["sm", "sm", "md"]}
           onClick={() => {
             if (props.type !== "fiat") {
               setPage("swap");
@@ -464,11 +467,9 @@ function CoinRow(props) {
           Swap
         </Button>
         <Button
+          size={["sm", "sm", "md"]}
           onClick={() => {
-            if (props.type !== "fiat") {
-              setPage("swap");
-              onOpen();
-            }
+            navigate("/utilities");
           }}
           variant={"outline"}
           disabled={
@@ -480,6 +481,7 @@ function CoinRow(props) {
           Spend
         </Button>
         <Button
+          size={["sm", "sm", "md"]}
           onClick={() => {
             if (props.type === "fiat") {
               navigate(`/fiat-history/`);

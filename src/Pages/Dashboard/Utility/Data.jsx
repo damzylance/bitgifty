@@ -15,7 +15,7 @@ import {
 import { useForm } from "react-hook-form";
 import axios from "axios";
 
-const Data = () => {
+const Data = (props) => {
   const telcos = [
     { name: "mtn", logo: "/assets/images/mtn_logo.png", id: 1 },
     { name: "glo", logo: "/assets/images/glo_logo.webp", id: 2 },
@@ -49,7 +49,7 @@ const Data = () => {
           </VStack>
         </VStack>
       )}
-      {page === "buy" && <DataForm telco={telco} />}
+      {page === "buy" && <DataForm telco={telco} onClose={props.action} />}
     </>
   );
 };
@@ -75,33 +75,39 @@ const DataForm = (props) => {
   const buyData = async (data) => {
     data.network = props.telco;
     data.data_plan = parseInt(data.data.split(",")[0]);
+    // data.token_amount = data.data.split(",")[1];
     delete data.network;
     delete data.data;
     console.log(data);
 
-    setIsLoading(true);
-    await axios
-      .post(`${process.env.REACT_APP_BASE_URL}utilities/buy-data/`, data, {
-        headers: {
-          Authorization: `Token ${localStorage.getItem("token")}`,
-        },
-      })
-      .then((response) => {
-        console.log(response);
-        setIsLoading(false);
-        toast({
-          title: "Airtime purchase successful",
-          status: "success",
+    if (tokenAmount >= walletBalance) {
+      toast({ title: "insufficient balance", status: "warning" });
+    } else {
+      setIsLoading(true);
+      await axios
+        .post(`${process.env.REACT_APP_BASE_URL}utilities/buy-data/`, data, {
+          headers: {
+            Authorization: `Token ${localStorage.getItem("token")}`,
+          },
+        })
+        .then((response) => {
+          console.log(response);
+          setIsLoading(false);
+          toast({
+            title: "Airtime purchase successful",
+            status: "success",
+          });
+          props.onClose();
+        })
+        .catch((error) => {
+          console.log(error);
+          setIsLoading(false);
+          toast({
+            title: error.response.data.error,
+            status: "warning",
+          });
         });
-      })
-      .catch((error) => {
-        console.log(error);
-        setIsLoading(false);
-        toast({
-          title: error.response.data.error,
-          status: "warning",
-        });
-      });
+    }
   };
   const fetchDataPlans = async () => {
     await axios
@@ -140,6 +146,8 @@ const DataForm = (props) => {
       .catch(function (error) {});
   };
   const fetchRate = async (currency) => {
+    let rate;
+    setIsLoading(true);
     await axios
       .get(`${process.env.REACT_APP_BASE_URL}utilities/naira/${currency}`, {
         headers: { Authorization: `Token ${localStorage.getItem("token")}` },
@@ -147,10 +155,14 @@ const DataForm = (props) => {
       .then((response) => {
         console.log(response);
         setTokenToNairaRate(response.data);
+        rate = response.data;
+        setIsLoading(false);
       })
       .catch((error) => {
         console.log(error);
       });
+
+    return rate;
   };
   const handleCurrencyChange = async (e) => {
     const network = e.target.value;
@@ -166,14 +178,18 @@ const DataForm = (props) => {
       }
     }
     const rate = await fetchRate(e.target.value.toLowerCase());
+    console.log(rate);
     // alert(currency);
 
     setTokenAmount(rate * nairaAmount);
   };
 
   const handlePlanChange = (e) => {
-    setNairaAmount(e.target.value[1]);
+    const nairaAmount = parseInt(e.target.value.split(",")[1]);
+    setNairaAmount(parseInt(e.target.value.split(",")[1]));
+    setTokenAmount(tokenToNairaRate * nairaAmount);
   };
+
   useEffect(() => {
     fetchWallets();
     fetchDataPlans();
@@ -210,7 +226,7 @@ const DataForm = (props) => {
               mt={"5px"}
             >
               <Text fontSize={"xs"} textAlign={"right"}>
-                {tokenAmount.toFixed(2)} {currency}
+                ≈ {tokenAmount.toFixed(2)} {currency}
               </Text>
               <Text color={"red"} fontSize={"xx-small"}>
                 {errors.amount && errors.amount.message}

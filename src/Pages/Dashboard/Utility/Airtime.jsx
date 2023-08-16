@@ -17,7 +17,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
-const Airtime = () => {
+const Airtime = (props) => {
   const telcos = [
     { name: "mtn", logo: "/assets/images/mtn_logo.png", id: 1 },
     { name: "glo", logo: "/assets/images/glo_logo.webp", id: 2 },
@@ -54,7 +54,13 @@ const Airtime = () => {
           </VStack>
         </VStack>
       )}
-      {page === "buy" && <AirtimeForm telco={telco} networkId={networkId} />}
+      {page === "buy" && (
+        <AirtimeForm
+          telco={telco}
+          onClose={props.action}
+          networkId={networkId}
+        />
+      )}
     </>
   );
 };
@@ -98,6 +104,7 @@ const AirtimeForm = (props) => {
   const [wallets, setWallets] = useState([]);
   const buyAirtime = async (data) => {
     data.network = props.networkId;
+    // data.token_amount = tokenAmount;
     console.log(data);
     setIsLoading(true);
     await axios
@@ -108,6 +115,7 @@ const AirtimeForm = (props) => {
         console.log(response);
         setIsLoading(false);
         toast({ title: "Airtime purchase successful", status: "success" });
+        props.onClose();
       })
       .catch((error) => {
         console.log(error);
@@ -142,6 +150,7 @@ const AirtimeForm = (props) => {
   };
   const fetchRate = async (currency) => {
     let rate;
+    setIsLoading(true);
     await axios
       .get(`${process.env.REACT_APP_BASE_URL}utilities/naira/${currency}`, {
         headers: { Authorization: `Token ${localStorage.getItem("token")}` },
@@ -149,6 +158,7 @@ const AirtimeForm = (props) => {
       .then((response) => {
         console.log(response);
         setTokenToNairaRate(response.data);
+        setIsLoading(false);
         rate = response.data;
       })
       .catch((error) => {
@@ -230,7 +240,7 @@ const AirtimeForm = (props) => {
               mt={"5px"}
             >
               <Text fontSize={"xs"} textAlign={"right"}>
-                {tokenAmount.toFixed(2)} {currency}
+                ≈ {tokenAmount.toFixed(2)} {currency}
               </Text>
               <Text color={"red"} fontSize={"xx-small"}>
                 {errors.amount && errors.amount.message}
