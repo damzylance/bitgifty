@@ -220,9 +220,7 @@ const DataForm = (props) => {
           </Text>
         </HStack>
       </HStack>
-      <Text fontSize={"2xl"} textTransform={"uppercase"}>
-        BUY {props.telco} DATA
-      </Text>
+
       <form style={{ width: "100%" }} onSubmit={handleSubmit(buyData)}>
         <VStack width={"full"} gap={"20px"}>
           <FormControl>
