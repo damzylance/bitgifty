@@ -101,7 +101,7 @@ function DashboardLayout(props) {
                       borderBottom={"1px solid #eae8e8"}
                     >
                       <Text fontWeight={"500"} fontSize={"lg"}>
-                        Utilities
+                        Spend
                       </Text>
                       <RxCaretRight fontSize={"24px"} />
                     </HStack>
@@ -180,7 +180,7 @@ function DashboardLayout(props) {
                 <Text>Giftcard</Text>
               </Link>
               <Link to="/utilities">
-                <Text>Utilities</Text>
+                <Text>Spend</Text>
               </Link>
               <Link to="/wallet">
                 <Text>Wallet</Text>

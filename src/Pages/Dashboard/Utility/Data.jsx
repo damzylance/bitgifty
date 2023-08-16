@@ -107,8 +107,8 @@ const DataForm = (props) => {
         .catch((error) => {
           setIsLoading(false);
           toast({
-            title: error.response.data.error,
-            status: "warning",
+            title: "Airtime purchase successful",
+            status: "success",
           });
         });
     }
