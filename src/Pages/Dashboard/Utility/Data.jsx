@@ -107,8 +107,8 @@ const DataForm = (props) => {
         .catch((error) => {
           setIsLoading(false);
           toast({
-            title: "Data purchase successful",
-            status: "success",
+            title: error.response.data.error,
+            status: "warning",
           });
         });
     }
