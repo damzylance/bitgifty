@@ -1,3 +1,4 @@
+import { ArrowBackIcon } from "@chakra-ui/icons";
 import {
   Button,
   FormControl,
@@ -33,8 +34,10 @@ const Airtime = (props) => {
     <>
       {page === "list" && (
         <VStack width={"full"} gap={"40px"} my={"40px"}>
-          <Text fontSize={"2xl"}>Plese Select Telco Provider</Text>
-
+          <Text fontSize={"2xl"} textAlign={"center"}>
+            {" "}
+            Plese Select Telco Provider
+          </Text>
           <VStack width={"full"} gap={"10px"}>
             {telcos.length > 0
               ? telcos.map((provider) => {
@@ -59,6 +62,7 @@ const Airtime = (props) => {
           telco={telco}
           onClose={props.action}
           networkId={networkId}
+          back={() => setPage("list")}
         />
       )}
     </>
@@ -190,9 +194,24 @@ const AirtimeForm = (props) => {
   }, []);
   return (
     <VStack my={"40px"} gap={"20px"} width={"full"}>
-      <Text fontSize={"2xl"} textTransform={"uppercase"}>
-        BUY {props.telco} AIRTIME
-      </Text>
+      <HStack width={"full"} alignItems={"center"}>
+        <ArrowBackIcon
+          fontSize={"20px"}
+          cursor={"pointer"}
+          onClick={props.back}
+        />
+        <HStack width={"full"} justifyContent={"cener"}>
+          <Text
+            textAlign={"center"}
+            fontSize={"2xl"}
+            textTransform={"uppercase"}
+            width={"full"}
+          >
+            BUY {props.telco} AIRTIME
+          </Text>
+        </HStack>
+      </HStack>
+
       <form style={{ width: "100%" }} onSubmit={handleSubmit(buyAirtime)}>
         <VStack width={"full"} gap={"20px"}>
           <FormControl>
@@ -221,7 +240,7 @@ const AirtimeForm = (props) => {
             <Input
               border={"1px solid #f9f9f9"}
               outline={"none"}
-              fontSize={"14px"}
+              fontSize={"16px"}
               type="number"
               min={50}
               required
@@ -257,6 +276,7 @@ const AirtimeForm = (props) => {
             </FormLabel>
 
             <Select
+              fontSize={"16px"}
               {...register("wallet_from", { onChange: handleCurrencyChange })}
               required
             >

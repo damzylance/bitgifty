@@ -14,6 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
+import { ArrowBackIcon } from "@chakra-ui/icons";
 
 const Data = (props) => {
   const telcos = [
@@ -49,7 +50,13 @@ const Data = (props) => {
           </VStack>
         </VStack>
       )}
-      {page === "buy" && <DataForm telco={telco} onClose={props.action} />}
+      {page === "buy" && (
+        <DataForm
+          telco={telco}
+          onClose={props.action}
+          back={() => setPage("list")}
+        />
+      )}
     </>
   );
 };
@@ -196,6 +203,23 @@ const DataForm = (props) => {
   }, []);
   return (
     <VStack my={"40px"} gap={"20px"} width={"full"}>
+      <HStack width={"full"} alignItems={"center"}>
+        <ArrowBackIcon
+          fontSize={"20px"}
+          cursor={"pointer"}
+          onClick={props.back}
+        />
+        <HStack width={"full"} justifyContent={"cener"}>
+          <Text
+            textAlign={"center"}
+            fontSize={"2xl"}
+            textTransform={"uppercase"}
+            width={"full"}
+          >
+            BUY {props.telco} DATA
+          </Text>
+        </HStack>
+      </HStack>
       <Text fontSize={"2xl"} textTransform={"uppercase"}>
         BUY {props.telco} DATA
       </Text>
@@ -207,6 +231,7 @@ const DataForm = (props) => {
             </FormLabel>
 
             <Select
+              fontSize={"16px"}
               {...register("data", { onChange: handlePlanChange })}
               required
             >
@@ -240,9 +265,9 @@ const DataForm = (props) => {
             </FormLabel>
 
             <Input
+              fontSize={"16px"}
               border={"1px solid #f9f9f9"}
               outline={"none"}
-              fontSize={"14px"}
               type="tel"
               required
               name="phone"
