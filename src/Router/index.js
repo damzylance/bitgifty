@@ -17,6 +17,7 @@ import Payout from "../Pages/UserSetting/Payout";
 import SwapHistory from "../Pages/Dashboard/Wallet/SwapHistory";
 import FiatHistory from "../Pages/Dashboard/Wallet/FiatHistory";
 import Privacy from "../Pages/Privacy";
+import Utility from "../Pages/Dashboard/Utility";
 function Router() {
   return (
     <BrowserRouter>
@@ -42,6 +43,7 @@ function Router() {
         <Route exact path="/giftcard" element={<Giftcard />} />
         <Route exact path="/giftcard/:page" element={<Giftcard />} />
         <Route exact path="/wallet" element={<Wallet />} />
+        <Route exact path="/utilities" element={<Utility />} />
         <Route exact path="/coin-details/:currency" element={<CoinDetails />} />
         <Route exact path="/swap-history" element={<SwapHistory />} />
         <Route exact path="/fiat-history" element={<FiatHistory />} />

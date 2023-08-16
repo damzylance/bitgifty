@@ -45,7 +45,7 @@ const chartOptions = {
 
 function Wallet() {
   const options = {
-    headers: { "x-api-key": "b04e15d2-f32b-4c6b-a4d5-20c203c7cf80" },
+    headers: { "x-api-key": process.env.REACT_APP_RATE_KEY },
   };
 
   const [chartData, setChartData] = useState({
@@ -1000,21 +1000,7 @@ const WalletModal = (props) => {
                             }
                           }}
                         />
-                        <HStack width={"full"} justifyContent={"flex-end"}>
-                          <Text
-                            color={"blackAlpha.500"}
-                            fontSize={"xs"}
-                            textDecoration={"underline"}
-                            fontWeight={"semibold"}
-                            cursor={"pointer"}
-                            mt={"5px"}
-                            onClick={() => {
-                              setWithdrawAmount(props.balance);
-                            }}
-                          >
-                            MAX
-                          </Text>
-                        </HStack>
+
                         <Box textAlign={"left"}>
                           {errors.length > 0 && (
                             <Text my={"2"} color={"red"} fontSize={"xs"}>

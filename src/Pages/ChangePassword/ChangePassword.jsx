@@ -89,12 +89,9 @@ function PasswordResetConFirm() {
                     name="new_password1"
                     placeholder="New Password"
                     {...register("new_password1", {
-                      minLength: "8",
-                      pattern: {
-                        value:
-                          /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/,
-                        message:
-                          "Password must contain, one uppercase, number and a special character",
+                      minLength: {
+                        value: "8",
+                        message: "password must contain at least 8 characters",
                       },
                     })}
                     type={showPassword ? "text" : "password"}

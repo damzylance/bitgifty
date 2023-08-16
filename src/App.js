@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import Router from "./Router";
 import TagManager from "react-gtm-module";
 import ReactGA from "react-ga4";
-ReactGA.initialize("G-YV1233VJ3E");
+ReactGA.initialize(process.env.REACT_APP_GA);
 
 function App() {
   useEffect(() => {
