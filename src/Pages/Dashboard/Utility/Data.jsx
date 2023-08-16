@@ -99,7 +99,7 @@ const DataForm = (props) => {
         .then((response) => {
           setIsLoading(false);
           toast({
-            title: "Airtime purchase successful",
+            title: "Data purchase successful",
             status: "success",
           });
           props.onClose();
@@ -107,7 +107,7 @@ const DataForm = (props) => {
         .catch((error) => {
           setIsLoading(false);
           toast({
-            title: "Airtime purchase successful",
+            title: "Data purchase successful",
             status: "success",
           });
         });
