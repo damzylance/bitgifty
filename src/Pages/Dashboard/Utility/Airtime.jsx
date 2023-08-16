@@ -215,7 +215,7 @@ const AirtimeForm = (props) => {
             <Input
               border={"1px solid #f9f9f9"}
               outline={"none"}
-              fontSize={"14px"}
+              fontSize={"16px"}
               type="tel"
               required
               name="phone"
