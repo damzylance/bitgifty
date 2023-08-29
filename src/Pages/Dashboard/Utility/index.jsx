@@ -24,6 +24,8 @@ import {
 } from "react-icons/md";
 import Airtime from "./Airtime";
 import Data from "./Data";
+import Cable from "./Cable";
+import Electricity from "./Electricity";
 const Utility = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -55,8 +57,22 @@ const Utility = () => {
               onOpen();
             }}
           />
-          <UtilityCard icon={<MdElectricBolt />} text={"Electricity"} />
-          <UtilityCard icon={<MdConnectedTv />} text={"Cable"} />
+          <UtilityCard
+            icon={<MdElectricBolt />}
+            text={"Electricity"}
+            action={() => {
+              setType("electricity");
+              onOpen();
+            }}
+          />
+          <UtilityCard
+            icon={<MdConnectedTv />}
+            text={"Cable"}
+            action={() => {
+              setType("cable");
+              onOpen();
+            }}
+          />
         </Grid>
         <UtilityModal type={type} isOpen={isOpen} onClose={onClose} />
       </Container>
@@ -114,6 +130,10 @@ const UtilityModal = (props) => {
             {" "}
             {props.type === "airtime" && <Airtime action={props.onClose} />}
             {props.type === "data" && <Data action={props.onClose} />}
+            {props.type === "electricity" && (
+              <Electricity action={props.onClose} />
+            )}
+            {props.type === "cable" && <Cable />}
           </VStack>
         </ModalBody>
       </ModalContent>

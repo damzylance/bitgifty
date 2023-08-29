@@ -1,9 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { ProviderCard } from "./Airtime";
 import {
   Button,
   FormControl,
-  FormErrorMessage,
   FormLabel,
   HStack,
   Input,
@@ -12,34 +9,40 @@ import {
   VStack,
   useToast,
 } from "@chakra-ui/react";
+import React, { useEffect, useState } from "react";
+import { ProviderCard } from "./Airtime";
+import { ArrowBackIcon } from "@chakra-ui/icons";
 import { useForm } from "react-hook-form";
 import axios from "axios";
-import { ArrowBackIcon } from "@chakra-ui/icons";
 
-const Data = (props) => {
-  const telcos = [
-    { name: "mtn", logo: "/assets/images/mtn_logo.png", id: 1 },
-    { name: "glo", logo: "/assets/images/glo_logo.webp", id: 2 },
-    { name: "airtel", logo: "/assets/images/airtel_logo.png", id: 3 },
-    { name: "9mobile", logo: "/assets/images/9mobile_logo.jpeg", id: 4 },
-  ];
-
+const Cable = (props) => {
   const [page, setPage] = useState("list");
-  const [telco, setTelco] = useState(null);
+  const [merchants, setMerchants] = useState([
+    { name: "DSTV", logo: "/assets/images/dstv.png", id: 2 },
+    { name: "GoTV", logo: "/assets/images/gotv.png", id: 1 },
+    { name: "Startime", logo: "/assets/images/startimes.png", id: 3 },
+  ]);
+
+  const [merchantName, setMerchantName] = useState(null);
+  const [merchantId, setMerchantId] = useState(null);
   return (
     <>
       {page === "list" && (
         <VStack width={"full"} gap={"40px"} my={"40px"}>
-          <Text fontSize={"2xl"}>Plese Select Telco Provider</Text>
-
+          <Text fontSize={"2xl"} textAlign={"center"}>
+            {" "}
+            Plese Select Cable Provider
+          </Text>
           <VStack width={"full"} gap={"10px"}>
-            {telcos.length > 0
-              ? telcos.map((provider) => {
+            {merchants.length > 0
+              ? merchants.map((provider, id) => {
                   return (
                     <ProviderCard
+                      key={id}
                       action={() => {
                         setPage("buy");
-                        setTelco(provider.name);
+                        setMerchantId(provider.id);
+                        setMerchantName(provider.name);
                       }}
                       name={provider.name}
                       logo={provider.logo}
@@ -51,79 +54,67 @@ const Data = (props) => {
         </VStack>
       )}
       {page === "buy" && (
-        <DataForm
-          telco={telco}
+        <CableForm
           onClose={props.action}
+          name={merchantName}
+          cable={merchantId}
           back={() => setPage("list")}
         />
       )}
     </>
   );
 };
-
-const DataForm = (props) => {
+const CableForm = (props) => {
+  const toast = useToast();
   const {
     register,
     handleSubmit,
     formState: { errors },
     getValues,
   } = useForm();
-  const toast = useToast();
+  const [wallets, setWallets] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [walletBalance, setWalletBalance] = useState(null);
-  const [using, setUsing] = useState(null);
+  const [plans, setPlans] = useState([]);
   const [tokenAmount, setTokenAmount] = useState(0);
-  const [nairaAmount, setNairaAmount] = useState(null);
+  const [nairaAmount, setNairaAmount] = useState();
   const [tokenToNairaRate, setTokenToNairaRate] = useState(0);
   const [currency, setCurrency] = useState("");
-  const [plans, setPlans] = useState([]);
-  const [networkId, setNetworkId] = useState([]);
-  const [wallets, setWallets] = useState([]);
-  const buyData = async (data) => {
-    data.network = props.telco;
-    data.data_plan = parseInt(data.data.split(",")[0]);
-    // data.token_amount = data.data.split(",")[1];
-    delete data.network;
-    delete data.data;
+  const [walletBalance, setWalletBalance] = useState(null);
 
-    if (tokenAmount >= walletBalance) {
-      toast({ title: "insufficient balance", status: "warning" });
-    } else {
-      setIsLoading(true);
-      await axios
-        .post(`${process.env.REACT_APP_BASE_URL}utilities/buy-data/`, data, {
-          headers: {
-            Authorization: `Token ${localStorage.getItem("token")}`,
-          },
-        })
-        .then((response) => {
-          setIsLoading(false);
-          toast({
-            title: "Data purchase successful",
-            status: "success",
-          });
-          props.onClose();
-        })
-        .catch((error) => {
-          setIsLoading(false);
-          toast({
-            title: error.response.data.error,
-            status: "warning",
-          });
-        });
-    }
+  const handlePlanChange = (e) => {
+    const nairaAmount = parseInt(e.target.value.split(",")[1]);
+    setNairaAmount(parseInt(e.target.value.split(",")[1]));
+    setTokenAmount(tokenToNairaRate * nairaAmount);
   };
-  const fetchDataPlans = async () => {
+  const handleCurrencyChange = async (e) => {
+    const network = e.target.value;
+    setCurrency(e.target.value);
+    for (let index = 0; index < wallets.length; index++) {
+      if (wallets[index][0] === network) {
+        if (wallets[index][0] === "Celo") {
+          setWalletBalance(wallets[index][1].info.celo);
+        } else if (wallets[index][0] === network) {
+          setWalletBalance(wallets[index][1].info.balance / 1000000);
+        }
+      }
+    }
+    const rate = await fetchRate(e.target.value.toLowerCase());
+    // alert(currency);
+
+    setTokenAmount(rate * nairaAmount);
+  };
+  const fetchPlans = async () => {
     await axios
       .get(
         `${
           process.env.REACT_APP_BASE_URL
-        }utilities/data-plan/?network__name=${props.telco.toUpperCase()}`,
+        }utilities/cable-plan/?cable__name=${props.name.toUpperCase()}`,
         {
           headers: { Authorization: `Token ${localStorage.getItem("token")}` },
         }
       )
       .then((response) => {
+        console.log(response);
         setPlans(response.data.results);
       })
       .catch((error) => {});
@@ -162,33 +153,62 @@ const DataForm = (props) => {
 
     return rate;
   };
-  const handleCurrencyChange = async (e) => {
-    const network = e.target.value;
-    setCurrency(e.target.value);
-    for (let index = 0; index < wallets.length; index++) {
-      if (wallets[index][0] === network) {
-        if (wallets[index][0] === "Celo") {
-          setWalletBalance(wallets[index][1].info.celo);
-        } else if (wallets[index][0] === network) {
-          setWalletBalance(wallets[index][1].info.balance / 1000000);
-        }
-      }
+  const buyCable = async (data) => {
+    data.cable = props.cable;
+    data.cable_plan = parseInt(data.plan.split(",")[0]);
+    // data.token_amount = data.data.split(",")[1];
+    delete data.network;
+    delete data.data;
+    console.log(data);
+    if (tokenAmount >= walletBalance) {
+      toast({ title: "insufficient balance", status: "warning" });
+    } else {
+      setIsLoading(true);
+
+      axios
+        .get(
+          `https://arktivesub.com/api/cable/cable-validation?iuc=${data.iuc}&cable=${props.cable}`
+        )
+        .then(async (response) => {
+          setIsLoading(false);
+          toast("iuc valid");
+          console.log(response.data);
+          // await axios
+          //   .post(
+          //     `${process.env.REACT_APP_BASE_URL}utilities/buy-data/`,
+          //     data,
+          //     {
+          //       headers: {
+          //         Authorization: `Token ${localStorage.getItem("token")}`,
+          //       },
+          //     }
+          //   )
+          //   .then((response) => {
+          //     setIsLoading(false);
+          //     toast({
+          //       title: "Data purchase successful",
+          //       status: "success",
+          //     });
+          //     props.onClose();
+          //   })
+          //   .catch((error) => {
+          //     setIsLoading(false);
+          //     toast({
+          //       title: error.response.data.error,
+          //       status: "warning",
+          //     });
+          //   });
+        })
+        .catch((error) => {
+          setIsLoading(false);
+          toast("iuc invalid");
+          console.log(error);
+        });
     }
-    const rate = await fetchRate(e.target.value.toLowerCase());
-    // alert(currency);
-
-    setTokenAmount(rate * nairaAmount);
   };
-
-  const handlePlanChange = (e) => {
-    const nairaAmount = parseInt(e.target.value.split(",")[1]);
-    setNairaAmount(parseInt(e.target.value.split(",")[1]));
-    setTokenAmount(tokenToNairaRate * nairaAmount);
-  };
-
   useEffect(() => {
+    fetchPlans();
     fetchWallets();
-    fetchDataPlans();
   }, []);
   return (
     <VStack my={"40px"} gap={"20px"} width={"full"}>
@@ -205,21 +225,17 @@ const DataForm = (props) => {
             textTransform={"uppercase"}
             width={"full"}
           >
-            BUY {props.telco} DATA
+            Subscribe For {props.name}
           </Text>
         </HStack>
       </HStack>
-
-      <form style={{ width: "100%" }} onSubmit={handleSubmit(buyData)}>
+      <form style={{ width: "100%" }} onSubmit={handleSubmit(buyCable)}>
         <VStack width={"full"} gap={"20px"}>
           <FormControl>
-            <FormLabel fontSize={"sm"} color={"blackAlpha.700"}>
-              Data Plans
-            </FormLabel>
-
+            <FormLabel>Select Cable Plan</FormLabel>
             <Select
               fontSize={"16px"}
-              {...register("data", { onChange: handlePlanChange })}
+              {...register("plan", { onChange: handlePlanChange })}
               required
             >
               <option>Choose Plan</option>;
@@ -244,11 +260,10 @@ const DataForm = (props) => {
                 {errors.amount && errors.amount.message}
               </Text>
             </HStack>
-            <FormErrorMessage></FormErrorMessage>
           </FormControl>
           <FormControl>
             <FormLabel fontSize={"sm"} color={"blackAlpha.700"}>
-              Beneficiary Phone Number
+              Smart Card Number
             </FormLabel>
 
             <Input
@@ -258,30 +273,9 @@ const DataForm = (props) => {
               type="tel"
               required
               name="phone"
-              minLength={11}
-              maxLength={11}
-              {...register("phone")}
+              {...register("iuc")}
             />
-            <FormErrorMessage></FormErrorMessage>
           </FormControl>
-
-          {/* <FormControl>
-            <FormLabel fontSize={"sm"} color={"blackAlpha.700"}>
-              Amount
-            </FormLabel>
-
-            <Input
-              border={"1px solid #f9f9f9"}
-              value={amount}
-              outline={"none"}
-              fontSize={"14px"}
-              type="number"
-              min={100}
-              required
-            />
-            <FormErrorMessage></FormErrorMessage>
-          </FormControl> */}
-
           <FormControl>
             <FormLabel fontSize={"sm"} color={"blackAlpha.700"}>
               Pay with: Select Wallet
@@ -305,14 +299,14 @@ const DataForm = (props) => {
                 })}
             </Select>
             <Text mt={"10px"}>Balance: {walletBalance}</Text>
-            <FormErrorMessage></FormErrorMessage>
           </FormControl>
           <Button isLoading={isLoading} type="submit" width={"full"}>
-            Buy Data
+            Pay
           </Button>
         </VStack>
       </form>
     </VStack>
   );
 };
-export default Data;
+
+export default Cable;

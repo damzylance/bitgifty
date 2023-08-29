@@ -428,7 +428,11 @@ function CoinRow(props) {
             setPage("withdraw");
             onOpen();
           }}
-          disabled={props.currency === "ETHEREUM" ? true : false}
+          disabled={
+            props.currency === "ETHEREUM" || props.currency === "BITCOIN"
+              ? true
+              : false
+          }
         >
           Withdraw
         </Button>
@@ -442,7 +446,9 @@ function CoinRow(props) {
           }}
           variant={"outline"}
           disabled={
-            props.currency === "NAIRA" || props.currency === "ETHEREUM"
+            props.currency === "NAIRA" ||
+            props.currency === "ETHEREUM" ||
+            props.currency === "BITCOIN"
               ? true
               : false
           }
@@ -459,7 +465,9 @@ function CoinRow(props) {
           }}
           variant={"outline"}
           disabled={
-            props.currency === "NAIRA" || props.currency === "ETHEREUM"
+            props.currency === "NAIRA" ||
+            props.currency === "ETHEREUM" ||
+            props.currency === "BITCOIN"
               ? true
               : false
           }
@@ -473,7 +481,9 @@ function CoinRow(props) {
           }}
           variant={"outline"}
           disabled={
-            props.currency === "NAIRA" || props.currency === "ETHEREUM"
+            props.currency === "NAIRA" ||
+            props.currency === "ETHEREUM" ||
+            props.currency === "BITCOIN"
               ? true
               : false
           }
@@ -490,7 +500,11 @@ function CoinRow(props) {
             }
           }}
           variant={"outline"}
-          disabled={props.currency === "ETHEREUM" ? true : false}
+          disabled={
+            props.currency === "ETHEREUM" || props.currency === "BITCOIN"
+              ? true
+              : false
+          }
         >
           History
         </Button>
@@ -1161,14 +1175,13 @@ const WalletModal = (props) => {
                               ).toFixed(7);
 
                               let balanceError = [];
+
+                              //  setExchangeRate(rate * toFloatAmount);
+                              setExchangeRate(Math.round(toFloatAmount * rate));
                               if (toFloatAmount > parseFloat(props.balance)) {
                                 balanceError.push("Insufficient balance");
                                 setErrors(balanceError);
                               } else {
-                                //  setExchangeRate(rate * toFloatAmount);
-                                setExchangeRate(
-                                  Math.round(toFloatAmount * rate)
-                                );
                                 if (props.network === "Bitcoin") {
                                   let btcErrors = [];
 
