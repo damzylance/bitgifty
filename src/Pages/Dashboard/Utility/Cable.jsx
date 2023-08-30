@@ -173,7 +173,7 @@ const CableForm = (props) => {
           setIsLoading(false);
           console.log(response.data);
           toast({
-            title: "Data purchase successful",
+            title: "Cable plan purchase successful",
             status: "success",
           });
 

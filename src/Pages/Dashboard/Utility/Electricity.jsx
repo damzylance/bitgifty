@@ -171,11 +171,8 @@ const CableForm = (props) => {
     return rate;
   };
   const buyCable = async (data) => {
-    data.disco = props.disco - 1;
+    data.disco = props.disco;
     data.amount = parseInt(data.amount);
-    data.bypass = false;
-    data.meter_number = "0201001577638";
-    data = { ...data, "request-id": "test123456" };
 
     delete data.wallet_from;
 
@@ -197,6 +194,8 @@ const CableForm = (props) => {
         .then(async (response) => {
           console.log(response.data);
           toast({ title: "Payment successful", status: "success" });
+          setIsLoading(false);
+
           //   await axios
           //     .post(
           //       `${process.env.REACT_APP_BASE_URL}utilities/buy-electricity/`,
