@@ -193,8 +193,12 @@ const CableForm = (props) => {
         )
         .then(async (response) => {
           console.log(response.data);
-          toast({ title: "Payment successful", status: "success" });
+          toast({
+            title: "Payment successful. Check email for token",
+            status: "success",
+          });
           setIsLoading(false);
+          props.onClose();
 
           //   await axios
           //     .post(

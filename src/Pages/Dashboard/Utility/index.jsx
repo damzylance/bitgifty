@@ -133,7 +133,7 @@ const UtilityModal = (props) => {
             {props.type === "electricity" && (
               <Electricity action={props.onClose} />
             )}
-            {props.type === "cable" && <Cable />}
+            {props.type === "cable" && <Cable action={props.onClose} />}
           </VStack>
         </ModalBody>
       </ModalContent>

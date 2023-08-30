@@ -176,6 +176,7 @@ const CableForm = (props) => {
             title: "Cable plan purchase successful",
             status: "success",
           });
+          props.onClose();
 
           // await axios
           //   .post(
