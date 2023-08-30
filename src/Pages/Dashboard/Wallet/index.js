@@ -640,6 +640,7 @@ const WalletModal = (props) => {
           props.onClose();
         })
         .catch(function (error) {
+          console.log(error);
           setIsLoading(false);
           toast({
             title: "An error occured",

@@ -171,8 +171,12 @@ const CableForm = (props) => {
         )
         .then(async (response) => {
           setIsLoading(false);
-          toast("iuc valid");
           console.log(response.data);
+          toast({
+            title: "Data purchase successful",
+            status: "success",
+          });
+
           // await axios
           //   .post(
           //     `${process.env.REACT_APP_BASE_URL}utilities/buy-data/`,

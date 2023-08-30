@@ -196,6 +196,7 @@ const CableForm = (props) => {
         )
         .then(async (response) => {
           console.log(response.data);
+          toast({ title: "Payment successful", status: "success" });
           //   await axios
           //     .post(
           //       `${process.env.REACT_APP_BASE_URL}utilities/buy-electricity/`,
@@ -223,29 +224,6 @@ const CableForm = (props) => {
           //         status: "warning",
           //       });
           //     });
-          await axios
-            .post(`https://arktivesub.com/api/bill`, data, {
-              headers: {
-                Authorization: `Token 41ea61998be75a76ea01583b2f6cfd5a8e7dae6f6276e9270ce23a110fc4`,
-              },
-            })
-            .then((response) => {
-              console.log(response);
-              setIsLoading(false);
-              toast({
-                title: "Purchase successful",
-                status: "success",
-              });
-              props.onClose();
-            })
-            .catch((error) => {
-              console.log(error);
-              setIsLoading(false);
-              toast({
-                title: error.response.data.error,
-                status: "warning",
-              });
-            });
         })
         .catch((error) => {
           setIsLoading(false);
