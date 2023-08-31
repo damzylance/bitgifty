@@ -174,8 +174,6 @@ const CableForm = (props) => {
     data.disco = props.disco;
     data.amount = parseInt(data.amount);
 
-    delete data.wallet_from;
-
     // data.wallet_from = data.wallet_from.toLowerCase();
     // data.token_amount = data.data.split(",")[1];
 
@@ -192,41 +190,34 @@ const CableForm = (props) => {
           }&disco=${props.disco - 1}&meter_type=${data.meter_type}`
         )
         .then(async (response) => {
-          console.log(response.data);
-          toast({
-            title: "Payment successful. Check email for token",
-            status: "success",
-          });
           setIsLoading(false);
-          props.onClose();
 
-          //   await axios
-          //     .post(
-          //       `${process.env.REACT_APP_BASE_URL}utilities/buy-electricity/`,
-          //       data,
-          //       {
-          //         headers: {
-          //           Authorization: `Token ${localStorage.getItem("token")}`,
-          //         },
-          //       }
-          //     )
-          //     .then((response) => {
-          //       console.log(response);
-          //       setIsLoading(false);
-          //       toast({
-          //         title: "Purchase successful",
-          //         status: "success",
-          //       });
-          //       props.onClose();
-          //     })
-          //     .catch((error) => {
-          //       console.log(error);
-          //       setIsLoading(false);
-          //       toast({
-          //         title: error.response.data.error,
-          //         status: "warning",
-          //       });
-          //     });
+          await axios
+            .post(
+              `${process.env.REACT_APP_BASE_URL}utilities/buy-electricity/`,
+              data,
+              {
+                headers: {
+                  Authorization: `Token ${localStorage.getItem("token")}`,
+                },
+              }
+            )
+            .then((response) => {
+              setIsLoading(false);
+              toast({
+                title: "Purchase successful",
+                status: "success",
+              });
+              props.onClose();
+            })
+            .catch((error) => {
+              console.log(error);
+              setIsLoading(false);
+              toast({
+                title: error.response.data.error,
+                status: "warning",
+              });
+            });
         })
         .catch((error) => {
           setIsLoading(false);

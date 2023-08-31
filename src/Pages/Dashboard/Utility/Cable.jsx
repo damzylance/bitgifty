@@ -157,9 +157,6 @@ const CableForm = (props) => {
     data.cable = props.cable;
     data.cable_plan = parseInt(data.plan.split(",")[0]);
     // data.token_amount = data.data.split(",")[1];
-    delete data.network;
-    delete data.data;
-    console.log(data);
     if (tokenAmount >= walletBalance) {
       toast({ title: "insufficient balance", status: "warning" });
     } else {
@@ -171,38 +168,32 @@ const CableForm = (props) => {
         )
         .then(async (response) => {
           setIsLoading(false);
-          console.log(response.data);
-          toast({
-            title: "Cable plan purchase successful",
-            status: "success",
-          });
-          props.onClose();
 
-          // await axios
-          //   .post(
-          //     `${process.env.REACT_APP_BASE_URL}utilities/buy-data/`,
-          //     data,
-          //     {
-          //       headers: {
-          //         Authorization: `Token ${localStorage.getItem("token")}`,
-          //       },
-          //     }
-          //   )
-          //   .then((response) => {
-          //     setIsLoading(false);
-          //     toast({
-          //       title: "Data purchase successful",
-          //       status: "success",
-          //     });
-          //     props.onClose();
-          //   })
-          //   .catch((error) => {
-          //     setIsLoading(false);
-          //     toast({
-          //       title: error.response.data.error,
-          //       status: "warning",
-          //     });
-          //   });
+          await axios
+            .post(
+              `${process.env.REACT_APP_BASE_URL}utilities/buy-data/`,
+              data,
+              {
+                headers: {
+                  Authorization: `Token ${localStorage.getItem("token")}`,
+                },
+              }
+            )
+            .then((response) => {
+              setIsLoading(false);
+              toast({
+                title: "Data purchase successful",
+                status: "success",
+              });
+              props.onClose();
+            })
+            .catch((error) => {
+              setIsLoading(false);
+              toast({
+                title: error.response.data.error,
+                status: "warning",
+              });
+            });
         })
         .catch((error) => {
           setIsLoading(false);
