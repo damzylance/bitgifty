@@ -910,6 +910,11 @@ const WalletModal = (props) => {
                           alignItems={"center"}
                           padding={"20px"}
                           borderRadius={"xl"}
+                          cursor={"pointer"}
+                          onClick={() => {
+                            bankModalOpen();
+                            fetchBankAccounts();
+                          }}
                         >
                           <Text
                             pl={"10px"}
