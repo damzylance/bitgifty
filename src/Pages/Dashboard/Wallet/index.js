@@ -923,7 +923,7 @@ const WalletModal = (props) => {
                             fontWeight={"semibold"}
                             borderLeft={"2px solid #477FEB "}
                           >
-                            Bank Transfer
+                            Add Bank
                           </Text>
                           <AiFillPlusSquare
                             color={"#103D96"}

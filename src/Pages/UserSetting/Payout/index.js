@@ -24,7 +24,7 @@ import {
   ModalBody,
   ModalCloseButton,
 } from "@chakra-ui/react";
-import { AddIcon, PlusSquareIcon } from "@chakra-ui/icons";
+import { AddIcon, DeleteIcon, PlusSquareIcon } from "@chakra-ui/icons";
 import { AiFillPlusSquare } from "react-icons/ai";
 import axios from "axios";
 const Payout = () => {
@@ -35,7 +35,23 @@ const Payout = () => {
     onClose();
     fetchBankAccounts();
   };
-
+  const deleteBank = async (id) => {
+    setLoading(true);
+    await axios
+      .delete(`${process.env.REACT_APP_BASE_URL}payouts/${id}`, {
+        headers: {
+          Authorization: `Token ${localStorage.getItem("token")}`,
+        },
+      })
+      .then((response) => {
+        setLoading(false);
+        fetchBankAccounts();
+      })
+      .catch((error) => {
+        setLoading(false);
+        console.log(error);
+      });
+  };
   const fetchBankAccounts = async () => {
     await axios
       .get(`${process.env.REACT_APP_BASE_URL}payouts/`, {
@@ -44,6 +60,7 @@ const Payout = () => {
         },
       })
       .then((response) => {
+        console.log(response);
         setBankAccounts(response.data.results);
         setLoading(false);
       })
@@ -68,36 +85,78 @@ const Payout = () => {
               <Spinner />
             ) : bankAccounts.length > 0 ? (
               bankAccounts.map((bankAccount, index) => {
+                const { bank_name, account_name, account_number, id } =
+                  bankAccount;
+
                 return (
-                  <VStack
-                    width="full"
+                  <BankCard
                     key={index}
-                    gap={"10px"}
-                    p={"20px"}
-                    borderRadius={"lg"}
-                    border={"1px solid #90d4e4"}
-                    alignItems={"flex-start"}
-                  >
-                    <Text
-                      pl={"10px"}
-                      lineHeight={"100%"}
-                      color={"gray.600"}
-                      fontWeight={"semibold"}
-                      borderLeft={"2px solid #477FEB "}
-                    >
-                      {bankAccount.bank_name}
-                    </Text>
-                    <HStack
-                      width={"full"}
-                      alignItems={"center"}
-                      justifyContent={"space-between"}
-                    >
-                      <Text color={"gray.500"}>{bankAccount.account_name}</Text>
-                      <Text color={"gray.500"}>
-                        {bankAccount.account_number}
-                      </Text>
-                    </HStack>
-                  </VStack>
+                    bank_name={bank_name}
+                    account_name={account_name}
+                    account_number={account_number}
+                    action={() => deleteBank(id)}
+                  />
+                  // <VStack
+                  //   width="full"
+                  //   key={index}
+                  //   gap={"10px"}
+                  //   p={"20px"}
+                  //   borderRadius={"lg"}
+                  //   border={"1px solid #90d4e4"}
+                  //   alignItems={"flex-start"}
+                  //   position={"relative"}
+                  // >
+                  //   <Text
+                  //     pl={"10px"}
+                  //     lineHeight={"100%"}
+                  //     color={"gray.600"}
+                  //     fontWeight={"semibold"}
+                  //     borderLeft={"2px solid #477FEB "}
+                  //   >
+                  //     {bankAccount.bank_name}
+                  //   </Text>
+                  //   <HStack
+                  //     width={"full"}
+                  //     alignItems={"center"}
+                  //     justifyContent={"space-between"}
+                  //   >
+                  //     <Text color={"gray.500"}>{bankAccount.account_name}</Text>
+                  //     <Text color={"gray.500"}>
+                  //       {bankAccount.account_number}
+                  //     </Text>
+                  //   </HStack>
+
+                  //   {bankAccount.toDelete === true ? (
+                  //     <HStack position={"absolute"} top={0} right={2}>
+                  //       <Button
+                  //         _hover={{ bg: "red.500" }}
+                  //         bg={"red.400"}
+                  //         size={"xs"}
+                  //         onClick={() => {
+                  //           deleteBank(bankAccount.id);
+                  //         }}
+                  //       >
+                  //         Confirm
+                  //       </Button>
+                  //       <Button
+                  //         size={"xs"}
+                  //         onClick={() => (bankAccount.toDelete = false)}
+                  //       >
+                  //         Cancel
+                  //       </Button>
+                  //     </HStack>
+                  //   ) : (
+                  //     <DeleteIcon
+                  //       position={"absolute"}
+                  //       top={0}
+                  //       right={2}
+                  //       color={"red.400"}
+                  //       cursor={"pointer"}
+                  //       aria-details="Delete account"
+                  //       onClick={() => (bankAccount.toDelete = true)}
+                  //     />
+                  //   )}
+                  // </VStack>
                 );
               })
             ) : (
@@ -105,7 +164,6 @@ const Payout = () => {
                 You don't have a payment method. Please set one
               </Text>
             )}
-            {}
 
             <HStack
               width={"full"}
@@ -249,6 +307,65 @@ export const PayoutModal = (props) => {
         </ModalBody>
       </ModalContent>
     </Modal>
+  );
+};
+
+export const BankCard = (props) => {
+  const [toDelete, setToDelete] = useState();
+  return (
+    <VStack
+      width="full"
+      gap={"10px"}
+      p={"20px"}
+      borderRadius={"lg"}
+      border={"1px solid #90d4e4"}
+      alignItems={"flex-start"}
+      position={"relative"}
+    >
+      <Text
+        pl={"10px"}
+        lineHeight={"100%"}
+        color={"gray.600"}
+        fontWeight={"semibold"}
+        borderLeft={"2px solid #477FEB "}
+      >
+        {props.bank_name}
+      </Text>
+      <HStack
+        width={"full"}
+        alignItems={"center"}
+        justifyContent={"space-between"}
+      >
+        <Text color={"gray.500"}>{props.account_name}</Text>
+        <Text color={"gray.500"}>{props.account_number}</Text>
+      </HStack>
+
+      {toDelete === true ? (
+        <HStack position={"absolute"} top={0} right={2}>
+          <Button
+            _hover={{ bg: "red.500" }}
+            bg={"red.400"}
+            size={"xs"}
+            onClick={() => props.action(props.id)}
+          >
+            Confirm
+          </Button>
+          <Button size={"xs"} onClick={() => setToDelete(false)}>
+            Cancel
+          </Button>
+        </HStack>
+      ) : (
+        <DeleteIcon
+          position={"absolute"}
+          top={0}
+          right={2}
+          color={"red.400"}
+          cursor={"pointer"}
+          aria-details="Delete account"
+          onClick={() => setToDelete(true)}
+        />
+      )}
+    </VStack>
   );
 };
 
