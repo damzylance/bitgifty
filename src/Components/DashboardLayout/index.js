@@ -9,16 +9,18 @@ import {
   useToast,
   VStack,
   Button,
+  Textarea,
 } from "@chakra-ui/react";
 import { RxHamburgerMenu, RxCross1, RxCaretRight } from "react-icons/rx";
 import Authenticate from "../../Helpers/Auth";
-
+import { connect } from "react-redux";
+import { decrement, increment } from "../../Store/action";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { SettingsIcon } from "@chakra-ui/icons";
 
-function DashboardLayout(props) {
+function DashboardLayout({ notifications, increment, decrement, children }) {
   const toast = useToast();
   const [openMenu, setOpenMenu] = useState(false);
   const navigate = useNavigate();
@@ -193,7 +195,11 @@ function DashboardLayout(props) {
             <HStack gap={10}>
               <Link to="/setting">
                 <Box>
-                  <SettingsIcon color={"#fff"} fontSize={"20px"} />
+                  <SettingsIcon
+                    color={"#fff"}
+                    fontSize={"20px"}
+                    onClick={decrement}
+                  />
 
                   {/* <svg
                     width="20"
@@ -210,8 +216,20 @@ function DashboardLayout(props) {
                 </Box>
               </Link>
 
-              <Box>
+              <Box position={"relative"}>
+                <Text
+                  fontSize={"8px"}
+                  position={"absolute"}
+                  bg={"#fff"}
+                  p={"1px 5px"}
+                  borderRadius={"full"}
+                  right={0}
+                  top={-4}
+                >
+                  {notifications}
+                </Text>
                 <svg
+                  onClick={increment}
                   width="20"
                   height="20"
                   viewBox="0 0 28 31"
@@ -231,7 +249,7 @@ function DashboardLayout(props) {
       <Box width={"full"} minH={"500px"} bg={"brand.bg1"}>
         <Authenticate>
           <Container px={[2, 2, 0]} py={4} maxW={["100%", "100%", "75%"]}>
-            {props.children}
+            {children}
           </Container>
         </Authenticate>
       </Box>
@@ -243,5 +261,10 @@ function DashboardLayout(props) {
     </Box>
   );
 }
+const mapStateToProps = (state) => ({
+  notifications: state.notifications,
+});
 
-export default DashboardLayout;
+export default connect(mapStateToProps, { increment, decrement })(
+  DashboardLayout
+);
