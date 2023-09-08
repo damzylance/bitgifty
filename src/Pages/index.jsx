@@ -1,5 +1,6 @@
 import "./home.css";
 import { PlusSquareIcon } from "@chakra-ui/icons";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   Button,
@@ -7,6 +8,7 @@ import {
   HStack,
   Image,
   Img,
+  Select,
   Text,
   VStack,
   keyframes,
@@ -64,6 +66,14 @@ const navStyle = {
 };
 const Home = () => {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
+
+  const handleLanguageChange = (e) => {
+    const languageValue = e.target.value;
+    localStorage.setItem("localeLang", languageValue);
+    i18n.changeLanguage(languageValue);
+  };
+
   const [openMenu, setOpenMenu] = useState(false);
   const showMobileMenu = () => {
     setOpenMenu(!openMenu);
@@ -210,75 +220,83 @@ const Home = () => {
           )}
         </Box>
         <Container maxWidth={["full", "full", "95%", "80%"]}>
-          <VStack width={"full"}>
-            <HStack
-              width={"full"}
-              justifyContent={"space-between"}
-              display={["none", "none", "flex", "flex"]}
-              alignItems={"cener"}
-            >
-              <Box>
-                <Image
-                  width={"150px"}
-                  src="/assets/images/logo-inline-whitebg.png"
-                />
-              </Box>
-              <HStack gap={"20px"} alignItems={"center"}>
-                <Text
-                  onClick={() => {
-                    scrollToSection(about);
-                  }}
-                  sx={navStyle}
-                  _hover={navHoverStyle}
-                >
-                  About
-                </Text>
-                <Text
-                  onClick={() => {
-                    scrollToSection(howItWorks);
-                  }}
-                  sx={navStyle}
-                  _hover={navHoverStyle}
-                >
-                  How it works
-                </Text>
+          <HStack
+            width={"full"}
+            justifyContent={"space-between"}
+            display={["none", "none", "flex", "flex"]}
+            alignItems={"cener"}
+          >
+            <Box>
+              <Image
+                width={"150px"}
+                src="/assets/images/logo-inline-whitebg.png"
+              />
+            </Box>
+            <HStack gap={"20px"} alignItems={"center"}>
+              <Text
+                onClick={() => {
+                  scrollToSection(about);
+                }}
+                sx={navStyle}
+                _hover={navHoverStyle}
+              >
+                About
+              </Text>
+              <Text
+                onClick={() => {
+                  scrollToSection(howItWorks);
+                }}
+                sx={navStyle}
+                _hover={navHoverStyle}
+              >
+                How it works
+              </Text>
 
-                <Text
-                  onClick={() => {
-                    scrollToSection(faq);
-                  }}
-                  sx={navStyle}
-                  _hover={navHoverStyle}
-                >
-                  FAQ
-                </Text>
-                <Button
-                  onClick={() => navigate("/login")}
-                  background={"brand.700"}
-                >
-                  Login
-                </Button>
-                <Button
-                  onClick={() => navigate("/register")}
-                  background={"#fff"}
-                  color={"brand.700"}
-                  borderColor={"brand.700"}
-                  borderWidth={"1px"}
-                  borderStyle={"solid"}
-                  _hover={{ color: "brand.700" }}
-                >
-                  Sign Up
-                </Button>
-                {/* <Text fontSize={"64px"} fontWeight={700}>
+              <Text
+                onClick={() => {
+                  scrollToSection(faq);
+                }}
+                sx={navStyle}
+                _hover={navHoverStyle}
+              >
+                FAQ
+              </Text>
+
+              <Button
+                onClick={() => navigate("/login")}
+                background={"brand.700"}
+              >
+                Login
+              </Button>
+              <Button
+                onClick={() => navigate("/register")}
+                background={"#fff"}
+                color={"brand.700"}
+                borderColor={"brand.700"}
+                borderWidth={"1px"}
+                borderStyle={"solid"}
+                _hover={{ color: "brand.700" }}
+              >
+                Sign Up
+              </Button>
+              <Select
+                defaultValue={localStorage.getItem("localeLang")}
+                onChange={handleLanguageChange}
+                width={"70px"}
+                style={{ fontSize: "14px", border: "1px solid gray" }}
+              >
+                <option value={"en"}>EN</option>
+                <option value={"es"}>ES</option>
+              </Select>
+              {/* <Text fontSize={"64px"} fontWeight={700}>
                   SEND THE GIFT OF CRYPTO WITH EASE
                 </Text>
                 <Text fontSize={"24px"}>
                   Give the Gift of Choice: Create and redeem your crypto gift
                   cards here at Gifty!
                 </Text> */}
-              </HStack>
             </HStack>
-          </VStack>
+          </HStack>
         </Container>
       </Box>
       <Box width={"full"} position={"relative"}>
@@ -305,7 +323,8 @@ const Home = () => {
                 fontWeight={"900"}
                 lineHeight={["60px", "60px", "78px", "80px"]}
               >
-                CREATE AND REDEEM CRYPTO GIFT CARDS WITH EASE
+                {t("heroText")}
+                {/* CREATE AND REDEEM CRYPTO GIFT CARDS WITH EASE */}
               </Text>
 
               <Text
@@ -313,11 +332,10 @@ const Home = () => {
                 maxWidth={"500px"}
                 fontWeight={"500"}
               >
-                Reward and Gift Crypto in Style - Create Bitcoin Giftcards in
-                Seconds here at BitGifty!
+                {t("heroCaption")}
               </Text>
               <Button size={"lg"} onClick={() => navigate("/register")}>
-                Get Started
+                {t("heroButton")}
               </Button>
             </VStack>
             <Image
