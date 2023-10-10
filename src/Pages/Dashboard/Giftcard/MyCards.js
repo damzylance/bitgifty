@@ -30,7 +30,7 @@ function MyCards() {
 
   const fetchCards = async () => {
     await axios
-      .get(`${process.env.REACT_APP_BASE_URL}gift_cards/`, {
+      .get(`${process.env.REACT_APP_BASE_URL}gift_cards/create`, {
         headers: {
           Authorization: `Token ${localStorage.getItem("token")}`,
         },

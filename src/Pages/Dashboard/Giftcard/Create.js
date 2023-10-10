@@ -30,7 +30,7 @@ import { MdRedeem } from "react-icons/md";
 import DashboardLayout from "../../../Components/DashboardLayout";
 
 function Create() {
-  const { userWallets, walletsLoading } = useWallets();
+  const [wallets, setWallets] = useState([]);
   const navigate = useNavigate();
   const {
     register,
@@ -49,7 +49,6 @@ function Create() {
     headers: { "x-api-key": process.env.REACT_APP_RATE_KEY },
   };
 
-  const wallets = userWallets;
   const [fee, setFee] = useState(0);
   const [amountMin, setAmountMin] = useState(0.0003);
   const [balance, setBalance] = useState(0);
@@ -63,7 +62,26 @@ function Create() {
   const [totalAmount, setTotalAmount] = useState(0);
   const [rate, setRate] = useState(0);
   const [ribbonAmount, setRibbonAmount] = useState(0);
+  const fetchWallets = async () => {
+    await axios
+      .get(`${process.env.REACT_APP_BASE_URL}wallets/`, {
+        headers: {
+          Authorization: `Token ${localStorage.getItem("token")}`,
+        },
+      })
+      .then(function (response) {
+        if (response.data) {
+          console.log(response.data);
+          const entries = Object.entries(response.data);
+          console.log(entries);
+          setIsLoading(false);
 
+          setWallets(entries);
+          localStorage.setItem("wallets", JSON.stringify(entries));
+        }
+      })
+      .catch(function (error) {});
+  };
   const fetchRate = async (network) => {
     if (network !== "naira") {
       await axios
@@ -82,23 +100,6 @@ function Create() {
       setRate(1);
     }
   };
-  // const fetchWallets = async () => {
-  //   await axios
-  //     .get(`${process.env.REACT_APP_BASE_URL}wallets/`, {
-  //       headers: {
-  //         Authorization: `Token ${localStorage.getItem("token")}`,
-  //       },
-  //     })
-  //     .then(function (response) {
-  //       if (response.data) {
-  //         const entries = Object.entries(response.data);
-  //         setIsLoading(false);
-
-  //         setWallets(entries);
-  //       }
-  //     })
-  //     .catch(function (error) {});
-  // };
 
   const handleCurrencyChange = async (e) => {
     const network = `${e.target.value}`;
@@ -106,10 +107,10 @@ function Create() {
 
     for (let index = 0; index < wallets.length; index++) {
       if (wallets[index][0] === network) {
-        setBalance(wallets[index][1].balance.availableBalance);
-
-        // setBalance(isNaN(btcBalance) ? 0 : btcBalance);
-        if (network === "bitcoin") {
+        const btcBalance =
+          wallets[index][1].info.incoming - wallets[index][1].info.outgoing;
+        setBalance(isNaN(btcBalance) ? 0 : btcBalance);
+        if (network === "Bitcoin") {
           await axios
             .post(
               "https://api.tatum.io/v3/tatum/rate/",
@@ -126,26 +127,24 @@ function Create() {
             .catch((errors) => {
               toast({ title: "Error Fetching Fees", status: "warning" });
             });
-        } else if (network === "celo") {
-          const networkFee = 1;
-          setFee(networkFee);
-          // setBalance(wallets[index][1].info.celo);
-          console.log(balance);
-          setAmountMin(2);
-          setTotalAmount(parseFloat(getValues("amount")) + networkFee);
+        } else if (network === "Celo") {
+          setBalance(wallets[index][1].info.celo);
+          setFee(1);
+          setAmountMin(10);
+          setTotalAmount(parseFloat(getValues("amount")) + fee);
         } else if (network === "Ethereum") {
           setAmountMin(0.003);
-          // setBalance(wallets[index][1].info.balance);
+          setBalance(wallets[index][1].info.balance);
           setFee(0.0004);
           setTotalAmount(parseFloat(getValues("amount")) + fee);
         } else if (network === "Tron") {
           const tronBalance = wallets[index][1].info.balance / 1000000;
           setFee(1);
-          // setBalance(isNaN(tronBalance) ? 0 : tronBalance);
+          setBalance(isNaN(tronBalance) ? 0 : tronBalance);
           setAmountMin(5);
           setTotalAmount(parseFloat(getValues("amount")) + fee);
         } else if (network === "Bnb") {
-          // setBalance(0);
+          setBalance(0);
           setFee(0.0005);
           setAmountMin(0.02);
           setTotalAmount(parseFloat(getValues("amount")) + fee);
@@ -182,7 +181,7 @@ function Create() {
 
     setIsLoading(true);
     await axios
-      .post(`${process.env.REACT_APP_BASE_URL}gift_cards/create/`, data, {
+      .post(`${process.env.REACT_APP_BASE_URL}gift_cards/v2/create/`, data, {
         headers: {
           Authorization: `Token ${localStorage.getItem("token")}`,
         },
@@ -217,6 +216,7 @@ function Create() {
   useEffect(() => {
     window.onresize = () => handleWindowResize();
     fetchCardTemplates();
+    fetchWallets();
   }, []);
   return (
     <DashboardLayout>
@@ -299,7 +299,7 @@ function Create() {
               animate={{ opacity: 1 }}
               transition="5s"
               height={"416px"}
-              width={"400px"}
+              width={["350px", "350px", "400px"]}
               bg={"url(/assets/images/cardbg.png)"}
               bgRepeat={"no-repeat"}
               position={"relative"}
@@ -307,11 +307,11 @@ function Create() {
             >
               <Image
                 src={`${template.link}`}
-                width={["full", "full", "300px"]}
+                width={["350px", "350px", "300px"]}
                 height={"338px"}
                 objectFit={"cover"}
                 position={"absolute"}
-                left={"10%"}
+                left={["6%", "6%", "10%"]}
                 top={"10%"}
               />
             </VStack>

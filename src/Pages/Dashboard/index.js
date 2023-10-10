@@ -14,40 +14,7 @@ import DashboardLayout from "../../Components/DashboardLayout";
 import { RxArrowRight } from "react-icons/rx";
 function Dashboard() {
   const navigate = useNavigate();
-  // useEffect(() => {
-  //   const user = async () => {
-  //     await axios
-  //       .get(`${process.env.REACT_APP_BASE_URL}auth/user/`, {
-  //         headers: {
-  //           Authorization: `Token ${localStorage.getItem("token")}`,
-  //         },
-  //       })
-  //       .then(function (response) {
-  //         console.log(response);
-  //       })
-  //       .catch(function (error) {
-  //         console.log(error);
-  //         if (error.response?.status === 500) {
-  //           toast({ title: "Server error", status: "error" });
-  //         }
-  //         if (error.response?.status === 403) {
-  //           toast({
-  //             title: "session expired. Please sign in again",
-  //             status: "warning",
-  //           });
-  //           navigate("/login");
-  //         }
-  //         if (error.response?.status === 401) {
-  //           toast({
-  //             title: "Unautorised. Please sign in again",
-  //             status: "warning",
-  //           });
-  //           navigate("/login");
-  //         }
-  //       });
-  //   };
-  //   user();
-  // });
+
   return (
     <DashboardLayout>
       <Flex
@@ -56,7 +23,7 @@ function Dashboard() {
         width={"full"}
         background={"brand.bg1"}
         my="20"
-        flexDir={["column-reverse", "column", "row"]}
+        flexDir={["column-reverse", "column-reverse", "row"]}
       >
         <VStack
           w={"full"}
@@ -64,7 +31,11 @@ function Dashboard() {
           gap={["10", "10", "20"]}
           alignItems={["center", "center", "flex-start"]}
         >
-          <VStack width={"full"} gap={"20px"}>
+          <VStack
+            width={"full"}
+            gap={"20px"}
+            display={["none", "none", "flex"]}
+          >
             <Text fontSize={"48px"} fontWeight={700} color="#121212">
               Send The Gift of <span style={{ color: "#103D96" }}>Crypto</span>{" "}
               With Ease

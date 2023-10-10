@@ -46,11 +46,117 @@ const chartOptions = {
 };
 
 function Wallet() {
-  const { userWallets, walletsLoading } = useWallets();
   const options = {
     headers: { "x-api-key": process.env.REACT_APP_RATE_KEY },
   };
+  const [wallets, setWallets] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [fiatWallets, setFiatWallets] = useState([]);
+  const [totalInDollars, setTotalInDollars] = useState(0);
 
+  const fetchWallets = async () => {
+    await axios
+      .get(`${process.env.REACT_APP_BASE_URL}wallets/`, {
+        headers: {
+          Authorization: `Token ${localStorage.getItem("token")}`,
+        },
+      })
+      .then(async function (response) {
+        const entries = Object.entries(response.data);
+        if (response.data) {
+          setIsLoading(false);
+          setWallets(entries);
+          setFiatWallets(
+            entries.filter((element) => {
+              return element[1].type === "fiat";
+            })
+          );
+          const labels = [];
+          const balances = [];
+          let sum = 0;
+          for (let index = 0; index < entries.length; index++) {
+            const coinWallet = entries[index];
+            if (coinWallet[0] === "Bitcoin") {
+              const balance =
+                coinWallet[1].info.incoming - coinWallet[1].info.outgoing;
+              const btcInDollar = await BalanceToDollar(
+                `BTC`,
+                isNaN(balance) ? 0 : balance
+              );
+              sum += btcInDollar;
+              balances.push(btcInDollar);
+              labels.push("BTC");
+            } else if (coinWallet[0] === "Bnb") {
+              sum += 0;
+              balances.push(0);
+              labels.push("BNB");
+            } else if (coinWallet[0] === "Celo") {
+              const balance = coinWallet[1].info.celo;
+
+              const celoInDollar = await BalanceToDollar(
+                `CELO`,
+                isNaN(balance) ? 0 : balance
+              );
+              sum += celoInDollar;
+              balances.push(celoInDollar);
+              labels.push("CELO");
+            } else if (coinWallet[0] === "Ethereum") {
+              const balance = coinWallet[1].info.balance;
+              const ethInDollar = await BalanceToDollar(
+                `ETH`,
+                isNaN(balance) ? 0 : balance
+              );
+              sum += ethInDollar;
+              balances.push(ethInDollar);
+              labels.push("ETH");
+            } else if (coinWallet[0] === "Tron") {
+              const balance = coinWallet[1].info.balance / 1000000;
+              const trxInDollar = await BalanceToDollar(
+                `TRON`,
+                isNaN(balance) ? 0 : balance
+              );
+              sum += trxInDollar;
+              balances.push(trxInDollar);
+              labels.push("TRON");
+            } else if (coinWallet[0] === "naira") {
+              const balance = Math.round(coinWallet[1].balance) / 850;
+              sum += isNaN(balance) ? 0 : balance;
+              balances.push(balance);
+              labels.push("NGN");
+            }
+
+            setTotalInDollars(sum.toFixed(2));
+            setChartData({
+              labels: labels,
+              datasets: [
+                {
+                  label: "Balance",
+                  data: balances,
+                  backgroundColor: [
+                    "#492b7c",
+                    "#ff8600",
+                    "#fff",
+                    "#f8a6e4",
+                    "#6A6BD5",
+                    "#624CAB",
+                  ],
+                  borderColor: [
+                    "rgba(255, 99, 132, 1)",
+                    "rgba(54, 162, 235, 1)",
+                    "rgba(255, 206, 86, 1)",
+                    "rgba(75, 192, 192, 1)",
+                    "rgba(153, 102, 255, 1)",
+                    "rgba(255, 159, 64, 1)",
+                  ],
+                  borderWidth: 1,
+                },
+              ],
+            });
+          }
+        }
+      })
+      .catch(function (error) {});
+  };
   const [chartData, setChartData] = useState({
     labels: [],
     datasets: [
@@ -77,14 +183,6 @@ function Wallet() {
       },
     ],
   });
-  const wallets = userWallets;
-  const walletLoading = walletsLoading;
-  const fiatWallets = wallets.filter((element) => {
-    return element[1].type === "fiat";
-  });
-  const [isLoading, setIsLoading] = useState(true);
-  // const [fiatWallets, setFiatWallets] = useState([]);
-  const [totalInDollars, setTotalInDollars] = useState(0);
 
   // const fetchVirtualWallets = async () => {
   //   await axios
@@ -110,9 +208,9 @@ function Wallet() {
   //     });
   // };
 
-  // useEffect(() => {
-  //   fetchVirtualWallets();
-  // }, []);
+  useEffect(() => {
+    fetchWallets();
+  }, []);
 
   const BalanceToDollar = async (coin, balance) => {
     let rate;
@@ -214,7 +312,7 @@ function Wallet() {
                 Fiat
               </Text>
               <VStack width={"full"} gap={"2"} alignContent="flex-start">
-                {walletLoading ? (
+                {isLoading ? (
                   <Spinner />
                 ) : (
                   wallets
@@ -224,9 +322,7 @@ function Wallet() {
                     .map((wallet, index) => {
                       // const { address, network } = wallet;
                       const coinWallet = wallet;
-                      const balance = Math.floor(
-                        coinWallet[1].balance.availableBalance
-                      );
+                      const balance = Math.floor(coinWallet[1].balance);
 
                       return (
                         <CoinRow
@@ -261,7 +357,7 @@ function Wallet() {
                 Coins
               </Text>
               <VStack width={"full"} gap={"2"} alignContent="flex-start">
-                {walletLoading ? (
+                {isLoading ? (
                   <Spinner />
                 ) : (
                   wallets
@@ -271,7 +367,22 @@ function Wallet() {
                     .map((wallet, index) => {
                       // const { address, network } = wallet;
                       const coinWallet = wallet;
-                      let balance = coinWallet[1].balance.availableBalance;
+                      let balance;
+                      if (coinWallet[0] === "Bitcoin") {
+                        balance =
+                          coinWallet[1].info.incoming -
+                          coinWallet[1].info.outgoing;
+                      } else if (coinWallet[0] === "Bnb") {
+                        balance = 0;
+                      } else if (coinWallet[0] === "Celo") {
+                        balance = coinWallet[1].info.celo;
+                      } else if (coinWallet[0] === "Ethereum") {
+                        balance = coinWallet[1].info.balance;
+                      } else if (coinWallet[0] === "Tron") {
+                        balance = coinWallet[1].info.balance / 1000000;
+                      } else if (coinWallet[0] === "naira") {
+                        balance = Math.round(coinWallet[1].balance);
+                      }
 
                       return (
                         <CoinRow
