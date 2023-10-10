@@ -1,4 +1,4 @@
-const initialState = { notifications: 0, wallets: {} };
+const initialState = { notifications: 0, wallets: {}, giftCardPage: "create" };
 export const rootReducer = (state = initialState, action) => {
   switch (action.type) {
     case "INCREMENT":
@@ -7,6 +7,8 @@ export const rootReducer = (state = initialState, action) => {
       return { ...state, notifications: state.notifications - 1 };
     case "FETCHWALLET":
       return { ...state, wallets: {} };
+    case "CARDPAGE":
+      return { ...state, giftCardPage: "" };
     default:
       return state;
   }

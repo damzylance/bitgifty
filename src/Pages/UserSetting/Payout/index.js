@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 
 import SettingsLayout from "../SettingsLayout";
 import {
+  Box,
   Button,
   Container,
   FormControl,
@@ -71,12 +72,12 @@ const Payout = () => {
   }, []);
 
   return (
-    <SettingsLayout>
-      <VStack width={"full"} gap={"20px"}>
-        <Text fontSize={"xl"} fontWeight={"bold"} mt={5}>
+    <>
+      <VStack width={"full"} gap={"20px"} alignItems={"flex-start"}>
+        <Text fontSize={"xl"} fontWeight={"bold"}>
           Payment/Withdrawal Methods
         </Text>
-        <Container width={["full", "full", "80%", "70%"]}>
+        <Box width={["full", "full", "80%", "70%"]}>
           <VStack gap={2} alignItems={"flex-start"}>
             <Text fontSize={"md"} color={"gray.700"}>
               Add Payment Method
@@ -194,10 +195,10 @@ const Payout = () => {
               />
             </HStack>
           </VStack>
-        </Container>
+        </Box>
         <PayoutModal isOpen={isOpen} onClose={closeModal} />
       </VStack>
-    </SettingsLayout>
+    </>
   );
 };
 

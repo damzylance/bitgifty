@@ -45,7 +45,7 @@ const Authenticate = (props) => {
   };
   useEffect(() => {
     user();
-  });
+  }, []);
 
   return <Box> {isActive && props.children}</Box>;
 };

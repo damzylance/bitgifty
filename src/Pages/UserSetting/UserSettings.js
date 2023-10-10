@@ -1,7 +1,7 @@
 import SettingsLayout from "./SettingsLayout";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@chakra-ui/react";
+import { Box, useToast } from "@chakra-ui/react";
 import {
   Button,
   HStack,
@@ -19,10 +19,9 @@ function UserSetting() {
   const navigate = useNavigate();
   const toast = useToast();
   const inputStyle = {
-    border: 0,
-    borderBottom: "1px solid #144CB8",
-    background: "#F5FCFE",
-    borderRadius: 0,
+    padding: "20px 16px",
+    border: "1px solid #144CB8",
+    borderRadius: "8px",
   };
   const { register, handleSubmit } = useForm();
   const [isLoading, setIsLoading] = useState(false);
@@ -66,12 +65,12 @@ function UserSetting() {
     fetchUser();
   }, []);
   return (
-    <SettingsLayout>
-      <Text fontSize={"xl"} fontWeight={"bold"} mt={5}>
+    <>
+      <Text fontSize={"xl"} fontWeight={"bold"}>
         Update Profile
       </Text>
 
-      <Container width={"full"}>
+      <Box width={"full"}>
         <form
           onSubmit={handleSubmit((data) => {
             console.log(data);
@@ -92,8 +91,8 @@ function UserSetting() {
               });
           })}
         >
-          <VStack gap={6} bg="">
-            <HStack width={"full"}>
+          <VStack gap={6} alignItems={"flex-start"}>
+            <HStack width={"full"} gap={["5px", "5px", "20px"]}>
               <Input
                 style={inputStyle}
                 type="text"
@@ -111,20 +110,24 @@ function UserSetting() {
                 defaultValue={user?.last_name ? user.last_name : ""}
               />
             </HStack>
-            <Input
-              style={inputStyle}
-              type="text"
-              placeholder="Username"
-              value={user?.username ? user.username : ""}
-              disabled
-            />
-            <Input
-              style={inputStyle}
-              disabled={true}
-              type="email"
-              placeholder="Email Address"
-              value={user?.email ? user.email : ""}
-            />
+            <HStack width={"full"} gap={["5px", "5px", "20px"]}>
+              {" "}
+              <Input
+                style={inputStyle}
+                type="text"
+                placeholder="Username"
+                value={user?.username ? user.username : ""}
+                disabled
+              />
+              <Input
+                style={inputStyle}
+                disabled={true}
+                type="email"
+                placeholder="Email Address"
+                value={user?.email ? user.email : ""}
+              />
+            </HStack>
+
             <Input
               style={inputStyle}
               type="tel"
@@ -134,18 +137,19 @@ function UserSetting() {
               {...register("phone_number")}
             />
             <Button
-              justifyContent={"space-between"}
-              rightIcon={<ArrowForwardIcon />}
-              width={"full"}
+              justifyContent={"center"}
+              width={"260px"}
               type="submit"
+              bg={"linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)"}
+              padding={"30px 16px"}
               isLoading={isLoading}
             >
               Update
             </Button>
           </VStack>
         </form>
-      </Container>
-    </SettingsLayout>
+      </Box>
+    </>
   );
 }
 

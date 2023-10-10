@@ -8,3 +8,6 @@ export const decrement = () => ({
 export const fetchWallets = () => ({
   type: "wallet/fetchwallets",
 });
+export const cardPage = () => ({
+  type: "CARDPAGE",
+});

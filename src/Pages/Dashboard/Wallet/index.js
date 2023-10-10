@@ -32,6 +32,8 @@ import { Doughnut } from "react-chartjs-2";
 import { MdSwapVert } from "react-icons/md";
 import { AiFillPlusSquare } from "react-icons/ai";
 import { PayoutModal } from "../../UserSetting/Payout";
+import useWallets from "../../../Hooks/useWallets";
+import { RxEyeClosed } from "react-icons/rx";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -44,6 +46,7 @@ const chartOptions = {
 };
 
 function Wallet() {
+  const { userWallets, walletsLoading } = useWallets();
   const options = {
     headers: { "x-api-key": process.env.REACT_APP_RATE_KEY },
   };
@@ -74,117 +77,42 @@ function Wallet() {
       },
     ],
   });
-  const [wallets, setWallets] = useState([]);
+  const wallets = userWallets;
+  const walletLoading = walletsLoading;
+  const fiatWallets = wallets.filter((element) => {
+    return element[1].type === "fiat";
+  });
   const [isLoading, setIsLoading] = useState(true);
-  const [fiatWallets, setFiatWallets] = useState([]);
+  // const [fiatWallets, setFiatWallets] = useState([]);
   const [totalInDollars, setTotalInDollars] = useState(0);
 
-  const fetchWallets = async () => {
-    await axios
-      .get(`${process.env.REACT_APP_BASE_URL}wallets/`, {
-        headers: {
-          Authorization: `Token ${localStorage.getItem("token")}`,
-        },
-      })
-      .then(async function (response) {
-        const entries = Object.entries(response.data);
-        if (response.data) {
-          setIsLoading(false);
-          setWallets(entries);
-          setFiatWallets(
-            entries.filter((element) => {
-              return element[1].type === "fiat";
-            })
-          );
-          const labels = [];
-          const balances = [];
-          let sum = 0;
-          for (let index = 0; index < entries.length; index++) {
-            const coinWallet = entries[index];
-            if (coinWallet[0] === "Bitcoin") {
-              const balance =
-                coinWallet[1].info.incoming - coinWallet[1].info.outgoing;
-              const btcInDollar = await BalanceToDollar(
-                `BTC`,
-                isNaN(balance) ? 0 : balance
-              );
-              sum += btcInDollar;
-              balances.push(btcInDollar);
-              labels.push("BTC");
-            } else if (coinWallet[0] === "Bnb") {
-              sum += 0;
-              balances.push(0);
-              labels.push("BNB");
-            } else if (coinWallet[0] === "Celo") {
-              const balance = coinWallet[1].info.celo;
+  // const fetchVirtualWallets = async () => {
+  //   await axios
+  //     .get(`${process.env.REACT_APP_BASE_URL}wallets/virtual-accounts`, {
+  //       headers: {
+  //         Authorization: `Token ${localStorage.getItem("token")}`,
+  //       },
+  //     })
+  //     .then((response) => {
+  //       console.log(response);
+  //       const entries = Object.entries(response.data);
+  //       console.log(entries);
+  //       setIsLoading(false);
+  //       setWallets(entries);
+  //       setFiatWallets(
+  //         entries.filter((element) => {
+  //           return element[1].type === "fiat";
+  //         })
+  //       );
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //     });
+  // };
 
-              const celoInDollar = await BalanceToDollar(
-                `CELO`,
-                isNaN(balance) ? 0 : balance
-              );
-              sum += celoInDollar;
-              balances.push(celoInDollar);
-              labels.push("CELO");
-            } else if (coinWallet[0] === "Ethereum") {
-              const balance = coinWallet[1].info.balance;
-              const ethInDollar = await BalanceToDollar(
-                `ETH`,
-                isNaN(balance) ? 0 : balance
-              );
-              sum += ethInDollar;
-              balances.push(ethInDollar);
-              labels.push("ETH");
-            } else if (coinWallet[0] === "Tron") {
-              const balance = coinWallet[1].info.balance / 1000000;
-              const trxInDollar = await BalanceToDollar(
-                `TRON`,
-                isNaN(balance) ? 0 : balance
-              );
-              sum += trxInDollar;
-              balances.push(trxInDollar);
-              labels.push("TRON");
-            } else if (coinWallet[0] === "naira") {
-              const balance = Math.round(coinWallet[1].balance) / 850;
-              sum += isNaN(balance) ? 0 : balance;
-              balances.push(balance);
-              labels.push("NGN");
-            }
-
-            setTotalInDollars(sum.toFixed(2));
-            setChartData({
-              labels: labels,
-              datasets: [
-                {
-                  label: "Balance",
-                  data: balances,
-                  backgroundColor: [
-                    "#492b7c",
-                    "#ff8600",
-                    "#fff",
-                    "#f8a6e4",
-                    "#6A6BD5",
-                    "#624CAB",
-                  ],
-                  borderColor: [
-                    "rgba(255, 99, 132, 1)",
-                    "rgba(54, 162, 235, 1)",
-                    "rgba(255, 206, 86, 1)",
-                    "rgba(75, 192, 192, 1)",
-                    "rgba(153, 102, 255, 1)",
-                    "rgba(255, 159, 64, 1)",
-                  ],
-                  borderWidth: 1,
-                },
-              ],
-            });
-          }
-        }
-      })
-      .catch(function (error) {});
-  };
-  useEffect(() => {
-    fetchWallets();
-  }, []);
+  // useEffect(() => {
+  //   fetchVirtualWallets();
+  // }, []);
 
   const BalanceToDollar = async (coin, balance) => {
     let rate;
@@ -199,16 +127,18 @@ function Wallet() {
   };
   return (
     <DashboardLayout>
-      <VStack gap={"10"} width="full" scrollBehavior={"smooth"}>
+      <VStack gap={"10"} my={"50px"} width="full" scrollBehavior={"smooth"}>
         <Container
-          background={"#202f44"}
+          background={"#D1DFFA"}
           py={"4"}
-          border={"1px solid #A3BFF5"}
-          borderRadius={"12px"}
-          maxWidth="400px"
+          border={"0.5px solid #103D96"}
+          borderRadius={"24px 8px"}
+          maxWidth="500px"
           position={"relative"}
           backgroundImage={"assets/images/waves.svg"}
           bgSize={"cover"}
+          color={"#0B2A65"}
+          boxShadow={"0px 4px 4px 0px rgba(0, 0, 0, 0.25)"}
         >
           <VStack
             position={"relative"}
@@ -217,14 +147,13 @@ function Wallet() {
             justifyContent={"flex-start"}
             width={"full"}
           >
-            <Text
-              fontStyle={"italic"}
-              color={"whiteAlpha.900"}
-              fontSize={"lg"}
-              fontWeight={"600"}
-            >
-              Total Balance
-            </Text>
+            <HStack justifyContent={"space-between"} alignItems={"center"}>
+              <Text fontSize={"18px"} fontWeight={"400"}>
+                Total Balance
+              </Text>
+
+              <RxEyeClosed cursor={"pointer"} />
+            </HStack>
 
             <HStack
               width={"full"}
@@ -232,18 +161,10 @@ function Wallet() {
               alignItems={"center"}
             >
               <VStack gap={"4"} alignItems={"flex-start"}>
-                <Text
-                  fontSize={"2xl"}
-                  fontWeight={"900"}
-                  color={"whiteAlpha.900"}
-                >
+                <Text fontSize={"40px"} fontWeight={"600"}>
                   {totalInDollars} cUSD
                 </Text>
-                <Text
-                  color={"whiteAlpha.800"}
-                  fontSize={"2xl"}
-                  fontWeight={"900"}
-                >
+                <Text fontSize={"18px"} fontWeight={"600"}>
                   ${totalInDollars}
                 </Text>
               </VStack>
@@ -266,10 +187,10 @@ function Wallet() {
               display={["none", "none", "flex", "flex"]}
               width={"full"}
               bg={"brand.600"}
-              py="2"
-              px={"2"}
+              py="24px"
+              px={"30px"}
+              fontWeight={"700"}
               color={"brand.bg1"}
-              borderRadius={"md"}
             >
               <Text>Assets</Text>
               <Text>Balance</Text>
@@ -293,7 +214,7 @@ function Wallet() {
                 Fiat
               </Text>
               <VStack width={"full"} gap={"2"} alignContent="flex-start">
-                {isLoading ? (
+                {walletLoading ? (
                   <Spinner />
                 ) : (
                   wallets
@@ -303,7 +224,9 @@ function Wallet() {
                     .map((wallet, index) => {
                       // const { address, network } = wallet;
                       const coinWallet = wallet;
-                      const balance = Math.floor(coinWallet[1].balance);
+                      const balance = Math.floor(
+                        coinWallet[1].balance.availableBalance
+                      );
 
                       return (
                         <CoinRow
@@ -313,9 +236,6 @@ function Wallet() {
                           amount={isNaN(balance) ? 0 : balance}
                           network={coinWallet[0]}
                           qr={coinWallet[1].qrcode}
-                          refresh={() => {
-                            fetchWallets();
-                          }}
                           type={coinWallet[1].type}
                         />
                       );
@@ -341,7 +261,7 @@ function Wallet() {
                 Coins
               </Text>
               <VStack width={"full"} gap={"2"} alignContent="flex-start">
-                {isLoading ? (
+                {walletLoading ? (
                   <Spinner />
                 ) : (
                   wallets
@@ -351,22 +271,8 @@ function Wallet() {
                     .map((wallet, index) => {
                       // const { address, network } = wallet;
                       const coinWallet = wallet;
-                      let balance;
-                      if (coinWallet[0] === "Bitcoin") {
-                        balance =
-                          coinWallet[1].info.incoming -
-                          coinWallet[1].info.outgoing;
-                      } else if (coinWallet[0] === "Bnb") {
-                        balance = 0;
-                      } else if (coinWallet[0] === "Celo") {
-                        balance = coinWallet[1].info.celo;
-                      } else if (coinWallet[0] === "Ethereum") {
-                        balance = coinWallet[1].info.balance;
-                      } else if (coinWallet[0] === "Tron") {
-                        balance = coinWallet[1].info.balance / 1000000;
-                      } else if (coinWallet[0] === "naira") {
-                        balance = Math.round(coinWallet[1].balance);
-                      }
+                      let balance = coinWallet[1].balance.availableBalance;
+
                       return (
                         <CoinRow
                           key={index}
@@ -375,9 +281,6 @@ function Wallet() {
                           amount={isNaN(balance) ? 0 : balance}
                           network={coinWallet[0]}
                           qr={coinWallet[1].qrcode}
-                          refresh={() => {
-                            fetchWallets();
-                          }}
                           type={"crypto"}
                         />
                       );
@@ -408,9 +311,8 @@ function CoinRow(props) {
       alignItems={"center"}
       flexDir={["column", "column", "row"]}
       background={"#fff"}
-      padding={"20px 10px"}
-      borderRadius={"10px"}
-      boxShadow={"0px 2px 8px rgba(199, 199, 199, 0.6)"}
+      padding={"24px 30px"}
+      boxShadow={"0px 1px 4px 0px rgba(0, 0, 0, 0.10)"}
     >
       <HStack width={"full"} justifyContent="space-between">
         <Text>{props.currency}</Text>
@@ -424,6 +326,8 @@ function CoinRow(props) {
       >
         <Button
           size={["sm", "sm", "md"]}
+          borderRadius={"none"}
+          bg={"linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)"}
           onClick={() => {
             setPage("withdraw");
             onOpen();
@@ -438,6 +342,7 @@ function CoinRow(props) {
         </Button>
         <Button
           size={["sm", "sm", "md"]}
+          borderRadius={"none"}
           onClick={() => {
             if (props.type !== "fiat") {
               setPage("deposit");
@@ -457,6 +362,7 @@ function CoinRow(props) {
         </Button>
         <Button
           size={["sm", "sm", "md"]}
+          borderRadius={"none"}
           onClick={() => {
             if (props.type !== "fiat") {
               setPage("swap");
@@ -476,6 +382,7 @@ function CoinRow(props) {
         </Button>
         <Button
           size={["sm", "sm", "md"]}
+          borderRadius={"none"}
           onClick={() => {
             navigate("/utilities");
           }}
@@ -492,6 +399,7 @@ function CoinRow(props) {
         </Button>
         <Button
           size={["sm", "sm", "md"]}
+          borderRadius={"none"}
           onClick={() => {
             if (props.type === "fiat") {
               navigate(`/fiat-history/`);
@@ -650,13 +558,17 @@ const WalletModal = (props) => {
     }
   };
   const WithdrawCrypto = async (data) => {
-    data.amount = floatAmount;
+    console.log(floatAmount);
+    data.amount = 1.0;
     data.network = props.network;
+    data.fee = 0.0005;
+    data.transaction_type = "crypto";
+    console.log(data);
     if (errors.length > 0) {
     } else {
       setIsLoading(true);
       await axios
-        .post(`${process.env.REACT_APP_BASE_URL}withdraw/`, data, {
+        .post(`${process.env.REACT_APP_BASE_URL}v2/withdraw/`, data, {
           headers: {
             Authorization: `Token ${localStorage.getItem("token")}`,
           },
@@ -671,6 +583,7 @@ const WalletModal = (props) => {
           props.onClose();
         })
         .catch(function (error) {
+          console.log(error);
           setIsLoading(false);
           toast({
             title: "An error occured",
@@ -969,13 +882,14 @@ const WalletModal = (props) => {
                             borderRadius: "5px",
                           }}
                           onChange={(e) => {
+                            console.log(e.target.value);
                             let amount = e.target.value;
                             setWithdrawAmount(amount);
-
                             let toFloatAmount;
                             toFloatAmount = parseFloat(
                               amount.replaceAll(",", "")
                             ).toFixed(7);
+
                             if (props.network === "Bitcoin") {
                               let btcErrors = [];
 
@@ -986,7 +900,7 @@ const WalletModal = (props) => {
                                 setErrors([]);
                                 setFloatAmount(toFloatAmount.toString());
                               }
-                            } else if (props.network === "Celo") {
+                            } else if (props.network === "celo") {
                               let coinErrors = [];
                               if (toFloatAmount < 2) {
                                 coinErrors.push("Minimum withdrawal is 2");

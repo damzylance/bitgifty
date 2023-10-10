@@ -7,12 +7,17 @@ import {
   Input,
   useToast,
   HStack,
+  Flex,
 } from "@chakra-ui/react";
 import Confetti from "react-confetti";
 
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import DashboardLayout from "../../../Components/DashboardLayout";
+import { RxCardStack, RxPlus } from "react-icons/rx";
+import { MdRedeem } from "react-icons/md";
+import GiftCardTemplate from "./GiftCardTemplate";
 function Reedeem() {
   const navigate = useNavigate();
   const {
@@ -84,10 +89,10 @@ function Reedeem() {
     handleWindowResize();
   }, []);
   return (
-    <>
+    <GiftCardTemplate>
       <Container
         py="52px"
-        px="32px"
+        px={["32px"]}
         color={"brand.700"}
         borderRadius={"2xl"}
         bg={"brand.50"}
@@ -147,11 +152,13 @@ function Reedeem() {
               ? history.reverse().map((transaction) => {
                   return (
                     <HStack
-                      padding={"10px 10px"}
+                      padding={"24px"}
                       borderRadius={"10px"}
                       width={"full"}
                       justifyContent={"space-between"}
-                      bg={"brand.50"}
+                      bg={"#fff"}
+                      boxShadow={"0px 1px 4px 0px rgba(0, 0, 0, 0.10)"}
+                      color={"#050505"}
                     >
                       <Text fontSize={"sm"}>{transaction.code}</Text>
                       <Text fontSize={"sm"}>{`${new Date(
@@ -164,7 +171,7 @@ function Reedeem() {
           </VStack>
         </Container>
       )}
-    </>
+    </GiftCardTemplate>
   );
 }
 

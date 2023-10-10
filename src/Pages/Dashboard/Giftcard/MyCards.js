@@ -1,7 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { CopyIcon } from "@chakra-ui/icons";
-import { motion } from "framer-motion";
 import {
   Box,
   Container,
@@ -21,6 +20,7 @@ import {
   useDisclosure,
   Button,
 } from "@chakra-ui/react";
+import GiftCardTemplate from "./GiftCardTemplate";
 
 function MyCards() {
   const toast = useToast();
@@ -30,7 +30,7 @@ function MyCards() {
 
   const fetchCards = async () => {
     await axios
-      .get(`${process.env.REACT_APP_BASE_URL}gift_cards/create/`, {
+      .get(`${process.env.REACT_APP_BASE_URL}gift_cards/`, {
         headers: {
           Authorization: `Token ${localStorage.getItem("token")}`,
         },
@@ -63,39 +63,41 @@ function MyCards() {
     fetchCardTemplates();
   }, []);
   return (
-    <Box mt={"30px"} cursor={"pointer"}>
-      <SimpleGrid columns={[2, 2, 4]} spacing="4">
-        {" "}
-        {loading ? (
-          <Container>
-            <Spinner />
-          </Container>
-        ) : cards.length > 0 ? (
-          cards.map((card, id) => {
-            let link;
-            for (let x = 0; x < templates.length; x++) {
-              if (card.image === templates[x].id) {
-                link = templates[x].link;
+    <GiftCardTemplate>
+      <Box mt={"30px"} cursor={"pointer"}>
+        <SimpleGrid columns={[2, 2, 4]} spacing="4">
+          {" "}
+          {loading ? (
+            <Container>
+              <Spinner />
+            </Container>
+          ) : cards.length > 0 ? (
+            cards.map((card, id) => {
+              let link;
+              for (let x = 0; x < templates.length; x++) {
+                if (card.image === templates[x].id) {
+                  link = templates[x].link;
+                }
               }
-            }
-            return (
-              <Card
-                key={id}
-                amount={card.amount}
-                image={templates.length > 0 ? link : ""}
-                currency={card.currency}
-                code={card.code}
-                status={card.status}
-                receipent={card.receipent_email}
-                createdOn={card.creation_date}
-              />
-            );
-          })
-        ) : (
-          <Text>No Giftcard created</Text>
-        )}
-      </SimpleGrid>
-    </Box>
+              return (
+                <Card
+                  key={id}
+                  amount={card.amount}
+                  image={templates.length > 0 ? link : ""}
+                  currency={card.currency}
+                  code={card.code}
+                  status={card.status}
+                  receipent={card.receipent_email}
+                  createdOn={card.creation_date}
+                />
+              );
+            })
+          ) : (
+            <Text>No Giftcard created</Text>
+          )}
+        </SimpleGrid>
+      </Box>
+    </GiftCardTemplate>
   );
 }
 const Card = (props) => {

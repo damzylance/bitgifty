@@ -18,14 +18,19 @@ import {
   Spinner,
   Checkbox,
   HStack,
+  Divider,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import useWallets from "../../../Hooks/useWallets";
+import { RxCardStack, RxPlus } from "react-icons/rx";
+import { MdRedeem } from "react-icons/md";
+import DashboardLayout from "../../../Components/DashboardLayout";
 
 function Create() {
-  const [wallets, setWallets] = useState([]);
+  const { userWallets, walletsLoading } = useWallets();
   const navigate = useNavigate();
   const {
     register,
@@ -44,6 +49,7 @@ function Create() {
     headers: { "x-api-key": process.env.REACT_APP_RATE_KEY },
   };
 
+  const wallets = userWallets;
   const [fee, setFee] = useState(0);
   const [amountMin, setAmountMin] = useState(0.0003);
   const [balance, setBalance] = useState(0);
@@ -56,49 +62,54 @@ function Create() {
   const [dollarAmount, setDollarAmount] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
   const [rate, setRate] = useState(0);
+  const [ribbonAmount, setRibbonAmount] = useState(0);
 
   const fetchRate = async (network) => {
-    await axios
-      .get(`${process.env.REACT_APP_BASE_URL}swap/get_usdt/${network}`, {
-        headers: {
-          Authorization: `Token ${localStorage.getItem("token")}`,
-        },
-      })
-      .then((response) => {
-        setRate(response.data);
-      })
-      .catch((error) => {});
+    if (network !== "naira") {
+      await axios
+        .get(`${process.env.REACT_APP_BASE_URL}swap/get_usdt/${network}`, {
+          headers: {
+            Authorization: `Token ${localStorage.getItem("token")}`,
+          },
+        })
+        .then((response) => {
+          setRate(response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } else {
+      setRate(1);
+    }
   };
-  const fetchWallets = async () => {
-    await axios
-      .get(`${process.env.REACT_APP_BASE_URL}wallets/`, {
-        headers: {
-          Authorization: `Token ${localStorage.getItem("token")}`,
-        },
-      })
-      .then(function (response) {
-        if (response.data) {
-          const entries = Object.entries(response.data);
-          setIsLoading(false);
+  // const fetchWallets = async () => {
+  //   await axios
+  //     .get(`${process.env.REACT_APP_BASE_URL}wallets/`, {
+  //       headers: {
+  //         Authorization: `Token ${localStorage.getItem("token")}`,
+  //       },
+  //     })
+  //     .then(function (response) {
+  //       if (response.data) {
+  //         const entries = Object.entries(response.data);
+  //         setIsLoading(false);
 
-          setWallets(entries);
-          localStorage.setItem("wallets", JSON.stringify(entries));
-        }
-      })
-      .catch(function (error) {});
-  };
+  //         setWallets(entries);
+  //       }
+  //     })
+  //     .catch(function (error) {});
+  // };
 
   const handleCurrencyChange = async (e) => {
-    const network = `${e.target.value
-      .slice(0, 1)
-      .toUpperCase()}${e.target.value.slice(1, e.target.value.length)}`;
+    const network = `${e.target.value}`;
+    console.log(network);
 
     for (let index = 0; index < wallets.length; index++) {
       if (wallets[index][0] === network) {
-        const btcBalance =
-          wallets[index][1].info.incoming - wallets[index][1].info.outgoing;
-        setBalance(isNaN(btcBalance) ? 0 : btcBalance);
-        if (network === "Bitcoin") {
+        setBalance(wallets[index][1].balance.availableBalance);
+
+        // setBalance(isNaN(btcBalance) ? 0 : btcBalance);
+        if (network === "bitcoin") {
           await axios
             .post(
               "https://api.tatum.io/v3/tatum/rate/",
@@ -115,24 +126,26 @@ function Create() {
             .catch((errors) => {
               toast({ title: "Error Fetching Fees", status: "warning" });
             });
-        } else if (network === "Celo") {
-          setBalance(wallets[index][1].info.celo);
-          setFee(1);
-          setAmountMin(10);
-          setTotalAmount(parseFloat(getValues("amount")) + fee);
+        } else if (network === "celo") {
+          const networkFee = 1;
+          setFee(networkFee);
+          // setBalance(wallets[index][1].info.celo);
+          console.log(balance);
+          setAmountMin(2);
+          setTotalAmount(parseFloat(getValues("amount")) + networkFee);
         } else if (network === "Ethereum") {
           setAmountMin(0.003);
-          setBalance(wallets[index][1].info.balance);
+          // setBalance(wallets[index][1].info.balance);
           setFee(0.0004);
           setTotalAmount(parseFloat(getValues("amount")) + fee);
         } else if (network === "Tron") {
           const tronBalance = wallets[index][1].info.balance / 1000000;
           setFee(1);
-          setBalance(isNaN(tronBalance) ? 0 : tronBalance);
+          // setBalance(isNaN(tronBalance) ? 0 : tronBalance);
           setAmountMin(5);
           setTotalAmount(parseFloat(getValues("amount")) + fee);
         } else if (network === "Bnb") {
-          setBalance(0);
+          // setBalance(0);
           setFee(0.0005);
           setAmountMin(0.02);
           setTotalAmount(parseFloat(getValues("amount")) + fee);
@@ -165,6 +178,7 @@ function Create() {
     data.image = template.id;
     data.amount = parseFloat(data.amount);
     data.quantity = 1;
+    console.log(data);
 
     setIsLoading(true);
     await axios
@@ -185,9 +199,9 @@ function Create() {
         setTimeout(() => {
           setConfitti(false);
         }, 5000);
-        fetchWallets();
       })
       .catch(function (error) {
+        console.log(error);
         if (error.response?.status === 400) {
           console.log(error.response.status);
 
@@ -203,44 +217,191 @@ function Create() {
   useEffect(() => {
     window.onresize = () => handleWindowResize();
     fetchCardTemplates();
-    fetchWallets();
   }, []);
   return (
-    <>
+    <DashboardLayout>
       {confetti && (
         <Box width={"full"}>
           <Confetti width={windowSize.width} height={windowSize.height} />
         </Box>
       )}
       <Flex
+        height={"50px"}
+        gap={5}
+        my={"20px"}
+        px={"6px"}
+        display={["flex", "flex", "none"]}
+      >
+        <Button
+          borderRadius={"none"}
+          rightIcon={<RxPlus />}
+          background={
+            " linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)"
+          }
+          onClick={() => {}}
+          variant={"solid"}
+          size={["md", "md", "lg"]}
+        >
+          Create
+        </Button>
+
+        <Button
+          onClick={() => {
+            navigate("/giftcard/redeem");
+          }}
+          size={["md", "md", "lg"]}
+          rightIcon={<MdRedeem />}
+          variant={"outline"}
+          borderRadius={"none"}
+        >
+          Reedeem
+        </Button>
+
+        <Button
+          onClick={() => {
+            navigate("/giftcard/cards");
+          }}
+          size={["md", "md", "lg"]}
+          variant={"outline"}
+          rightIcon={<RxCardStack />}
+          borderRadius={"none"}
+        >
+          My Cards
+        </Button>
+      </Flex>
+      <Flex
         width={"full"}
-        my={10}
+        my={0}
+        flexDir={["column", "column", "row"]}
         gap={["20px", "20px", 0]}
         flexWrap={["wrap", "wrap", "nowrap"]}
       >
-        <VStack width={"full"} alignItems={"flex-start"} gap={"5"}>
+        <VStack
+          width={"full"}
+          alignItems={"center"}
+          justifyContent={"center"}
+          gap={"5"}
+          flex={"1"}
+          background={"brand.700"}
+          px={"10px"}
+          pt={"10px"}
+          mt={[2, 2, 0]}
+          height={["700px", "700px", "90vh"]}
+          overflow={"scroll"}
+          borderTop={[0, 0, "2px solid #38c7e7"]}
+        >
           {templatesLoading ? (
             <Spinner />
           ) : templates.length > 0 ? (
-            <Box
+            <VStack
               as={motion.div}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition="5s"
+              height={"416px"}
+              width={"400px"}
+              bg={"url(/assets/images/cardbg.png)"}
+              bgRepeat={"no-repeat"}
+              position={"relative"}
+              padding={"3px"}
             >
               <Image
                 src={`${template.link}`}
-                width={["full", "full", "400px"]}
-                height={"300px"}
-                objectFit={"contain"}
-                borderRadius={"10px"}
+                width={["full", "full", "300px"]}
+                height={"338px"}
+                objectFit={"cover"}
+                position={"absolute"}
+                left={"10%"}
+                top={"10%"}
               />
-            </Box>
+            </VStack>
           ) : (
             "No template"
           )}
 
-          <Text color={"brand.700"} fontSize={"lg"} fontWeight={700}>
+          <HStack
+            width={"194px"}
+            justifyContent={"center"}
+            position={"relative"}
+            display={["none", "none", "flex"]}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="218"
+              height="95"
+              viewBox="0 0 218 95"
+              fill="none"
+            >
+              <g filter="url(#filter0_d_1002_1971)">
+                <path
+                  d="M12 4H206C206 4 183.874 24.3 184.5 41C185.089 56.6988 206 75 206 75H12C12 75 30.4648 56.201 31 41C31.5715 24.7669 12 4 12 4Z"
+                  fill="#103D96"
+                />
+                <path
+                  d="M202.333 5.5C202.061 5.77935 201.771 6.07886 201.467 6.3974C199.376 8.58948 196.591 11.6917 193.822 15.3288C191.056 18.9615 188.283 23.1581 186.236 27.5385C184.195 31.9074 182.832 36.5539 183.001 41.0562C183.16 45.2861 184.678 49.598 186.777 53.6283C188.882 57.6698 191.616 61.5149 194.306 64.8318C196.998 68.1525 199.669 70.9707 201.665 72.9581C201.854 73.1462 202.037 73.3269 202.213 73.5H15.4195C15.6124 73.2821 15.8146 73.0517 16.0253 72.8095C17.7878 70.783 20.1453 67.9187 22.5226 64.5684C27.2223 57.9452 32.2147 49.1299 32.4991 41.0528C32.8029 32.422 27.7978 22.8223 22.9618 15.5796C20.5148 11.9149 18.0528 8.76943 16.2035 6.54063C15.8941 6.16772 15.6016 5.82023 15.329 5.5H202.333Z"
+                  stroke="white"
+                  stroke-width="3"
+                />
+              </g>
+              <defs>
+                <filter
+                  id="filter0_d_1002_1971"
+                  x="0"
+                  y="0"
+                  width="218"
+                  height="95"
+                  filterUnits="userSpaceOnUse"
+                  color-interpolation-filters="sRGB"
+                >
+                  <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                  <feColorMatrix
+                    in="SourceAlpha"
+                    type="matrix"
+                    values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+                    result="hardAlpha"
+                  />
+                  <feOffset dy="8" />
+                  <feGaussianBlur stdDeviation="6" />
+                  <feComposite in2="hardAlpha" operator="out" />
+                  <feColorMatrix
+                    type="matrix"
+                    values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"
+                  />
+                  <feBlend
+                    mode="normal"
+                    in2="BackgroundImageFix"
+                    result="effect1_dropShadow_1002_1971"
+                  />
+                  <feBlend
+                    mode="normal"
+                    in="SourceGraphic"
+                    in2="effect1_dropShadow_1002_1971"
+                    result="shape"
+                  />
+                </filter>
+              </defs>
+            </svg>
+            <HStack
+              position={"absolute"}
+              width={"194px"}
+              height={"71px"}
+              pb={"10px"}
+              justifyContent={"center"}
+              alignItems={"center"}
+            >
+              <Text
+                fontSize={"24px"}
+                fontStyle={"700"}
+                color={"#fff"}
+                width={"full"}
+                textAlign={"center"}
+              >
+                {ribbonAmount}
+              </Text>
+            </HStack>
+          </HStack>
+
+          {/* <Text color={"brand.700"} fontSize={"lg"} fontWeight={700}>
             Giftcard Designs
           </Text>
           <SimpleGrid columns={3} spacing="4">
@@ -271,72 +432,162 @@ function Create() {
             ) : (
               <Text>No template available</Text>
             )}
-          </SimpleGrid>
+          </SimpleGrid> */}
         </VStack>
         <form
           action=""
           onSubmit={handleSubmit(onSubmit)}
-          style={{ width: "100%" }}
+          style={{ width: "100%", flex: "2" }}
         >
           <VStack
+            padding={["10px 10px 50px 10px", "10px 10px 50px 10px", "10px"]}
             color={"brand.600"}
             gap="10"
-            width={["full", "full", "80%"]}
+            width={["full", "full", "70%"]}
+            mx={"auto"}
             alignItems={"flex-start"}
           >
-            <FormControl>
-              <FormLabel>Select Currency</FormLabel>
-              <Select
-                required
-                name="currency"
-                {...register("currency", { onChange: handleCurrencyChange })}
+            <Flex height={"50px"} gap={5} display={["none", "none", "flex"]}>
+              <Button
+                borderRadius={"none"}
+                rightIcon={<RxPlus />}
+                background={
+                  " linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)"
+                }
+                onClick={() => {}}
+                variant={"solid"}
+                size={"lg"}
               >
-                <option>Select Coin</option>;
-                {wallets.map((wallet, index) => {
-                  return (
-                    <option value={wallet[0].toLowerCase()} key={index}>
-                      {wallet[0]}
-                    </option>
-                  );
-                })}
-              </Select>
+                Create
+              </Button>
+
+              <Button
+                onClick={() => {
+                  navigate("/giftcard/redeem");
+                }}
+                size="lg"
+                rightIcon={<MdRedeem />}
+                variant={"outline"}
+                borderRadius={"none"}
+              >
+                Reedeem
+              </Button>
+
+              <Button
+                onClick={() => {
+                  navigate("/giftcard/cards");
+                }}
+                size="lg"
+                variant={"outline"}
+                rightIcon={<RxCardStack />}
+                borderRadius={"none"}
+              >
+                My Cards
+              </Button>
+            </Flex>
+            <FormControl>
+              <FormLabel>Select your gift card design</FormLabel>
+              <HStack
+                columns={4}
+                gap={"4px"}
+                width={["full", "full", "500px"]}
+                overflowX={"scroll"}
+              >
+                {templatesLoading ? (
+                  <Spinner />
+                ) : templates.length > 0 ? (
+                  templates.map((image) => {
+                    return (
+                      <Box>
+                        <HStack
+                          width={"100px"}
+                          height={"70px "}
+                          key={image.id}
+                          bgImage={`url(${image.link})`}
+                          backgroundSize={"contain"}
+                          backgroundPosition={"center"}
+                          borderRadius={"base"}
+                          cursor={"pointer"}
+                          border={
+                            image.link === template.link ? "1px solid #fff" : ""
+                          }
+                          _hover={{ border: "1px solid blue" }}
+                          onClick={() => {
+                            setTemplate({ link: image.link, id: image.id });
+                          }}
+                        ></HStack>
+                      </Box>
+                    );
+                  })
+                ) : (
+                  <Text>No template available</Text>
+                )}
+              </HStack>
             </FormControl>
-            <VStack gap={"2"} width="full" alignItems="flex-start">
-              <FormControl isInvalid={errors.amount}>
-                <HStack
-                  width={"full"}
-                  alignItems={"center"}
-                  justifyContent={"space-between"}
-                  my={"2"}
-                >
-                  <FormLabel>Enter Amount</FormLabel>
-                  <Text mt={"20px"} fontSize={"sm"}>
-                    ${isNaN(dollarAmount) ? 0 : dollarAmount.toFixed(2)}
-                  </Text>
-                </HStack>
-
-                <Input
+            <HStack
+              width={"full"}
+              flexDir={["column", "column", "row"]}
+              alignItems={"flex-start"}
+              gap={"20px"}
+            >
+              <FormControl width={"full"}>
+                <FormLabel>Select Currency</FormLabel>
+                <Select
+                  textTransform={"capitalize"}
                   required
-                  name="amount"
-                  type={"number"}
-                  {...register("amount", {
-                    onChange: (e) => {
-                      setTotalAmount(parseFloat(e.target.value) + fee);
-                      setDollarAmount(parseFloat(e.target.value) * rate);
-                    },
-                    max: { value: balance, message: "Insufficient funds" },
-                    min: {
-                      value: amountMin,
-                      message: `Minimum amount is ${amountMin}`,
-                    },
+                  name="currency"
+                  {...register("currency", { onChange: handleCurrencyChange })}
+                >
+                  <option>Select Coin</option>;
+                  {wallets.map((wallet, index) => {
+                    return (
+                      <option value={wallet[0]} key={index}>
+                        {wallet[0]}
+                      </option>
+                    );
                   })}
-                />
-
-                <FormErrorMessage>
-                  {errors.amount && errors.amount.message}
-                </FormErrorMessage>
+                </Select>
               </FormControl>
-              {/* <Flex
+              <VStack
+                marginInlineStart={"0 !important"}
+                width="full"
+                alignItems="flex-start"
+              >
+                <FormControl isInvalid={errors.amount}>
+                  <HStack
+                    width={"full"}
+                    alignItems={"center"}
+                    justifyContent={"space-between"}
+                  >
+                    <FormLabel>Enter Amount</FormLabel>
+                    <Text mt={"20px"} fontSize={"sm"}>
+                      ${isNaN(dollarAmount) ? 0 : dollarAmount.toFixed(2)}
+                    </Text>
+                  </HStack>
+
+                  <Input
+                    required
+                    name="amount"
+                    type={"number"}
+                    {...register("amount", {
+                      onChange: (e) => {
+                        setTotalAmount(parseFloat(e.target.value) + fee);
+                        setDollarAmount(parseFloat(e.target.value) * rate);
+                        setRibbonAmount(e.target.value);
+                      },
+                      max: { value: balance, message: "Insufficient funds" },
+                      min: {
+                        value: amountMin,
+                        message: `Minimum amount is ${amountMin}`,
+                      },
+                    })}
+                  />
+
+                  <FormErrorMessage>
+                    {errors.amount && errors.amount.message}
+                  </FormErrorMessage>
+                </FormControl>
+                {/* <Flex
                 justifyContent={"space-between"}
                 width="full"
                 color={"brand.tx1"}
@@ -386,11 +637,12 @@ function Create() {
                   100%
                 </Box>
               </Flex> */}
-              <Flex color="brand.300" gap={2}>
-                <Text>Wallet Balance:</Text>
-                <Text>{balance}</Text>
-              </Flex>
-            </VStack>
+                <Flex color="brand.300" gap={2}>
+                  <Text fontSize={"sm"}>Wallet Balance:</Text>
+                  <Text fontSize={"sm"}>{balance}</Text>
+                </Flex>
+              </VStack>
+            </HStack>
 
             <FormControl>
               <FormLabel>Note (optional)</FormLabel>
@@ -448,7 +700,7 @@ function Create() {
           </VStack>
         </form>
       </Flex>
-    </>
+    </DashboardLayout>
   );
 }
 

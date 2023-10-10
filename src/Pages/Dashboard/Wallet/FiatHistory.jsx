@@ -65,11 +65,11 @@ const FiatHistory = () => {
             justifyContent={"space-between"}
             width={"full"}
             bg={"brand.600"}
-            py="2"
-            px={"2"}
+            py="24px"
+            px={"4"}
             color={"brand.bg1"}
-            borderRadius={"md"}
             display={["flex", "flex", "flex", "flex"]}
+            fontWeight={"700"}
           >
             <Text fontSize={["xs", "xs", "sm", "sm"]} flex={2}>
               Time
@@ -89,15 +89,16 @@ const FiatHistory = () => {
               Status
             </Text>
           </Flex>
-          <VStack width={"full"}>
+          <VStack width={"full"} gap={"14px"}>
             {transactions.length > 0 ? (
-              transactions[3][1].reverse().map((transaction) => {
+              transactions[3][1].reverse().map((transaction, id) => {
                 return (
                   <TransactionRow
                     time={toTimeDate(new Date(transaction.time))}
                     amount={transaction.amount}
                     status={transaction.status}
                     bankName={transaction.bank_name}
+                    key={id}
                   />
                 );
               })
@@ -118,6 +119,8 @@ function TransactionRow(props) {
     <Flex
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
+      px={"24px"}
+      py={"20px"}
       transition="1s"
       width={"full"}
       gap="2"
@@ -125,6 +128,8 @@ function TransactionRow(props) {
       alignItems={"center"}
       wrap="wrap"
       display={["flex", "flex", "flex", "flex"]}
+      bg={"#fff"}
+      boxShadow={"0px 1px 4px 0px rgba(0, 0, 0, 0.10)"}
       sx={{
         animation: "drop-in 1200ms ease 500ms backwards",
       }}

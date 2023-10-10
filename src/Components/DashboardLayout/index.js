@@ -21,6 +21,7 @@ import { useNavigate } from "react-router-dom";
 import { SettingsIcon } from "@chakra-ui/icons";
 
 function DashboardLayout({ notifications, increment, decrement, children }) {
+  const page = window.location.pathname.split("/")[2];
   const toast = useToast();
   const [openMenu, setOpenMenu] = useState(false);
   const navigate = useNavigate();
@@ -45,7 +46,7 @@ function DashboardLayout({ notifications, increment, decrement, children }) {
   return (
     <Box width={"full"}>
       <Box width={"full"} bg={"brand.700"}>
-        <Container px={[2, 2, 0]} py={4} maxW={["100%", "100%", "75%"]}>
+        <Container px={[2, 2, 0]} py={4} maxW={["100%", "100%", "90%"]}>
           <Box
             width={"full"}
             top={0}
@@ -80,7 +81,7 @@ function DashboardLayout({ notifications, increment, decrement, children }) {
                 justifyContent={"space-between"}
               >
                 <VStack width={"full"} alignItems={"flex-start"}>
-                  <Link to={"/giftcard"} style={{ width: "100%" }}>
+                  <Link to={"/giftcard/create"} style={{ width: "100%" }}>
                     <HStack
                       width={"full"}
                       justifyContent={"space-between"}
@@ -159,39 +160,42 @@ function DashboardLayout({ notifications, increment, decrement, children }) {
             justifyContent={"space-between"}
             alignItems="center"
           >
-            <Link to={"/"}>
+            <HStack gap={"100px"}>
               {" "}
-              <Box>
-                <Image
-                  src="/assets/images/logo-inline-transparent.png"
-                  width={"150px"}
-                />
-              </Box>
-            </Link>
+              <Link to={"/"}>
+                {" "}
+                <Box>
+                  <Image
+                    src="/assets/images/logo-inline-transparent.png"
+                    width={"150px"}
+                  />
+                </Box>
+              </Link>
+              <HStack
+                gap={18}
+                color={"brand.bg1"}
+                fontWeight={"600"}
+                fontSize="md"
+              >
+                <Link to="/dashboard">
+                  <Text>Dashboard</Text>
+                </Link>
+                <Link to="/giftcard/create">
+                  <Text>Giftcard</Text>
+                </Link>
+                <Link to="/utilities">
+                  <Text>Spend</Text>
+                </Link>
+                <Link to="/wallet">
+                  <Text>Wallet</Text>
+                </Link>
 
-            <HStack
-              gap={18}
-              color={"brand.bg1"}
-              fontWeight={"600"}
-              fontSize="md"
-            >
-              <Link to="/dashboard">
-                <Text>Dashboard</Text>
-              </Link>
-              <Link to="/giftcard">
-                <Text>Giftcard</Text>
-              </Link>
-              <Link to="/utilities">
-                <Text>Spend</Text>
-              </Link>
-              <Link to="/wallet">
-                <Text>Wallet</Text>
-              </Link>
-
-              <Link onClick={() => logOut()}>
-                <Text>Logout</Text>
-              </Link>
+                <Link onClick={() => logOut()}>
+                  <Text>Logout</Text>
+                </Link>
+              </HStack>
             </HStack>
+
             <HStack gap={10}>
               <Link to="/setting">
                 <Box>
@@ -246,9 +250,14 @@ function DashboardLayout({ notifications, increment, decrement, children }) {
           </Flex>
         </Container>
       </Box>
-      <Box width={"full"} minH={"500px"} bg={"brand.bg1"}>
+      <Box
+        width={page === "create" ? "full" : ["90%", "90%", "80%"]}
+        minH={"500px"}
+        bg={"brand.bg1"}
+        margin={"auto"}
+      >
         <Authenticate>
-          <Container px={[2, 2, 0]} py={4} maxW={["100%", "100%", "75%"]}>
+          <Container px={[0, 0, 0]} py={0} maxW={["100%", "100%", "100%"]}>
             {children}
           </Container>
         </Authenticate>

@@ -3,12 +3,11 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Login from "../Pages/Login/Login";
 import Signup from "../Pages/Signup/Signup";
 import ConfirmEmail from "../Pages/Signup/ConfirmEmail";
-import UserSetting from "../Pages/UserSetting";
 import Dashboard from "../Pages/Dashboard";
-import Giftcard from "../Pages/Dashboard/Giftcard";
 import Wallet from "../Pages/Dashboard/Wallet";
 import Reset from "../Pages/Reset/Reset";
 import PasswordResetConFirm from "../Pages/ChangePassword/ChangePassword";
+import Create from "../Pages/Dashboard/Giftcard/Create";
 import CoinDetails from "../Pages/Dashboard/Wallet/Wallet";
 import Home from "../Pages";
 import Notfound from "../Pages/404";
@@ -18,6 +17,9 @@ import SwapHistory from "../Pages/Dashboard/Wallet/SwapHistory";
 import FiatHistory from "../Pages/Dashboard/Wallet/FiatHistory";
 import Privacy from "../Pages/Privacy";
 import Utility from "../Pages/Dashboard/Utility";
+import Reedeem from "../Pages/Dashboard/Giftcard/Reedeem";
+import MyCards from "../Pages/Dashboard/Giftcard/MyCards";
+import SettingsLayout from "../Pages/UserSetting/SettingsLayout";
 function Router() {
   return (
     <BrowserRouter>
@@ -40,15 +42,16 @@ function Router() {
         />
 
         <Route exact path="/dashboard" element={<Dashboard />} />
-        <Route exact path="/giftcard" element={<Giftcard />} />
-        <Route exact path="/giftcard/:page" element={<Giftcard />} />
+        <Route exact path="/giftcard/cards" element={<MyCards />} />
+        <Route exact path="/giftcard/create" element={<Create />} />
+        <Route exact path="/giftcard/redeem" element={<Reedeem />} />
         <Route exact path="/wallet" element={<Wallet />} />
         <Route exact path="/utilities" element={<Utility />} />
         <Route exact path="/coin-details/:currency" element={<CoinDetails />} />
         <Route exact path="/swap-history" element={<SwapHistory />} />
         <Route exact path="/fiat-history" element={<FiatHistory />} />
 
-        <Route exact path="/setting" element={<UserSetting />} />
+        <Route exact path="/setting" element={<SettingsLayout />} />
         <Route exact path="/setting/payout" element={<Payout />} />
         <Route path="/*" element={<Notfound />} />
       </Routes>

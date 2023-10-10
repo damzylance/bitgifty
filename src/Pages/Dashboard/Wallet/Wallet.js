@@ -62,13 +62,16 @@ const Wallet = () => {
               },
             })
             .then(function (response) {
+              console.log(response);
               if (response.data) {
                 setIsLoading(false);
 
                 setTransactions(response.data);
               }
             })
-            .catch(function (error) {});
+            .catch(function (error) {
+              console.log(error);
+            });
         }
       })
       .catch((error) => {
@@ -109,10 +112,9 @@ const Wallet = () => {
               justifyContent={"space-between"}
               width={"full"}
               bg={"brand.600"}
-              py="2"
-              px={"2"}
+              py="24px"
+              px={"30px"}
               color={"brand.bg1"}
-              borderRadius={"md"}
               display={["none", "none", "none", "flex"]}
             >
               <Text fontSize={["xs", "xs", "sm", "sm"]} flex={2}>
