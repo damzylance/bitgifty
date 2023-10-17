@@ -181,7 +181,7 @@ function Create() {
 
     setIsLoading(true);
     await axios
-      .post(`${process.env.REACT_APP_BASE_URL}gift_cards/v2/create/`, data, {
+      .post(`${process.env.REACT_APP_BASE_URL}gift_cards/create/`, data, {
         headers: {
           Authorization: `Token ${localStorage.getItem("token")}`,
         },
