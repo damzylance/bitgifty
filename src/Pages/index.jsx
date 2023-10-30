@@ -1358,7 +1358,7 @@ const Home = () => {
               <VStack
                 height={"336px"}
                 width={"360px"}
-                background={"url('/assets/images/serviceimage.jpeg')"}
+                background={"url('/assets/images/gift_cards.webp')"}
                 backgroundSize={"cover"}
                 backgroundPosition={"center"}
                 justifyContent={"flex-end"}
@@ -1376,17 +1376,17 @@ const Home = () => {
                     fontSize={"20px"}
                     fontWeight={"600"}
                     color={"#fff"}
-                    width={"200px"}
                     p={"10px"}
                   >
-                    Create crypto gift cards
+                    Digital Gift Cards - An Inclusive Path to Financial
+                    Empowerment
                   </Text>
                 </VStack>
               </VStack>
               <VStack
                 height={"336px"}
                 width={"360px"}
-                background={"url('/assets/images/serviceimage.jpeg')"}
+                background={"url('/assets/images/bitgifty_prezenti.webp')"}
                 backgroundSize={"cover"}
                 backgroundPosition={"center"}
                 justifyContent={"flex-end"}
@@ -1404,17 +1404,17 @@ const Home = () => {
                     fontSize={"20px"}
                     fontWeight={"600"}
                     color={"#fff"}
-                    width={"200px"}
                     p={"10px"}
                   >
-                    Create crypto gift cards
+                    BitGifty Receives Prezenti Grant to Build Innovative Offramp
+                    and Utility
                   </Text>
                 </VStack>
               </VStack>
               <VStack
                 height={"336px"}
                 width={"360px"}
-                background={"url('/assets/images/serviceimage.jpeg')"}
+                background={"url('/assets/images/gift_cards.webp')"}
                 backgroundSize={"cover"}
                 backgroundPosition={"center"}
                 justifyContent={"flex-end"}
@@ -1432,10 +1432,10 @@ const Home = () => {
                     fontSize={"20px"}
                     fontWeight={"600"}
                     color={"#fff"}
-                    width={"200px"}
                     p={"10px"}
                   >
-                    Create crypto gift cards
+                    Introducing BitGifty: The Future of Gifting with Crypto Gift
+                    Cards
                   </Text>
                 </VStack>
               </VStack>

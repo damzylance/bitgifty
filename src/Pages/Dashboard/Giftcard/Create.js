@@ -110,6 +110,8 @@ function Create() {
         setBalance(userWallets[index][1].balance.availableBalance);
 
         if (network === "btc") {
+          setIsNaira(false);
+
           await axios
             .post(
               "https://api.tatum.io/v3/tatum/rate/",
@@ -127,14 +129,20 @@ function Create() {
               toast({ title: "Error Fetching Fees", status: "warning" });
             });
         } else if (network === "celo") {
+          setIsNaira(false);
+
           setFee(1);
           setAmountMin(10);
           setTotalAmount(parseFloat(getValues("amount")) + fee);
         } else if (network === "ethereum") {
+          setIsNaira(false);
+
           setAmountMin(0.003);
           setFee(0.0004);
           setTotalAmount(parseFloat(getValues("amount")) + fee);
         } else if (network === "tron") {
+          setIsNaira(false);
+
           setFee(1);
           setAmountMin(5);
           setTotalAmount(parseFloat(getValues("amount")) + fee);
@@ -698,9 +706,9 @@ function Create() {
               <Box textAlign={"right"} width={"full"}>
                 <Button
                   isLoading={isLoading}
-                  borderRadius={"none"}
                   type="submit"
                   size={"lg"}
+                  borderRadius={"none"}
                   background={
                     " linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)"
                   }

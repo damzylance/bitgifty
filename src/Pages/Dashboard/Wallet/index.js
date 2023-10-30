@@ -756,6 +756,7 @@ const AddWalletModal = (props) => {
               {" "}
               <Select fontSize={"16px"} {...register("chain")} required>
                 <option>Select Wallet</option>;
+                <option value={"cusd"}>CUSD</option>
                 <option value={"ceur"}>CEUR</option>
                 <option value={"tron"}>TRON</option>
                 <option value={"eth"}>ETH</option>
