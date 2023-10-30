@@ -121,7 +121,15 @@ function Reedeem() {
               <Button
                 size={"lg"}
                 type="submit"
-                colorScheme="brand"
+                borderRadius={"none"}
+                background={
+                  " linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)"
+                }
+                _hover={{
+                  background:
+                    "linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)",
+                }}
+                variant={"solid"}
                 isLoading={isLoading}
               >
                 Reedem

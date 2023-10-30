@@ -537,66 +537,17 @@ function CoinRow(props) {
         <Button
           size={["xs", "sm", "md"]}
           borderRadius={"none"}
-          bg={"linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)"}
-          onClick={() => {
-            setPage("withdraw");
-            onOpen();
-          }}
-          disabled={
-            props.currency === "ETHEREUM" || props.currency === "BITCOIN"
-              ? true
-              : false
+          background={
+            " linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)"
           }
-        >
-          Withdraw
-        </Button>
-        <Button
-          size={["xs", "sm", "md"]}
-          borderRadius={"none"}
-          onClick={() => {
-            if (props.type !== "fiat") {
-              setPage("deposit");
-              onOpen();
-            }
+          _hover={{
+            background:
+              "linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)",
           }}
-          variant={"outline"}
-          disabled={
-            props.currency === "NAIRA" ||
-            props.currency === "ETHEREUM" ||
-            props.currency === "BITCOIN"
-              ? true
-              : false
-          }
-        >
-          Deposit
-        </Button>
-        <Button
-          size={["xs", "sm", "md"]}
-          borderRadius={"none"}
-          onClick={() => {
-            if (props.type !== "fiat") {
-              setPage("swap");
-              onOpen();
-            }
-          }}
-          variant={"outline"}
-          disabled={
-            props.currency === "NAIRA" ||
-            props.currency === "ETHEREUM" ||
-            props.currency === "BITCOIN"
-              ? true
-              : false
-          }
-        >
-          Swap
-        </Button>
-        <Button
-          size={["xs", "sm", "md"]}
-          borderRadius={"none"}
+          variant={"solid"}
           onClick={() => {
             navigate("/utilities");
           }}
-          variant={"outline"}
           disabled={
             props.currency === "NAIRA" ||
             props.currency === "ETHEREUM" ||
@@ -610,6 +561,84 @@ function CoinRow(props) {
         <Button
           size={["xs", "sm", "md"]}
           borderRadius={"none"}
+          _hover={{
+            background:
+              "linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)",
+            color: "#fff",
+          }}
+          variant={"outline"}
+          onClick={() => {
+            if (props.type !== "fiat") {
+              setPage("deposit");
+              onOpen();
+            }
+          }}
+          disabled={
+            props.currency === "NAIRA" ||
+            props.currency === "ETHEREUM" ||
+            props.currency === "BITCOIN"
+              ? true
+              : false
+          }
+        >
+          Deposit
+        </Button>
+        <Button
+          size={["xs", "sm", "md"]}
+          borderRadius={"none"}
+          _hover={{
+            background:
+              "linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)",
+            color: "#fff",
+          }}
+          variant={"outline"}
+          onClick={() => {
+            if (props.type !== "fiat") {
+              setPage("swap");
+              onOpen();
+            }
+          }}
+          disabled={
+            props.currency === "NAIRA" ||
+            props.currency === "ETHEREUM" ||
+            props.currency === "BITCOIN"
+              ? true
+              : false
+          }
+        >
+          Swap
+        </Button>
+        <Button
+          size={["xs", "sm", "md"]}
+          borderRadius={"none"}
+          _hover={{
+            background:
+              "linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)",
+            color: "#fff",
+          }}
+          variant={"outline"}
+          onClick={() => {
+            setPage("withdraw");
+            onOpen();
+          }}
+          disabled={
+            props.currency === "ETHEREUM" || props.currency === "BITCOIN"
+              ? true
+              : false
+          }
+        >
+          Withdraw
+        </Button>
+
+        <Button
+          size={["xs", "sm", "md"]}
+          borderRadius={"none"}
+          _hover={{
+            background:
+              "linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)",
+            color: "#fff",
+          }}
+          variant={"outline"}
           onClick={() => {
             if (props.type === "fiat") {
               navigate(`/fiat-history/`);
@@ -617,7 +646,6 @@ function CoinRow(props) {
               navigate(`/coin-details/${props.currency.toLowerCase()}`);
             }
           }}
-          variant={"outline"}
           disabled={
             props.currency === "ETHEREUM" || props.currency === "BITCOIN"
               ? true
@@ -733,7 +761,20 @@ const AddWalletModal = (props) => {
                 <option value={"eth"}>ETH</option>
                 <option value={"usdt_tron"}>USDT</option>
               </Select>
-              <Button isLoading={isLoading} type="submit" width={"full"}>
+              <Button
+                isLoading={isLoading}
+                borderRadius={"none"}
+                background={
+                  " linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)"
+                }
+                _hover={{
+                  background:
+                    "linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)",
+                }}
+                variant={"solid"}
+                type="submit"
+                width={"full"}
+              >
                 Create
               </Button>
             </VStack>
@@ -1131,6 +1172,15 @@ const WalletModal = (props) => {
                         </VStack>
                         <Button
                           width={"full"}
+                          borderRadius={"none"}
+                          background={
+                            " linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)"
+                          }
+                          _hover={{
+                            background:
+                              "linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)",
+                          }}
+                          variant={"solid"}
                           isLoading={isLoading}
                           type="Submit"
                         >
@@ -1298,6 +1348,15 @@ const WalletModal = (props) => {
 
                       <Button
                         width={"full"}
+                        borderRadius={"none"}
+                        background={
+                          " linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)"
+                        }
+                        _hover={{
+                          background:
+                            "linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)",
+                        }}
+                        variant={"solid"}
                         isLoading={isLoading}
                         type="Submit"
                       >
@@ -1583,6 +1642,15 @@ const WalletModal = (props) => {
                     <Box width={"full"} height={"40px"}></Box>
                     <Button
                       width={"full"}
+                      borderRadius={"none"}
+                      background={
+                        " linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)"
+                      }
+                      _hover={{
+                        background:
+                          "linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)",
+                      }}
+                      variant={"solid"}
                       mt={"10px"}
                       size={"lg"}
                       isLoading={isLoading}
@@ -1649,6 +1717,15 @@ const WithdrawalModal = (props) => {
             </Text>
             <Countdown date={Date.now() + 900000} renderer={renderer} />,
             <Button
+              borderRadius={"none"}
+              background={
+                " linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)"
+              }
+              _hover={{
+                background:
+                  "linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)",
+              }}
+              variant={"solid"}
               onClick={() => {
                 props.onClose();
               }}

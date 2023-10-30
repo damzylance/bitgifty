@@ -292,7 +292,20 @@ const AirtimeForm = (props) => {
             <Text mt={"10px"}>Balance: {walletBalance}</Text>
             <FormErrorMessage></FormErrorMessage>
           </FormControl>
-          <Button isLoading={isLoading} type="submit" width={"full"}>
+          <Button
+            isLoading={isLoading}
+            type="submit"
+            width={"full"}
+            borderRadius={"none"}
+            background={
+              " linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)"
+            }
+            _hover={{
+              background:
+                "linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)",
+            }}
+            variant={"solid"}
+          >
             Buy Airtime
           </Button>
         </VStack>

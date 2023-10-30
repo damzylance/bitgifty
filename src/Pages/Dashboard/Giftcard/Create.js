@@ -52,6 +52,7 @@ function Create() {
   const [amountMin, setAmountMin] = useState(0.0003);
   const [balance, setBalance] = useState(0);
   const [showBalance, setShowBalance] = useState("");
+  const [isNaira, setIsNaira] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [templatesLoading, setTemplatesLoading] = useState(true);
   const [templates, setTemplates] = useState([]);
@@ -137,9 +138,10 @@ function Create() {
           setFee(1);
           setAmountMin(5);
           setTotalAmount(parseFloat(getValues("amount")) + fee);
-        } else if (network === "bnb") {
-          setFee(0.0005);
-          setAmountMin(0.02);
+        } else if (network === "naira") {
+          setFee(100);
+          setAmountMin(1000);
+          setIsNaira(true);
           setTotalAmount(parseFloat(getValues("amount")) + fee);
         }
       }
@@ -560,7 +562,8 @@ function Create() {
                   >
                     <FormLabel>Enter Amount</FormLabel>
                     <Text mt={"20px"} fontSize={"sm"}>
-                      ${isNaN(dollarAmount) ? 0 : dollarAmount.toFixed(2)}
+                      {isNaira ? "N" : "$"}
+                      {isNaN(dollarAmount) ? 0 : dollarAmount.toFixed(2)}
                     </Text>
                   </HStack>
 
@@ -643,33 +646,40 @@ function Create() {
               </VStack>
             </HStack>
 
-            <FormControl>
-              <FormLabel>Note (optional)</FormLabel>
-              <Textarea
-                name="note"
-                background={"brand.50"}
-                {...register("note")}
-              />
-            </FormControl>
+            <HStack
+              width={"full"}
+              flexDir={["column", "column", "row"]}
+              alignItems={"flex-start"}
+              gap={"20px"}
+            >
+              <FormControl>
+                <FormLabel>Note (optional)</FormLabel>
+                <Textarea
+                  name="note"
+                  background={"brand.50"}
+                  {...register("note")}
+                />
+              </FormControl>
+              {checkEmail ? (
+                <FormControl>
+                  <FormLabel>Receipent Email</FormLabel>
+                  <Input
+                    placeholder="friend@mail.com"
+                    type="email"
+                    name="note"
+                    required
+                    background={"brand.50"}
+                    {...register("receipent_email")}
+                  />
+                </FormControl>
+              ) : (
+                ""
+              )}
+            </HStack>
 
             <Checkbox onChange={() => setCheckEmail(!checkEmail)}>
               Send to receipient email
             </Checkbox>
-            {checkEmail ? (
-              <FormControl>
-                <FormLabel>Receipent Email</FormLabel>
-                <Input
-                  placeholder="friend@mail.com"
-                  type="email"
-                  name="note"
-                  required
-                  background={"brand.50"}
-                  {...register("receipent_email")}
-                />
-              </FormControl>
-            ) : (
-              ""
-            )}
 
             <Flex width={"full"} justifyContent="space-between">
               <VStack width={"full"} alignItems="flex-start">
@@ -688,9 +698,17 @@ function Create() {
               <Box textAlign={"right"} width={"full"}>
                 <Button
                   isLoading={isLoading}
+                  borderRadius={"none"}
                   type="submit"
                   size={"lg"}
-                  colorScheme={"brand"}
+                  background={
+                    " linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)"
+                  }
+                  _hover={{
+                    background:
+                      "linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)",
+                  }}
+                  variant={"solid"}
                 >
                   Create {checkEmail && ` & Send`}
                 </Button>

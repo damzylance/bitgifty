@@ -217,7 +217,18 @@ const CardModal = (props) => {
             )}
           </Box>
           <HStack justifyContent={"center"} gap={"20px"}>
-            <Button onClick={() => setShowCode(!showCode)}>
+            <Button
+              onClick={() => setShowCode(!showCode)}
+              borderRadius={"none"}
+              background={
+                " linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)"
+              }
+              _hover={{
+                background:
+                  "linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)",
+              }}
+              variant={"solid"}
+            >
               {showCode ? "Hide code" : "Reveal Code"}
             </Button>
             {showCode && (

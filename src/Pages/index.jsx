@@ -100,7 +100,7 @@ const Home = () => {
       behavior: "smooth",
     });
   };
-  const heroText = t("heroText").toLowerCase().split("crypto");
+  const heroText = t("heroText").toLowerCase().split("bitcoin");
   return (
     <VStack
       width={"full"}
@@ -278,7 +278,15 @@ const Home = () => {
 
               <Button
                 onClick={() => navigate("/login")}
-                background={"brand.700"}
+                borderRadius={"none"}
+                background={
+                  " linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)"
+                }
+                _hover={{
+                  background:
+                    "linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)",
+                }}
+                variant={"solid"}
               >
                 Login
               </Button>
@@ -326,7 +334,7 @@ const Home = () => {
                   fontWeight={"600"}
                   color={"rgba(18, 18, 18, 1)"}
                 >
-                  {heroText[0]}{" "}
+                  {heroText[0]}
                   <span style={{ color: "rgba(16, 61, 150, 1)" }}>Crypto</span>
                   {heroText[1]}
                 </Text>
@@ -335,12 +343,17 @@ const Home = () => {
                 </Text>
               </VStack>
               <Button
+                borderRadius={"none"}
                 background={
-                  " linear-gradient(106.07deg, #103D96 27.69%, #306FE9 102.01%)"
+                  " linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)"
                 }
+                _hover={{
+                  background:
+                    "linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)",
+                }}
+                variant={"solid"}
                 width={"200px"}
                 fontSize={"1rem"}
-                borderRadius={"none"}
                 cursor={"pointer"}
                 padding={"30px 16px"}
                 onClick={() => {
@@ -775,8 +788,15 @@ const Home = () => {
                 </VStack>
               </HStack>
               <Button
-                bg={" linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)"}
                 borderRadius={"none"}
+                background={
+                  " linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)"
+                }
+                _hover={{
+                  background:
+                    "linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)",
+                }}
+                variant={"solid"}
                 fontSize={"14px"}
                 fontWeight={"700"}
               >
@@ -993,7 +1013,15 @@ const Home = () => {
               </Text>
             </VStack>
             <Button
-              _hover={{ color: "#fff", background: "brand.700" }}
+              borderRadius={"none"}
+              background={
+                " linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)"
+              }
+              _hover={{
+                background:
+                  "linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)",
+              }}
+              variant={"solid"}
               onClick={() => navigate("/register")}
               padding={"30px 16px"}
             >

@@ -307,7 +307,20 @@ const CableForm = (props) => {
             </Select>
             <Text mt={"10px"}>Balance: {walletBalance}</Text>
           </FormControl>
-          <Button isLoading={isLoading} type="submit" width={"full"}>
+          <Button
+            isLoading={isLoading}
+            type="submit"
+            width={"full"}
+            borderRadius={"none"}
+            background={
+              " linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)"
+            }
+            _hover={{
+              background:
+                "linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)",
+            }}
+            variant={"solid"}
+          >
             Pay
           </Button>
         </VStack>
