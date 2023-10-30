@@ -30,7 +30,7 @@ import { MdRedeem } from "react-icons/md";
 import DashboardLayout from "../../../Components/DashboardLayout";
 
 function Create() {
-  const [wallets, setWallets] = useState([]);
+  const { userWallets } = useWallets();
   const navigate = useNavigate();
   const {
     register,
@@ -39,7 +39,6 @@ function Create() {
     getValues,
   } = useForm();
   const toast = useToast();
-  const [walletIndex, setWalletIndex] = useState(0);
   const [confetti, setConfitti] = useState(false);
   const [windowSize, setWindowSize] = useState({
     width: undefined,
@@ -62,26 +61,26 @@ function Create() {
   const [totalAmount, setTotalAmount] = useState(0);
   const [rate, setRate] = useState(0);
   const [ribbonAmount, setRibbonAmount] = useState(0);
-  const fetchWallets = async () => {
-    await axios
-      .get(`${process.env.REACT_APP_BASE_URL}wallets/`, {
-        headers: {
-          Authorization: `Token ${localStorage.getItem("token")}`,
-        },
-      })
-      .then(function (response) {
-        if (response.data) {
-          console.log(response.data);
-          const entries = Object.entries(response.data);
-          console.log(entries);
-          setIsLoading(false);
+  // const fetchWallets = async () => {
+  //   await axios
+  //     .get(`${process.env.REACT_APP_BASE_URL}wallets/`, {
+  //       headers: {
+  //         Authorization: `Token ${localStorage.getItem("token")}`,
+  //       },
+  //     })
+  //     .then(function (response) {
+  //       if (response.data) {
+  //         console.log(response.data);
+  //         const entries = Object.entries(response.data);
+  //         console.log(entries);
+  //         setIsLoading(false);
 
-          setWallets(entries);
-          localStorage.setItem("wallets", JSON.stringify(entries));
-        }
-      })
-      .catch(function (error) {});
-  };
+  //         setWallets(entries);
+  //         localStorage.setItem("wallets", JSON.stringify(entries));
+  //       }
+  //     })
+  //     .catch(function (error) {});
+  // };
   const fetchRate = async (network) => {
     if (network !== "naira") {
       await axios
@@ -105,12 +104,11 @@ function Create() {
     const network = `${e.target.value}`;
     console.log(network);
 
-    for (let index = 0; index < wallets.length; index++) {
-      if (wallets[index][0] === network) {
-        const btcBalance =
-          wallets[index][1].info.incoming - wallets[index][1].info.outgoing;
-        setBalance(isNaN(btcBalance) ? 0 : btcBalance);
-        if (network === "Bitcoin") {
+    for (let index = 0; index < userWallets.length; index++) {
+      if (userWallets[index][0] === network) {
+        setBalance(userWallets[index][1].balance.availableBalance);
+
+        if (network === "btc") {
           await axios
             .post(
               "https://api.tatum.io/v3/tatum/rate/",
@@ -127,24 +125,19 @@ function Create() {
             .catch((errors) => {
               toast({ title: "Error Fetching Fees", status: "warning" });
             });
-        } else if (network === "Celo") {
-          setBalance(wallets[index][1].info.celo);
+        } else if (network === "celo") {
           setFee(1);
           setAmountMin(10);
           setTotalAmount(parseFloat(getValues("amount")) + fee);
-        } else if (network === "Ethereum") {
+        } else if (network === "ethereum") {
           setAmountMin(0.003);
-          setBalance(wallets[index][1].info.balance);
           setFee(0.0004);
           setTotalAmount(parseFloat(getValues("amount")) + fee);
-        } else if (network === "Tron") {
-          const tronBalance = wallets[index][1].info.balance / 1000000;
+        } else if (network === "tron") {
           setFee(1);
-          setBalance(isNaN(tronBalance) ? 0 : tronBalance);
           setAmountMin(5);
           setTotalAmount(parseFloat(getValues("amount")) + fee);
-        } else if (network === "Bnb") {
-          setBalance(0);
+        } else if (network === "bnb") {
           setFee(0.0005);
           setAmountMin(0.02);
           setTotalAmount(parseFloat(getValues("amount")) + fee);
@@ -165,7 +158,8 @@ function Create() {
         setTemplatesLoading(false);
         setTemplates(response.data.results);
         setTemplate({
-          link: response.data.results[0].link,
+          link: "/assets/images/giftcardtest.jpg",
+          // link: response.data.results[0].link,
           id: response.data.results[0].id,
         });
       })
@@ -181,14 +175,13 @@ function Create() {
 
     setIsLoading(true);
     await axios
-      .post(`${process.env.REACT_APP_BASE_URL}gift_cards/create/`, data, {
+      .post(`${process.env.REACT_APP_BASE_URL}gift_cards/v2/create/`, data, {
         headers: {
           Authorization: `Token ${localStorage.getItem("token")}`,
         },
       })
       .then(function (response) {
         setIsLoading(false);
-        navigate("/giftcard/cards");
         toast({
           title: "Giftcard created, check `My cards to view giftcard`",
           position: "top",
@@ -197,6 +190,7 @@ function Create() {
         setConfitti(true);
         setTimeout(() => {
           setConfitti(false);
+          navigate("/giftcard/cards");
         }, 5000);
       })
       .catch(function (error) {
@@ -216,8 +210,10 @@ function Create() {
   useEffect(() => {
     window.onresize = () => handleWindowResize();
     fetchCardTemplates();
-    fetchWallets();
   }, []);
+  useEffect(() => {
+    setTotalAmount(parseFloat(getValues("amount")) + fee);
+  }, [fee, totalAmount, getValues]);
   return (
     <DashboardLayout>
       {confetti && (
@@ -309,7 +305,7 @@ function Create() {
                 src={`${template.link}`}
                 width={["350px", "350px", "300px"]}
                 height={"338px"}
-                objectFit={"cover"}
+                // objectFit={"cover"}
                 position={"absolute"}
                 left={["6%", "6%", "10%"]}
                 top={"10%"}
@@ -340,7 +336,7 @@ function Create() {
                 <path
                   d="M202.333 5.5C202.061 5.77935 201.771 6.07886 201.467 6.3974C199.376 8.58948 196.591 11.6917 193.822 15.3288C191.056 18.9615 188.283 23.1581 186.236 27.5385C184.195 31.9074 182.832 36.5539 183.001 41.0562C183.16 45.2861 184.678 49.598 186.777 53.6283C188.882 57.6698 191.616 61.5149 194.306 64.8318C196.998 68.1525 199.669 70.9707 201.665 72.9581C201.854 73.1462 202.037 73.3269 202.213 73.5H15.4195C15.6124 73.2821 15.8146 73.0517 16.0253 72.8095C17.7878 70.783 20.1453 67.9187 22.5226 64.5684C27.2223 57.9452 32.2147 49.1299 32.4991 41.0528C32.8029 32.422 27.7978 22.8223 22.9618 15.5796C20.5148 11.9149 18.0528 8.76943 16.2035 6.54063C15.8941 6.16772 15.6016 5.82023 15.329 5.5H202.333Z"
                   stroke="white"
-                  stroke-width="3"
+                  strokeWidth="3"
                 />
               </g>
               <defs>
@@ -351,9 +347,9 @@ function Create() {
                   width="218"
                   height="95"
                   filterUnits="userSpaceOnUse"
-                  color-interpolation-filters="sRGB"
+                  colorInterpolationFilters="sRGB"
                 >
-                  <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                  <feFlood floodOpacity="0" result="BackgroundImageFix" />
                   <feColorMatrix
                     in="SourceAlpha"
                     type="matrix"
@@ -454,7 +450,10 @@ function Create() {
                 background={
                   " linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)"
                 }
-                onClick={() => {}}
+                _hover={{
+                  background:
+                    "linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)",
+                }}
                 variant={"solid"}
                 size={"lg"}
               >
@@ -496,9 +495,9 @@ function Create() {
                 {templatesLoading ? (
                   <Spinner />
                 ) : templates.length > 0 ? (
-                  templates.map((image) => {
+                  templates.map((image, index) => {
                     return (
-                      <Box>
+                      <Box key={index}>
                         <HStack
                           width={"100px"}
                           height={"70px "}
@@ -539,10 +538,10 @@ function Create() {
                   {...register("currency", { onChange: handleCurrencyChange })}
                 >
                   <option>Select Coin</option>;
-                  {wallets.map((wallet, index) => {
+                  {userWallets.map((wallet, index) => {
                     return (
                       <option value={wallet[0]} key={index}>
-                        {wallet[0]}
+                        <Text textTransform={"capitalize"}>{wallet[0]}</Text>
                       </option>
                     );
                   })}
@@ -568,7 +567,7 @@ function Create() {
                   <Input
                     required
                     name="amount"
-                    type={"number"}
+                    type={"text"}
                     {...register("amount", {
                       onChange: (e) => {
                         setTotalAmount(parseFloat(e.target.value) + fee);

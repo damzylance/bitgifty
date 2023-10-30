@@ -14,13 +14,14 @@ import { ProviderCard } from "./Airtime";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { useForm } from "react-hook-form";
 import axios from "axios";
+import useWallets from "../../../Hooks/useWallets";
 
 const Cable = (props) => {
   const [page, setPage] = useState("list");
   const [merchants, setMerchants] = useState([
-    { name: "DSTV", logo: "/assets/images/dstv.png", id: 2 },
-    { name: "GoTV", logo: "/assets/images/gotv.png", id: 1 },
-    { name: "Startime", logo: "/assets/images/startimes.png", id: 3 },
+    { name: "DSTV", logo: "/assets/images/dstv.png", id: "BIL119" },
+    { name: "GOTV", logo: "/assets/images/gotv.png", id: "BIL120" },
+    { name: "STARTIMES", logo: "/assets/images/startimes.png", id: "BIL123" },
   ]);
 
   const [merchantName, setMerchantName] = useState(null);
@@ -65,6 +66,7 @@ const Cable = (props) => {
   );
 };
 const CableForm = (props) => {
+  const { userWallets, walletsLoading } = useWallets();
   const toast = useToast();
   const {
     register,
@@ -72,7 +74,6 @@ const CableForm = (props) => {
     formState: { errors },
     getValues,
   } = useForm();
-  const [wallets, setWallets] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [plans, setPlans] = useState([]);
   const [tokenAmount, setTokenAmount] = useState(0);
@@ -89,16 +90,12 @@ const CableForm = (props) => {
   const handleCurrencyChange = async (e) => {
     const network = e.target.value;
     setCurrency(e.target.value);
-    for (let index = 0; index < wallets.length; index++) {
-      if (wallets[index][0] === network) {
-        if (wallets[index][0] === "Celo") {
-          setWalletBalance(wallets[index][1].info.celo);
-        } else if (wallets[index][0] === network) {
-          setWalletBalance(wallets[index][1].info.balance / 1000000);
-        }
+    for (let index = 0; index < userWallets.length; index++) {
+      if (userWallets[index][0] === network) {
+        setWalletBalance(userWallets[index][1].balance.availableBalance);
       }
     }
-    const rate = await fetchRate(e.target.value.toLowerCase());
+    const rate = await fetchRate(e.target.value);
     // alert(currency);
 
     setTokenAmount(rate * nairaAmount);
@@ -119,24 +116,7 @@ const CableForm = (props) => {
       })
       .catch((error) => {});
   };
-  const fetchWallets = async () => {
-    await axios
-      .get(`${process.env.REACT_APP_BASE_URL}wallets/`, {
-        headers: {
-          Authorization: `Token ${localStorage.getItem("token")}`,
-        },
-      })
-      .then(function (response) {
-        if (response.data) {
-          const entries = Object.entries(response.data);
-          setIsLoading(false);
 
-          setWallets(entries);
-          localStorage.setItem("wallets", JSON.stringify(entries));
-        }
-      })
-      .catch(function (error) {});
-  };
   const fetchRate = async (currency) => {
     let rate;
     setIsLoading(true);
@@ -154,57 +134,70 @@ const CableForm = (props) => {
     return rate;
   };
   const buyCable = async (data) => {
-    data.cable = props.cable;
-    data.cable_plan = parseInt(data.plan.split(",")[0]);
-    // data.token_amount = data.data.split(",")[1];
+    data.country = "NG";
+    data.bill_type = data.plan.split(",")[0];
+    data.amount = data.plan.split(",")[1];
+    delete data.plan;
+
+    console.log(data);
+
+    //
     if (tokenAmount >= walletBalance) {
       toast({ title: "insufficient balance", status: "warning" });
     } else {
       setIsLoading(true);
 
-      axios
-        .get(
-          `https://arktivesub.com/api/cable/cable-validation?iuc=${data.iuc}&cable=${props.cable}`
+      await axios
+        .post(
+          `${process.env.REACT_APP_BASE_URL}utilities/v2/initialize-payment/`,
+          data,
+          {
+            headers: {
+              Authorization: `Token ${localStorage.getItem("token")}`,
+            },
+          }
         )
-        .then(async (response) => {
+        .then((response) => {
+          console.log(response);
           setIsLoading(false);
-
-          await axios
-            .post(
-              `${process.env.REACT_APP_BASE_URL}utilities/buy-data/`,
-              data,
-              {
-                headers: {
-                  Authorization: `Token ${localStorage.getItem("token")}`,
-                },
-              }
-            )
-            .then((response) => {
-              setIsLoading(false);
-              toast({
-                title: "Data purchase successful",
-                status: "success",
-              });
-              props.onClose();
-            })
-            .catch((error) => {
-              setIsLoading(false);
-              toast({
-                title: error.response.data.error,
-                status: "warning",
-              });
-            });
+          toast({ title: "Airtime purchase successful", status: "success" });
+          props.onClose();
         })
         .catch((error) => {
           setIsLoading(false);
-          toast("iuc invalid");
           console.log(error);
+          toast({
+            title: error.response.data.error,
+            status: "warning",
+          });
         });
     }
   };
   useEffect(() => {
-    fetchPlans();
-    fetchWallets();
+    axios
+      .get(
+        `${process.env.REACT_APP_BASE_URL}utilities/v2/get-bill-category?bill-type=cable`,
+        {
+          headers: {
+            Authorization: `Token ${localStorage.getItem("token")}`,
+          },
+        }
+      )
+      .then((response) => {
+        console.log(response.data);
+        setIsLoading(false);
+
+        setPlans(
+          response.data.data.filter((plan) => {
+            return plan.biller_code === props.cable;
+          })
+        );
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    // fetchPlans();
   }, []);
   return (
     <VStack my={"40px"} gap={"20px"} width={"full"}>
@@ -237,8 +230,8 @@ const CableForm = (props) => {
               <option>Choose Plan</option>;
               {plans.map((plan, index) => {
                 return (
-                  <option value={[plan.plan_id, plan.amount]} key={index}>
-                    {plan.plan_name} {plan.validity} (N{plan.amount})
+                  <option value={[plan.biller_name, plan.amount]} key={index}>
+                    {plan.biller_name} {plan.validity} (N{plan.amount})
                   </option>
                 );
               })}
@@ -266,10 +259,9 @@ const CableForm = (props) => {
               fontSize={"16px"}
               border={"1px solid #f9f9f9"}
               outline={"none"}
-              type="tel"
               required
-              name="phone"
-              {...register("iuc")}
+              name="customer"
+              {...register("customer")}
             />
           </FormControl>
           <FormControl>
@@ -278,13 +270,13 @@ const CableForm = (props) => {
             </FormLabel>
 
             <Select
-              {...register("wallet_from", { onChange: handleCurrencyChange })}
+              {...register("chain", { onChange: handleCurrencyChange })}
               required
             >
               <option>Select Coin</option>;
-              {wallets
+              {userWallets
                 .filter((wallet, index) => {
-                  return wallet[0] === "Celo" || wallet[0] === "Tron";
+                  return wallet[0] === "celo" || wallet[0] === "tron";
                 })
                 .map((wallet, index) => {
                   return (

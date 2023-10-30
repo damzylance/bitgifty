@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 const useWallets = () => {
   const [walletsLoading, setWalletsLoading] = useState(true);
@@ -7,7 +7,7 @@ const useWallets = () => {
   const fetchVirtualWallets = async () => {
     setWalletsLoading(true);
     await axios
-      .get(`${process.env.REACT_APP_BASE_URL}wallets/`, {
+      .get(`${process.env.REACT_APP_BASE_URL}wallets/virtual-accounts`, {
         headers: {
           Authorization: `Token ${localStorage.getItem("token")}`,
         },

@@ -42,7 +42,7 @@ function Reedeem() {
     console.log(data);
     setIsLoading(true);
     await axios
-      .post(`${process.env.REACT_APP_BASE_URL}gift_cards/redeem/`, data, {
+      .post(`${process.env.REACT_APP_BASE_URL}gift_cards/v2/redeem/`, data, {
         headers: {
           Authorization: `Token ${localStorage.getItem("token")}`,
         },
@@ -75,7 +75,7 @@ function Reedeem() {
   };
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_BASE_URL}gift_cards/redeem`, {
+      .get(`${process.env.REACT_APP_BASE_URL}gift_cards/v2/redeem`, {
         headers: {
           Authorization: `Token ${localStorage.getItem("token")}`,
         },

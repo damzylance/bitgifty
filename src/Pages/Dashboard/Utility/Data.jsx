@@ -15,13 +15,14 @@ import {
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { ArrowBackIcon } from "@chakra-ui/icons";
+import useWallets from "../../../Hooks/useWallets";
 
 const Data = (props) => {
   const telcos = [
-    { name: "mtn", logo: "/assets/images/mtn_logo.png", id: 1 },
-    { name: "glo", logo: "/assets/images/glo_logo.webp", id: 2 },
-    { name: "airtel", logo: "/assets/images/airtel_logo.png", id: 3 },
-    { name: "9mobile", logo: "/assets/images/9mobile_logo.jpeg", id: 4 },
+    { name: "mtn", logo: "/assets/images/mtn_logo.png", id: "BIL104" },
+    { name: "glo", logo: "/assets/images/glo_logo.webp", id: "BIL105" },
+    { name: "airtel", logo: "/assets/images/airtel_logo.png", id: "BIL106" },
+    { name: "9mobile", logo: "/assets/images/9mobile_logo.jpeg", id: "BIL107" },
   ];
 
   const [page, setPage] = useState("list");
@@ -39,7 +40,7 @@ const Data = (props) => {
                     <ProviderCard
                       action={() => {
                         setPage("buy");
-                        setTelco(provider.name);
+                        setTelco(provider.id);
                       }}
                       name={provider.name}
                       logo={provider.logo}
@@ -68,6 +69,7 @@ const DataForm = (props) => {
     formState: { errors },
     getValues,
   } = useForm();
+  const { userWallets } = useWallets();
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [walletBalance, setWalletBalance] = useState(null);
@@ -78,24 +80,30 @@ const DataForm = (props) => {
   const [currency, setCurrency] = useState("");
   const [plans, setPlans] = useState([]);
   const [networkId, setNetworkId] = useState([]);
-  const [wallets, setWallets] = useState([]);
   const buyData = async (data) => {
-    data.network = props.telco;
-    data.data_plan = parseInt(data.data.split(",")[0]);
+    data.amount = data.type.split(",")[1];
+    data.type = data.type.split(",")[0];
+    data.country = "NG";
+    console.log(data);
+
     // data.token_amount = data.data.split(",")[1];
-    delete data.network;
-    delete data.data;
+    // delete data.network;
+    // delete data.data;
 
     if (tokenAmount >= walletBalance) {
       toast({ title: "insufficient balance", status: "warning" });
     } else {
       setIsLoading(true);
       await axios
-        .post(`${process.env.REACT_APP_BASE_URL}utilities/buy-data/`, data, {
-          headers: {
-            Authorization: `Token ${localStorage.getItem("token")}`,
-          },
-        })
+        .post(
+          `${process.env.REACT_APP_BASE_URL}utilities/v2/initialize-payment/`,
+          data,
+          {
+            headers: {
+              Authorization: `Token ${localStorage.getItem("token")}`,
+            },
+          }
+        )
         .then((response) => {
           setIsLoading(false);
           toast({
@@ -114,38 +122,30 @@ const DataForm = (props) => {
     }
   };
   const fetchDataPlans = async () => {
+    console.log(props.telco);
     await axios
       .get(
-        `${
-          process.env.REACT_APP_BASE_URL
-        }utilities/data-plan/?network__name=${props.telco.toUpperCase()}`,
+        `${process.env.REACT_APP_BASE_URL}utilities/v2/get-bill-category?bill-type=data_bundle`,
         {
-          headers: { Authorization: `Token ${localStorage.getItem("token")}` },
+          headers: {
+            Authorization: `Token ${localStorage.getItem("token")}`,
+          },
         }
       )
       .then((response) => {
-        setPlans(response.data.results);
+        console.log(response.data.data);
+        setPlans(
+          response.data.data.filter((plan) => {
+            return plan.biller_code === props.telco;
+          })
+        );
+        setIsLoading(false);
       })
-      .catch((error) => {});
+      .catch((error) => {
+        console.log(error);
+      });
   };
-  const fetchWallets = async () => {
-    await axios
-      .get(`${process.env.REACT_APP_BASE_URL}wallets/`, {
-        headers: {
-          Authorization: `Token ${localStorage.getItem("token")}`,
-        },
-      })
-      .then(function (response) {
-        if (response.data) {
-          const entries = Object.entries(response.data);
-          setIsLoading(false);
 
-          setWallets(entries);
-          localStorage.setItem("wallets", JSON.stringify(entries));
-        }
-      })
-      .catch(function (error) {});
-  };
   const fetchRate = async (currency) => {
     let rate;
     setIsLoading(true);
@@ -165,21 +165,16 @@ const DataForm = (props) => {
   const handleCurrencyChange = async (e) => {
     const network = e.target.value;
     setCurrency(e.target.value);
-    for (let index = 0; index < wallets.length; index++) {
-      if (wallets[index][0] === network) {
-        if (wallets[index][0] === "Celo") {
-          setWalletBalance(wallets[index][1].info.celo);
-        } else if (wallets[index][0] === network) {
-          setWalletBalance(wallets[index][1].info.balance / 1000000);
-        }
+    for (let index = 0; index < userWallets.length; index++) {
+      if (userWallets[index][0] === network) {
+        setWalletBalance(userWallets[index][1].balance.availableBalance);
       }
     }
-    const rate = await fetchRate(e.target.value.toLowerCase());
+    const rate = await fetchRate(e.target.value);
     // alert(currency);
 
     setTokenAmount(rate * nairaAmount);
   };
-
   const handlePlanChange = (e) => {
     const nairaAmount = parseInt(e.target.value.split(",")[1]);
     setNairaAmount(parseInt(e.target.value.split(",")[1]));
@@ -187,7 +182,6 @@ const DataForm = (props) => {
   };
 
   useEffect(() => {
-    fetchWallets();
     fetchDataPlans();
   }, []);
   return (
@@ -219,14 +213,14 @@ const DataForm = (props) => {
 
             <Select
               fontSize={"16px"}
-              {...register("data", { onChange: handlePlanChange })}
+              {...register("type", { onChange: handlePlanChange })}
               required
             >
               <option>Choose Plan</option>;
               {plans.map((plan, index) => {
                 return (
-                  <option value={[plan.plan_id, plan.amount]} key={index}>
-                    {plan.plan_name} {plan.validity} (N{plan.amount})
+                  <option value={[plan.biller_name, plan.amount]} key={index}>
+                    {plan.biller_name} (N{plan.amount})
                   </option>
                 );
               })}
@@ -257,10 +251,10 @@ const DataForm = (props) => {
               outline={"none"}
               type="tel"
               required
-              name="phone"
+              name="customer"
               minLength={11}
               maxLength={11}
-              {...register("phone")}
+              {...register("customer")}
             />
             <FormErrorMessage></FormErrorMessage>
           </FormControl>
@@ -288,13 +282,13 @@ const DataForm = (props) => {
             </FormLabel>
 
             <Select
-              {...register("wallet_from", { onChange: handleCurrencyChange })}
+              {...register("chain", { onChange: handleCurrencyChange })}
               required
             >
               <option>Select Coin</option>;
-              {wallets
+              {userWallets
                 .filter((wallet, index) => {
-                  return wallet[0] === "Celo" || wallet[0] === "Tron";
+                  return wallet[0] === "celo" || wallet[0] === "tron";
                 })
                 .map((wallet, index) => {
                   return (

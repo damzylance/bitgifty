@@ -18,7 +18,15 @@ import {
   HStack,
   Image,
   Select,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
 } from "@chakra-ui/react";
+import Countdown from "react-countdown";
 import { NumericFormat } from "react-number-format";
 
 import axios from "axios";
@@ -34,6 +42,7 @@ import { AiFillPlusSquare } from "react-icons/ai";
 import { PayoutModal } from "../../UserSetting/Payout";
 import useWallets from "../../../Hooks/useWallets";
 import { RxEyeClosed } from "react-icons/rx";
+import { AddIcon } from "@chakra-ui/icons";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -46,116 +55,206 @@ const chartOptions = {
 };
 
 function Wallet() {
+  const { userWallets, walletsLoading } = useWallets();
   const options = {
     headers: { "x-api-key": process.env.REACT_APP_RATE_KEY },
   };
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   const [wallets, setWallets] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(walletsLoading);
   const [fiatWallets, setFiatWallets] = useState([]);
   const [totalInDollars, setTotalInDollars] = useState(0);
 
   const fetchWallets = async () => {
-    await axios
-      .get(`${process.env.REACT_APP_BASE_URL}wallets/`, {
-        headers: {
-          Authorization: `Token ${localStorage.getItem("token")}`,
-        },
-      })
-      .then(async function (response) {
-        const entries = Object.entries(response.data);
-        if (response.data) {
-          setIsLoading(false);
-          setWallets(entries);
-          setFiatWallets(
-            entries.filter((element) => {
-              return element[1].type === "fiat";
-            })
+    console.log(wallets);
+    if (userWallets) {
+      setIsLoading(false);
+      setWallets(userWallets);
+      setFiatWallets(
+        userWallets.filter((element) => {
+          return element[1].type === "fiat";
+        })
+      );
+      const labels = [];
+      const balances = [];
+      let sum = 0;
+      for (let index = 0; index < userWallets.length; index++) {
+        const coinWallet = userWallets[index];
+        const balance = coinWallet[1].balance.availableBalance;
+        if (coinWallet[0] === "btc") {
+          const btcInDollar = await BalanceToDollar(
+            `BTC`,
+            isNaN(balance) ? 0 : balance
           );
-          const labels = [];
-          const balances = [];
-          let sum = 0;
-          for (let index = 0; index < entries.length; index++) {
-            const coinWallet = entries[index];
-            if (coinWallet[0] === "Bitcoin") {
-              const balance =
-                coinWallet[1].info.incoming - coinWallet[1].info.outgoing;
-              const btcInDollar = await BalanceToDollar(
-                `BTC`,
-                isNaN(balance) ? 0 : balance
-              );
-              sum += btcInDollar;
-              balances.push(btcInDollar);
-              labels.push("BTC");
-            } else if (coinWallet[0] === "Bnb") {
-              sum += 0;
-              balances.push(0);
-              labels.push("BNB");
-            } else if (coinWallet[0] === "Celo") {
-              const balance = coinWallet[1].info.celo;
-
-              const celoInDollar = await BalanceToDollar(
-                `CELO`,
-                isNaN(balance) ? 0 : balance
-              );
-              sum += celoInDollar;
-              balances.push(celoInDollar);
-              labels.push("CELO");
-            } else if (coinWallet[0] === "Ethereum") {
-              const balance = coinWallet[1].info.balance;
-              const ethInDollar = await BalanceToDollar(
-                `ETH`,
-                isNaN(balance) ? 0 : balance
-              );
-              sum += ethInDollar;
-              balances.push(ethInDollar);
-              labels.push("ETH");
-            } else if (coinWallet[0] === "Tron") {
-              const balance = coinWallet[1].info.balance / 1000000;
-              const trxInDollar = await BalanceToDollar(
-                `TRON`,
-                isNaN(balance) ? 0 : balance
-              );
-              sum += trxInDollar;
-              balances.push(trxInDollar);
-              labels.push("TRON");
-            } else if (coinWallet[0] === "naira") {
-              const balance = Math.round(coinWallet[1].balance) / 850;
-              sum += isNaN(balance) ? 0 : balance;
-              balances.push(balance);
-              labels.push("NGN");
-            }
-
-            setTotalInDollars(sum.toFixed(2));
-            setChartData({
-              labels: labels,
-              datasets: [
-                {
-                  label: "Balance",
-                  data: balances,
-                  backgroundColor: [
-                    "#492b7c",
-                    "#ff8600",
-                    "#fff",
-                    "#f8a6e4",
-                    "#6A6BD5",
-                    "#624CAB",
-                  ],
-                  borderColor: [
-                    "rgba(255, 99, 132, 1)",
-                    "rgba(54, 162, 235, 1)",
-                    "rgba(255, 206, 86, 1)",
-                    "rgba(75, 192, 192, 1)",
-                    "rgba(153, 102, 255, 1)",
-                    "rgba(255, 159, 64, 1)",
-                  ],
-                  borderWidth: 1,
-                },
-              ],
-            });
-          }
+          console.log("btc", btcInDollar);
+          sum += btcInDollar;
+          balances.push(btcInDollar);
+          labels.push("BTC");
+        } else if (coinWallet[0] === "celo") {
+          const celoInDollar = await BalanceToDollar(
+            `CELO`,
+            isNaN(balance) ? 0 : balance
+          );
+          sum += celoInDollar;
+          balances.push(celoInDollar);
+          labels.push("CELO");
+        } else if (coinWallet[0] === "tron") {
+          const tronInDollar = await BalanceToDollar(
+            `TRON`,
+            isNaN(balance) ? 0 : balance
+          );
+          sum += tronInDollar;
+          balances.push(tronInDollar);
+          labels.push("BTC");
+        } else if (coinWallet[0] === "ethereum") {
+          const ethInDollar = await BalanceToDollar(
+            `ETH`,
+            isNaN(balance) ? 0 : balance
+          );
+          sum += ethInDollar;
+          balances.push(ethInDollar);
+          labels.push("ETH");
+        } else if (coinWallet[0] === "naira") {
+          const balance = Math.round(coinWallet[1].balance) / 850;
+          sum += isNaN(balance) ? 0 : balance;
+          balances.push(balance);
+          labels.push("NGN");
         }
-      })
-      .catch(function (error) {});
+
+        setTotalInDollars(sum.toFixed(2));
+        setChartData({
+          labels: labels,
+          datasets: [
+            {
+              label: "Balance",
+              data: balances,
+              backgroundColor: [
+                "#492b7c",
+                "#ff8600",
+                "#fff",
+                "#f8a6e4",
+                "#6A6BD5",
+                "#624CAB",
+              ],
+              borderColor: [
+                "rgba(255, 99, 132, 1)",
+                "rgba(54, 162, 235, 1)",
+                "rgba(255, 206, 86, 1)",
+                "rgba(75, 192, 192, 1)",
+                "rgba(153, 102, 255, 1)",
+                "rgba(255, 159, 64, 1)",
+              ],
+              borderWidth: 1,
+            },
+          ],
+        });
+        console.log(balances);
+      }
+    } else {
+      alert("no wallets");
+    }
+    // await axios
+    //   .get(`${process.env.REACT_APP_BASE_URL}wallets/`, {
+    //     headers: {
+    //       Authorization: `Token ${localStorage.getItem("token")}`,
+    //     },
+    //   })
+    //   .then(async function (response) {
+    //     const entries = Object.entries(response.data);
+    //     if (response.data) {
+    //       setIsLoading(false);
+    //       setWallets(entries);
+    //       setFiatWallets(
+    //         entries.filter((element) => {
+    //           return element[1].type === "fiat";
+    //         })
+    //       );
+    //       const labels = [];
+    //       const balances = [];
+    //       let sum = 0;
+    //       for (let index = 0; index < entries.length; index++) {
+    //         const coinWallet = entries[index];
+    //         if (coinWallet[0] === "Bitcoin") {
+    //           const balance =
+    //             coinWallet[1].info.incoming - coinWallet[1].info.outgoing;
+    //           const btcInDollar = await BalanceToDollar(
+    //             `BTC`,
+    //             isNaN(balance) ? 0 : balance
+    //           );
+    //           sum += btcInDollar;
+    //           balances.push(btcInDollar);
+    //           labels.push("BTC");
+    //         } else if (coinWallet[0] === "Bnb") {
+    //           sum += 0;
+    //           balances.push(0);
+    //           labels.push("BNB");
+    //         } else if (coinWallet[0] === "Celo") {
+    //           const balance = coinWallet[1].info.celo;
+
+    //           const celoInDollar = await BalanceToDollar(
+    //             `CELO`,
+    //             isNaN(balance) ? 0 : balance
+    //           );
+    //           sum += celoInDollar;
+    //           balances.push(celoInDollar);
+    //           labels.push("CELO");
+    //         } else if (coinWallet[0] === "Ethereum") {
+    //           const balance = coinWallet[1].info.balance;
+    //           const ethInDollar = await BalanceToDollar(
+    //             `ETH`,
+    //             isNaN(balance) ? 0 : balance
+    //           );
+    //           sum += ethInDollar;
+    //           balances.push(ethInDollar);
+    //           labels.push("ETH");
+    //         } else if (coinWallet[0] === "Tron") {
+    //           const balance = coinWallet[1].info.balance / 1000000;
+    //           const trxInDollar = await BalanceToDollar(
+    //             `TRON`,
+    //             isNaN(balance) ? 0 : balance
+    //           );
+    //           sum += trxInDollar;
+    //           balances.push(trxInDollar);
+    //           labels.push("TRON");
+    //         } else if (coinWallet[0] === "naira") {
+    //           const balance = Math.round(coinWallet[1].balance) / 850;
+    //           sum += isNaN(balance) ? 0 : balance;
+    //           balances.push(balance);
+    //           labels.push("NGN");
+    //         }
+
+    //         setTotalInDollars(sum.toFixed(2));
+    //         setChartData({
+    //           labels: labels,
+    //           datasets: [
+    //             {
+    //               label: "Balance",
+    //               data: balances,
+    //               backgroundColor: [
+    //                 "#492b7c",
+    //                 "#ff8600",
+    //                 "#fff",
+    //                 "#f8a6e4",
+    //                 "#6A6BD5",
+    //                 "#624CAB",
+    //               ],
+    //               borderColor: [
+    //                 "rgba(255, 99, 132, 1)",
+    //                 "rgba(54, 162, 235, 1)",
+    //                 "rgba(255, 206, 86, 1)",
+    //                 "rgba(75, 192, 192, 1)",
+    //                 "rgba(153, 102, 255, 1)",
+    //                 "rgba(255, 159, 64, 1)",
+    //               ],
+    //               borderWidth: 1,
+    //             },
+    //           ],
+    //         });
+    //       }
+    //     }
+    //   })
+    //   .catch(function (error) {});
   };
   const [chartData, setChartData] = useState({
     labels: [],
@@ -312,17 +411,19 @@ function Wallet() {
                 Fiat
               </Text>
               <VStack width={"full"} gap={"2"} alignContent="flex-start">
-                {isLoading ? (
+                {walletsLoading ? (
                   <Spinner />
                 ) : (
-                  wallets
+                  userWallets
                     .filter((wallet) => {
                       return wallet[1].type === "fiat";
                     })
                     .map((wallet, index) => {
                       // const { address, network } = wallet;
                       const coinWallet = wallet;
-                      const balance = Math.floor(coinWallet[1].balance);
+                      const balance = Math.floor(
+                        coinWallet[1].balance.availableBalance
+                      );
 
                       return (
                         <CoinRow
@@ -357,33 +458,17 @@ function Wallet() {
                 Coins
               </Text>
               <VStack width={"full"} gap={"2"} alignContent="flex-start">
-                {isLoading ? (
+                {walletsLoading ? (
                   <Spinner />
                 ) : (
-                  wallets
+                  userWallets
                     .filter((wallet) => {
                       return wallet[1].type !== "fiat";
                     })
                     .map((wallet, index) => {
                       // const { address, network } = wallet;
                       const coinWallet = wallet;
-                      let balance;
-                      if (coinWallet[0] === "Bitcoin") {
-                        balance =
-                          coinWallet[1].info.incoming -
-                          coinWallet[1].info.outgoing;
-                      } else if (coinWallet[0] === "Bnb") {
-                        balance = 0;
-                      } else if (coinWallet[0] === "Celo") {
-                        balance = coinWallet[1].info.celo;
-                      } else if (coinWallet[0] === "Ethereum") {
-                        balance = coinWallet[1].info.balance;
-                      } else if (coinWallet[0] === "Tron") {
-                        balance = coinWallet[1].info.balance / 1000000;
-                      } else if (coinWallet[0] === "naira") {
-                        balance = Math.round(coinWallet[1].balance);
-                      }
-
+                      const balance = coinWallet[1].balance.availableBalance;
                       return (
                         <CoinRow
                           key={index}
@@ -397,11 +482,25 @@ function Wallet() {
                       );
                     })
                 )}
+                <VStack
+                  bg={"brand.700"}
+                  color={"#fff"}
+                  width={"100px"}
+                  justifyContent={"center"}
+                  borderRadius={"full"}
+                  height={"100px"}
+                  alignItems={"center"}
+                  cursor={"pointer"}
+                  alignSelf={"flex-end"}
+                  onClick={() => onOpen()}
+                >
+                  <AddIcon />
+                  <Text fontSize={"xs"}>Add Currency</Text>
+                </VStack>
               </VStack>
             </VStack>
+            <AddWalletModal isOpen={isOpen} onClose={onClose} />
           </VStack>
-
-          {/* <WithdrawModal isOpen={isOpen} onClose={onClose} /> */}
         </VStack>
       </VStack>
     </DashboardLayout>
@@ -422,7 +521,7 @@ function CoinRow(props) {
       alignItems={"center"}
       flexDir={["column", "column", "row"]}
       background={"#fff"}
-      padding={"24px 30px"}
+      padding={["24px 10px", "24px 10px", "24px 10px", "24px 30px"]}
       boxShadow={"0px 1px 4px 0px rgba(0, 0, 0, 0.10)"}
     >
       <HStack width={"full"} justifyContent="space-between">
@@ -436,7 +535,7 @@ function CoinRow(props) {
         justifyContent={["space-between", "space-between", "flex-end"]}
       >
         <Button
-          size={["sm", "sm", "md"]}
+          size={["xs", "sm", "md"]}
           borderRadius={"none"}
           bg={"linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)"}
           onClick={() => {
@@ -452,7 +551,7 @@ function CoinRow(props) {
           Withdraw
         </Button>
         <Button
-          size={["sm", "sm", "md"]}
+          size={["xs", "sm", "md"]}
           borderRadius={"none"}
           onClick={() => {
             if (props.type !== "fiat") {
@@ -472,7 +571,7 @@ function CoinRow(props) {
           Deposit
         </Button>
         <Button
-          size={["sm", "sm", "md"]}
+          size={["xs", "sm", "md"]}
           borderRadius={"none"}
           onClick={() => {
             if (props.type !== "fiat") {
@@ -492,7 +591,7 @@ function CoinRow(props) {
           Swap
         </Button>
         <Button
-          size={["sm", "sm", "md"]}
+          size={["xs", "sm", "md"]}
           borderRadius={"none"}
           onClick={() => {
             navigate("/utilities");
@@ -509,7 +608,7 @@ function CoinRow(props) {
           Spend
         </Button>
         <Button
-          size={["sm", "sm", "md"]}
+          size={["xs", "sm", "md"]}
           borderRadius={"none"}
           onClick={() => {
             if (props.type === "fiat") {
@@ -535,19 +634,126 @@ function CoinRow(props) {
         address={props.address}
         network={props.network}
         qr={props.qr}
-        refresh={props.refresh}
         balance={props.amount}
         type={props.type}
       />
     </Flex>
   );
 }
+const AddWalletModal = (props) => {
+  const navigate = useNavigate();
+  const { register, handleSubmit } = useForm();
+  const toast = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [owner, setOwner] = useState("");
+  const createNewWallet = async (data) => {
+    data.manual = true;
+    data.owner = owner;
+    console.log(data);
+    setIsLoading(true);
+    await axios
+      .post(
+        `${process.env.REACT_APP_BASE_URL}wallets/virtual-account-create/`,
+        data,
+        {
+          headers: {
+            Authorization: `Token ${localStorage.getItem("token")}`,
+          },
+        }
+      )
+      .then(function (response) {
+        setIsLoading(false);
+        toast({
+          title: "Wallet creation successfull",
+          status: "success",
+        });
+        props.onClose();
+      })
+      .catch(function (error) {
+        console.log(error);
+        setIsLoading(false);
+        toast({
+          title: "An error occured",
+          status: "warning",
+        });
+      });
+  };
+  const fetchUser = async () => {
+    await axios
+      .get(`${process.env.REACT_APP_BASE_URL}auth/user/`, {
+        headers: {
+          Authorization: `Token ${localStorage.getItem("token")}`,
+        },
+      })
+      .then(function (response) {
+        console.log("response", response);
+        setOwner(response.data.pk);
+      })
+      .catch(function (error) {
+        console.log(error);
+        if (error?.response?.status === 500) {
+          toast({ title: "Server error", status: "error" });
+        } else if (error.response?.status === 403) {
+          toast({
+            title: "session expired. Please sign in again",
+            status: "warning",
+          });
+          navigate("/login");
+        } else if (error.response?.status === 401) {
+          toast({
+            title: "Unautorised. Please sign in again",
+            status: "warning",
+          });
+          navigate("/login");
+        } else {
+          toast({
+            title: "An error occured",
+            status: "warning",
+          });
+        }
+      });
+  };
+  useEffect(() => {
+    fetchUser();
+  }, []);
+  return (
+    <Modal isOpen={props.isOpen} onClose={props.onClose}>
+      <ModalOverlay />
+      <ModalContent py={"40px"} width={"full"}>
+        <ModalHeader textAlign={"center"}>Add New Wallet</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody width={"full"}>
+          <form onSubmit={handleSubmit(createNewWallet)} width="100%">
+            <VStack width={"full"} gap={"20px"}>
+              {" "}
+              <Select fontSize={"16px"} {...register("chain")} required>
+                <option>Select Wallet</option>;
+                <option value={"ceur"}>CEUR</option>
+                <option value={"tron"}>TRON</option>
+                <option value={"eth"}>ETH</option>
+                <option value={"usdt_tron"}>USDT</option>
+              </Select>
+              <Button isLoading={isLoading} type="submit" width={"full"}>
+                Create
+              </Button>
+            </VStack>
+          </form>
+        </ModalBody>
+      </ModalContent>
+    </Modal>
+  );
+};
 const WalletModal = (props) => {
   const btnRef = React.useRef();
   const {
     onOpen: bankModalOpen,
     onClose: bankModalClose,
     isOpen: bankModalisOpen,
+  } = useDisclosure();
+  const {
+    onOpen: withdrawalModalOpen,
+    onClose: withdrawalModalClose,
+    isOpen: withdrawalisOpen,
   } = useDisclosure();
   const { register, handleSubmit } = useForm();
   const [withdrawAmount, setWithdrawAmount] = useState("");
@@ -584,6 +790,9 @@ const WalletModal = (props) => {
   };
   const [exchangeRate, setExchangeRate] = useState();
   const fetchNairaRate = async (coin) => {
+    if (coin === "btc") {
+      coin = "bitcoin";
+    }
     let rate;
     setIsLoading(true);
     await axios
@@ -600,28 +809,31 @@ const WalletModal = (props) => {
     return rate;
   };
   const SwapToNaira = async (data) => {
+    console.log(withdrawAmount);
     data.swap_amount = floatAmount;
     data.swap_to = "naira";
     data.swap_from = props.network;
+    console.log(data);
     if (errors.length > 0) {
     } else {
       setIsLoading(true);
       await axios
-        .post(`${process.env.REACT_APP_BASE_URL}swap/`, data, {
+        .post(`${process.env.REACT_APP_BASE_URL}swap/v2`, data, {
           headers: {
             Authorization: `Token ${localStorage.getItem("token")}`,
           },
         })
         .then(function (response) {
+          console.log(response);
           setIsLoading(false);
           toast({
             title: "Swap Successful",
             status: "success",
           });
-          props.refresh();
           props.onClose();
         })
         .catch(function (error) {
+          console.log(error);
           setIsLoading(false);
           if (error.response.data.error.includes("Insufficient funds")) {
             toast({
@@ -640,40 +852,6 @@ const WalletModal = (props) => {
   const WithdrawFiat = async (data) => {
     data.amount = withdrawAmount;
     data.network = props.network;
-    if (errors.length > 0) {
-    } else {
-      setIsLoading(true);
-      await axios
-        .post(`${process.env.REACT_APP_BASE_URL}withdraw/`, data, {
-          headers: {
-            Authorization: `Token ${localStorage.getItem("token")}`,
-          },
-        })
-        .then(function (response) {
-          setIsLoading(false);
-          toast({
-            title: "Withdrawal Successful",
-            status: "success",
-          });
-          props.refresh();
-          props.onClose();
-        })
-        .catch(function (error) {
-          console.log(error);
-          setIsLoading(false);
-          toast({
-            title: "An error occured",
-            status: "warning",
-          });
-        });
-    }
-  };
-  const WithdrawCrypto = async (data) => {
-    console.log(floatAmount);
-    data.amount = 1.0;
-    data.network = props.network;
-    data.fee = 0.0005;
-    data.transaction_type = "crypto";
     console.log(data);
     if (errors.length > 0) {
     } else {
@@ -690,7 +868,46 @@ const WalletModal = (props) => {
             title: "Withdrawal Successful",
             status: "success",
           });
-          props.refresh();
+          withdrawalModalOpen();
+        })
+        .catch(function (error) {
+          console.log(error);
+          setIsLoading(false);
+          toast({
+            title: "An error occured",
+            status: "warning",
+          });
+        });
+    }
+  };
+  const WithdrawCrypto = async (data) => {
+    console.log("float", withdrawAmount);
+    data.amount = withdrawAmount;
+
+    if (props.network === "btc") {
+      data.network = "bitcoin";
+    } else {
+      data.network = props.network;
+    }
+    // data.fee = 0.0005;
+    data.transaction_type = "crypto";
+    console.log(data);
+    if (errors.length > 0) {
+    } else {
+      setIsLoading(true);
+      await axios
+        .post(`${process.env.REACT_APP_BASE_URL}v2/withdraw/`, data, {
+          headers: {
+            Authorization: `Token ${localStorage.getItem("token")}`,
+          },
+        })
+        .then(function (response) {
+          console.log(response);
+          setIsLoading(false);
+          toast({
+            title: "Withdrawal Successful",
+            status: "success",
+          });
           props.onClose();
         })
         .catch(function (error) {
@@ -726,11 +943,11 @@ const WalletModal = (props) => {
             {" "}
             <DrawerHeader color={"brand.700"} textAlign={"center"}>
               {props.network} Wallet Address (
-              {props.network === "Celo"
+              {props.network === "celo"
                 ? "Celo Network"
-                : props.network === "Ethereum"
+                : props.network === "ethereum"
                 ? "ERC 20"
-                : props.network === "Tron"
+                : props.network === "tron"
                 ? "TRC 20"
                 : props.network === "Bnb"
                 ? "Binance Chain"
@@ -999,7 +1216,7 @@ const WalletModal = (props) => {
                             let toFloatAmount;
                             toFloatAmount = parseFloat(
                               amount.replaceAll(",", "")
-                            ).toFixed(7);
+                            );
 
                             if (props.network === "Bitcoin") {
                               let btcErrors = [];
@@ -1116,6 +1333,10 @@ const WalletModal = (props) => {
                 /> */}
               </Box>
               <PayoutModal isOpen={bankModalisOpen} onClose={bankModalClose} />
+              <WithdrawalModal
+                isOpen={withdrawalisOpen}
+                onClose={withdrawalModalClose}
+              />
             </DrawerBody>
           </>
         )}
@@ -1213,7 +1434,7 @@ const WalletModal = (props) => {
                                 balanceError.push("Insufficient balance");
                                 setErrors(balanceError);
                               } else {
-                                if (props.network === "Bitcoin") {
+                                if (props.network === "btc") {
                                   let btcErrors = [];
 
                                   if (toFloatAmount < 0.0005) {
@@ -1223,7 +1444,7 @@ const WalletModal = (props) => {
                                     setErrors([]);
                                     setFloatAmount(toFloatAmount.toString());
                                   }
-                                } else if (props.network === "Celo") {
+                                } else if (props.network === "celo") {
                                   let coinErrors = [];
                                   if (toFloatAmount < 1) {
                                     coinErrors.push("Minimum amount is 1");
@@ -1232,7 +1453,17 @@ const WalletModal = (props) => {
                                     setErrors([]);
                                     setFloatAmount(toFloatAmount.toString());
                                   }
-                                } else if (props.network === "Tron") {
+                                } else if (props.network === "ceur") {
+                                  let coinErrors = [];
+
+                                  if (toFloatAmount < 2) {
+                                    coinErrors.push("Minimum amount is 2  ");
+                                    setErrors(coinErrors);
+                                  } else {
+                                    setErrors([]);
+                                    setFloatAmount(toFloatAmount.toString());
+                                  }
+                                } else if (props.network === "tron") {
                                   let coinErrors = [];
 
                                   if (toFloatAmount < 2) {
@@ -1396,6 +1627,83 @@ const WalletModal = (props) => {
       </DrawerContent>
     </Drawer>
   );
+};
+
+const WithdrawalModal = (props) => {
+  return (
+    <Modal isOpen={props.isOpen} onClose={props.onClose}>
+      <ModalOverlay />
+      <ModalContent py={"40px"}>
+        <ModalHeader textAlign={"center"}>Withdrawal Processing</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <VStack width={"full"} alignItems={"center"} gap={"20px"}>
+            <Image
+              src="/assets/images/withdrawal-success.gif"
+              width={"200px"}
+              filter={"grayscale(1)"}
+            />
+            <Text textAlign={"center"}>
+              Your withdrawal is being processed. It should arrive in your
+              account in
+            </Text>
+            <Countdown date={Date.now() + 900000} renderer={renderer} />,
+            <Button
+              onClick={() => {
+                props.onClose();
+              }}
+            >
+              I have received payment
+            </Button>
+          </VStack>
+        </ModalBody>
+      </ModalContent>
+    </Modal>
+  );
+};
+
+const Completionist = () => <span>You are good to go!</span>;
+
+const renderer = ({ hours, minutes, seconds, completed }) => {
+  if (completed) {
+    // Render a complete state
+    return <Completionist />;
+  } else {
+    // Render a countdown
+    return (
+      <HStack>
+        <Text
+          borderRadius={"10px"}
+          bg={"brand.400"}
+          textAlign={"center"}
+          width={"50px"}
+          py={"10px"}
+        >
+          {hours}
+        </Text>
+        <Text>:</Text>
+        <Text
+          borderRadius={"10px"}
+          bg={"brand.400"}
+          textAlign={"center"}
+          width={"50px"}
+          py={"10px"}
+        >
+          {minutes}
+        </Text>
+        <Text>:</Text>
+        <Text
+          borderRadius={"10px"}
+          bg={"brand.400"}
+          textAlign={"center"}
+          width={"50px"}
+          py={"10px"}
+        >
+          {seconds}
+        </Text>
+      </HStack>
+    );
+  }
 };
 
 export default Wallet;

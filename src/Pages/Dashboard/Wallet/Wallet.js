@@ -27,55 +27,29 @@ const Wallet = () => {
     backgroundSize: "200%",
   };
 
-  const [page, setPage] = useState("deposits");
-  const [wallets, setWallets] = useState([]);
   const { currency } = useParams();
-  const currencies = [
-    "bitcoin",
-    "usdt",
-    "bnb",
-    "celo",
-    "cusd",
-    "tron",
-    "ethereum",
-  ];
+  const currencies = ["btc", "usdt", "bnb", "celo", "cusd", "tron", "ethereum"];
   const paramsMatch = currencies.includes(currency);
   const [transactions, setTransactions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchWallets = async () => {
+  const fetchTransactions = async () => {
     await axios
-      .get(`${process.env.REACT_APP_BASE_URL}wallets/`, {
+      .get(`${process.env.REACT_APP_BASE_URL}v2/transactions/`, {
         headers: {
           Authorization: `Token ${localStorage.getItem("token")}`,
         },
       })
-      .then((response) => {
+      .then(function (response) {
         if (response.data) {
-          const entries = Object.entries(response.data);
-          setWallets(entries);
+          setIsLoading(false);
+          console.log(response.data);
 
-          axios
-            .get(`${process.env.REACT_APP_BASE_URL}transactions/${currency}`, {
-              headers: {
-                Authorization: `Token ${localStorage.getItem("token")}`,
-              },
-            })
-            .then(function (response) {
-              console.log(response);
-              if (response.data) {
-                setIsLoading(false);
-
-                setTransactions(response.data);
-              }
-            })
-            .catch(function (error) {
-              console.log(error);
-            });
+          setTransactions(response.data);
         }
       })
-      .catch((error) => {
-        Toast({ title: "An error occured", status: "warning" });
+      .catch(function (error) {
+        console.log(error);
       });
   };
 
@@ -83,7 +57,7 @@ const Wallet = () => {
     if (!paramsMatch) {
       navigate("/wallet");
     }
-    fetchWallets();
+    fetchTransactions();
   }, []);
   return (
     <>
@@ -133,7 +107,7 @@ const Wallet = () => {
                 Wallet
               </Text>
               <Text fontSize={["xs", "xs", "sm", "sm"]} flex={2}>
-                TxID
+                Reference
               </Text>
               <Text
                 textAlign={"right"}
@@ -166,195 +140,60 @@ const Wallet = () => {
               <VStack width={"full"} gap={"2"} alignContent="flex-start">
                 {isLoading ? (
                   <Spinner />
-                ) : currency === "bitcoin" ||
-                  currency === "celo" ||
-                  currency === "eth" ? (
-                  transactions.length > 0 ? (
-                    transactions.map((transaction, index) => {
-                      let txid;
-                      let amount = 0;
-                      let wallet;
-                      let date;
-                      let type;
-                      let day;
-                      let time;
-                      let coin;
-                      let scanner;
+                ) : transactions.length > 0 ? (
+                  transactions.map((transaction, index) => {
+                    let txid;
+                    let amount = 0;
+                    let wallet;
+                    let date;
+                    let type;
+                    let day;
+                    let time;
+                    let coin;
+                    let scanner;
+                    date = new Date(transaction.created);
+                    day = date
+                      .toLocaleDateString("en-NG")
+                      .toString()
+                      .replaceAll("/", "-");
+                    time = date.toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    });
+                    date = `${day} ${time}`;
+                    wallet = transaction.address
+                      ? `${transaction?.address
+                          ?.toString()
+                          .slice(0, 6)}...${transaction?.address?.slice(
+                          19,
+                          20
+                        )}`
+                      : "";
 
-                      if (currency === "bitcoin") {
-                        scanner =
-                          "https://live.blockcypher.com/btc-testnet/tx/";
-                        if (
-                          transaction.inputs[0].coin.address ===
-                          wallets[5][1].address
-                        ) {
-                          type = "Withdrawal";
-                          for (let i = 0; i < transaction.inputs.length; i++) {
-                            amount +=
-                              transaction.inputs[i].coin.value / 100000000;
-                          }
-                          wallet = `${transaction.outputs[0].address.slice(
-                            0,
-                            6
-                          )}...`;
-                        } else {
-                          type = "Deposit";
-                          let walletDeposits = transaction.outputs.filter(
-                            (deposit) => {
-                              return deposit.address === wallets[0].address;
-                            }
-                          );
-
-                          for (let i = 0; i < walletDeposits.length; i++) {
-                            amount += walletDeposits[i].value / 100000000;
-                          }
-                          wallet = `${transaction.inputs[0].coin.address.slice(
-                            0,
-                            6
-                          )}...`;
-                        }
-
-                        txid = `${transaction.hash}`;
-                        coin = "BTC";
-                        date = new Date(transaction.time);
-                        day = date
-                          .toLocaleDateString("en-NG")
-                          .toString()
-                          .replaceAll("/", "-");
-                        time = date.toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        });
-
-                        date = `${day} ${time}`;
-                      }
-                      if (currency === "celo") {
-                        scanner = "https://celoscan.io/tx/";
-                        coin = "CELO";
-                        if (transaction.from === wallets[0][1].address) {
-                          type = "Withdrawal";
-                          wallet = `${transaction.to.slice(
-                            0,
-                            6
-                          )}...${transaction.to.slice(39, 42)}`;
-                        } else {
-                          type = "Deposit";
-                          wallet = `${transaction.from.slice(
-                            0,
-                            6
-                          )}...${transaction.from.slice(39, 42)}`;
-                        }
-                        txid = transaction.hash;
-                        amount = transaction.value / 1000000000000000000;
-                        date = new Date(transaction.timestamp * 1000);
-                        day = date
-                          .toLocaleDateString("en-NG")
-                          .toString()
-                          .replaceAll("/", "-");
-                        time = date.toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        });
-                        date = `${day} ${time}`;
-                      }
-
-                      return (
-                        <Box width={"full"} key={index}>
-                          {" "}
-                          <TransactionRow
-                            scanner={scanner}
-                            time={date.toString()}
-                            type={type}
-                            asset={coin}
-                            amount={amount}
-                            wallet={wallet}
-                            txid={txid}
-                            status="Completed"
-                          />
-                          <MobileTransactionRow
-                            scanner={scanner}
-                            time={date.toString()}
-                            type={type}
-                            amount={amount}
-                            wallet={wallet}
-                            txid={txid}
-                            status="Completed"
-                          />
-                        </Box>
-                      );
-                    })
-                  ) : (
-                    <Text>No recent Transaction</Text>
-                  )
-                ) : currency === "tron" ? (
-                  transactions.transactions.length > 0 ? (
-                    transactions.transactions.map((transaction, id) => {
-                      let txid = transaction.txID;
-                      let amount =
-                        transaction.rawData.contract[0].parameter.value.amount /
-                        1000000;
-                      let date = new Date(transaction.rawData.timestamp);
-                      let scanner = "https://tronscan.org/#/transaction/";
-                      let day = date
-                        .toLocaleDateString("en-NG")
-                        .toString()
-                        .replaceAll("/", "-");
-                      let time = date.toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      });
-                      date = `${day} ${time}`;
-                      let coin = "TRON";
-                      let type;
-                      let wallet;
-                      let viewWallet;
-
-                      if (
-                        transaction.rawData.contract[0].parameter.value
-                          .ownerAddressBase58 === wallets[2][1].address
-                      ) {
-                        type = "Withdrawal";
-                        viewWallet =
-                          transaction.rawData.contract[0].parameter.value
-                            .toAddressBase58;
-                      } else {
-                        type = "Deposit";
-                        viewWallet =
-                          transaction.rawData.contract[0].parameter.value
-                            .ownerAddressBase58;
-                      }
-                      wallet = `${viewWallet.slice(0, 6)}...${viewWallet.slice(
-                        30,
-                        34
-                      )}`;
-
-                      return (
-                        <Box width={"full"} key={id}>
-                          {" "}
-                          <TransactionRow
-                            time={date}
-                            type={type}
-                            asset={coin}
-                            amount={amount}
-                            wallet={wallet}
-                            txid={txid}
-                            scanner={scanner}
-                            status={"Completed"}
-                          />
-                          <MobileTransactionRow
-                            time={date}
-                            type={type}
-                            amount={amount}
-                            wallet={wallet}
-                            txid={txid}
-                            scanner={scanner}
-                          />
-                        </Box>
-                      );
-                    })
-                  ) : (
-                    <Text>No recent Transaction</Text>
-                  )
+                    return (
+                      <Box width={"full"} key={index}>
+                        {" "}
+                        <TransactionRow
+                          time={date.toString()}
+                          type={transaction.operationType}
+                          asset={transaction.currency}
+                          amount={transaction.amount}
+                          wallet={wallet}
+                          txid={transaction.reference}
+                          status="Completed"
+                        />
+                        <MobileTransactionRow
+                          time={date.toString()}
+                          type={transaction.operationType}
+                          asset={transaction.currency}
+                          amount={transaction.amount}
+                          wallet={wallet}
+                          txid={transaction.reference}
+                          status="Completed"
+                        />
+                      </Box>
+                    );
+                  })
                 ) : (
                   <Text>No recent Transaction</Text>
                 )}
@@ -382,6 +221,10 @@ function TransactionRow(props) {
       sx={{
         animation: "drop-in 1200ms ease 500ms backwards",
       }}
+      boxShadow={"0px 1px 4px 0px rgba(0, 0, 0, 0.10)"}
+      bg={"#fff"}
+      px={"24px"}
+      py={"23px"}
     >
       <Text fontSize={["xx-small", "xs", "sm", "sm"]} flex={2}>
         {props.time}
@@ -398,12 +241,10 @@ function TransactionRow(props) {
       <Text fontSize={["xs", "xs", "sm", "sm"]} flex={2}>
         {props.wallet}
       </Text>
-      <Text fontSize={["xs", "xs", "sm", "sm"]} flex={2} color={"brand.600"}>
-        <a href={`${props.scanner}${props.txid}`} target="_">
-          {`${props.txid.slice(0, 6)} ...`}
-        </a>
+      <Text fontSize={["xs", "xs", "sm", "sm"]} flex={3} color={"brand.600"}>
+        {`${props.txid}`}
       </Text>
-      <Text fontSize={["xs", "xs", "sm", "sm"]} flex={2} textAlign="right">
+      <Text fontSize={["xs", "xs", "sm", "sm"]} flex={1.5} textAlign="right">
         {props.status}
       </Text>
     </Flex>
@@ -432,10 +273,8 @@ const MobileTransactionRow = (props) => {
           py={"4px"}
           borderBottom={"1px solid #e5dede"}
         >
-          <Text color={"green.500"} fontWeight="bold">
-            <a href={`${props.scanner}${props.txid}`} target="_">
-              {`${props.txid.slice(0, 6)} ...`}
-            </a>
+          <Text color={"green.500"} fontWeight="normal" fontSize={"2xs"}>
+            {`${props.txid}`}
           </Text>
           <Text>{props.status}</Text>
         </HStack>

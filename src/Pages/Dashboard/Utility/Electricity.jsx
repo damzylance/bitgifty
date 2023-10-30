@@ -15,32 +15,26 @@ import { ProviderCard } from "./Airtime";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { useForm } from "react-hook-form";
 import axios from "axios";
+import useWallets from "../../../Hooks/useWallets";
 
 const Electricity = (props) => {
   const [page, setPage] = useState("list");
   const [merchants, setMerchants] = useState([
-    { name: "Ikeja Electricity", id: 2 },
-    { name: "Eko Electricity", id: 3 },
-    { name: "Kano Electricity", id: 4 },
+    { name: "IKEDC TOP UP (PREPAID)", id: "BIL110" },
+    { name: "EKEDC PREPAID TOPUP", id: "BIL111" },
+    { name: "KANO DISCO PREPAID TOPUP", id: "BIL115" },
     {
-      name: "Port Harcourt Electricity",
-      id: 5,
+      name: "PHC DISCO PREPAID TOPUP",
+      id: "114",
+    },
+
+    {
+      name: "IBADAN DISCO ELECTRICITY PREPAID",
+      id: "BIL116",
     },
     {
-      name: "Jos Electricity",
-      id: 6,
-    },
-    {
-      name: "Ibadan Electricity",
-      id: 7,
-    },
-    {
-      name: "Kaduna Electric",
-      id: 8,
-    },
-    {
-      name: "Abuja Electricity",
-      id: 9,
+      name: "KADUNA DISCO PREPAID TOPUP",
+      id: "BIL112",
     },
   ]);
 
@@ -86,6 +80,7 @@ const Electricity = (props) => {
   );
 };
 const CableForm = (props) => {
+  const { userWallets } = useWallets();
   const toast = useToast();
   const {
     register,
@@ -93,7 +88,6 @@ const CableForm = (props) => {
     formState: { errors },
     getValues,
   } = useForm();
-  const [wallets, setWallets] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [plans, setPlans] = useState([]);
   const [tokenAmount, setTokenAmount] = useState(0);
@@ -114,16 +108,9 @@ const CableForm = (props) => {
   const handleCurrencyChange = async (e) => {
     const network = e.target.value;
     setCurrency(e.target.value);
-    for (let index = 0; index < wallets.length; index++) {
-      if (wallets[index][0] === network) {
-        if (wallets[index][0] === "Celo") {
-          setWalletBalance(wallets[index][1].info.celo);
-        } else if (wallets[index][0] === "Tron") {
-          setWalletBalance(wallets[index][1].info.balance / 1000000);
-        } else if (wallets[index][0] === "naira") {
-          setWalletBalance(wallets[index][1].balance);
-          console.log(wallets[index]);
-        }
+    for (let index = 0; index < userWallets.length; index++) {
+      if (userWallets[index][0] === network) {
+        setWalletBalance(userWallets[index][1].balance.availableBalance);
       }
     }
     if (network === "naira") {
@@ -136,24 +123,6 @@ const CableForm = (props) => {
     }
   };
 
-  const fetchWallets = async () => {
-    await axios
-      .get(`${process.env.REACT_APP_BASE_URL}wallets/`, {
-        headers: {
-          Authorization: `Token ${localStorage.getItem("token")}`,
-        },
-      })
-      .then(function (response) {
-        if (response.data) {
-          const entries = Object.entries(response.data);
-          setIsLoading(false);
-
-          setWallets(entries);
-          localStorage.setItem("wallets", JSON.stringify(entries));
-        }
-      })
-      .catch(function (error) {});
-  };
   const fetchRate = async (currency) => {
     let rate;
     setIsLoading(true);
@@ -171,8 +140,8 @@ const CableForm = (props) => {
     return rate;
   };
   const buyCable = async (data) => {
-    data.disco = props.disco;
-    data.amount = parseInt(data.amount);
+    data.bill_type = props.name;
+    data.country = "NG";
 
     // data.wallet_from = data.wallet_from.toLowerCase();
     // data.token_amount = data.data.split(",")[1];
@@ -182,53 +151,61 @@ const CableForm = (props) => {
       toast({ title: "insufficient balance", status: "warning" });
     } else {
       setIsLoading(true);
-
       await axios
-        .get(
-          `https://arktivesub.com/api/bill/bill-validation?meter_number=${
-            data.meter_number
-          }&disco=${props.disco - 1}&meter_type=${data.meter_type}`
+        .post(
+          `${process.env.REACT_APP_BASE_URL}utilities/v2/initialize-payment/`,
+          data,
+          {
+            headers: {
+              Authorization: `Token ${localStorage.getItem("token")}`,
+            },
+          }
         )
-        .then(async (response) => {
+        .then((response) => {
           setIsLoading(false);
-
-          await axios
-            .post(
-              `${process.env.REACT_APP_BASE_URL}utilities/buy-electricity/`,
-              data,
-              {
-                headers: {
-                  Authorization: `Token ${localStorage.getItem("token")}`,
-                },
-              }
-            )
-            .then((response) => {
-              setIsLoading(false);
-              toast({
-                title: "Purchase successful",
-                status: "success",
-              });
-              props.onClose();
-            })
-            .catch((error) => {
-              console.log(error);
-              setIsLoading(false);
-              toast({
-                title: error.response.data.error,
-                status: "warning",
-              });
-            });
+          toast({
+            title: "Purchase successful",
+            status: "success",
+          });
+          props.onClose();
         })
         .catch((error) => {
-          setIsLoading(false);
-          toast({ title: error.response.data.message, status: "warning" });
           console.log(error);
+          setIsLoading(false);
+          toast({
+            title: error.response.data.error,
+            status: "warning",
+          });
         });
     }
   };
   useEffect(() => {
-    fetchWallets();
+    axios
+      .get(
+        `${process.env.REACT_APP_BASE_URL}utilities/v2/get-bill-category?bill-type=power`,
+        {
+          headers: {
+            Authorization: `Token ${localStorage.getItem("token")}`,
+          },
+        }
+      )
+      .then((response) => {
+        console.log(response.data);
+        setIsLoading(false);
+
+        setPlans(
+          response.data.data.filter((plan) => {
+            return plan.biller_code === props.cable;
+          })
+        );
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    // fetchPlans();
   }, []);
+
   return (
     <VStack my={"40px"} gap={"20px"} width={"full"}>
       <HStack width={"full"} alignItems={"center"}>
@@ -252,7 +229,7 @@ const CableForm = (props) => {
         <VStack width={"full"} gap={"20px"}>
           <FormControl>
             <FormLabel>Select Meter Type</FormLabel>
-            <Select fontSize={"16px"} {...register("meter_type")} required>
+            <Select fontSize={"16px"} disabled>
               <option value={"prepaid"}>Prepaid</option>
               <option value={"postpaid"}>Postpaid</option>
             </Select>
@@ -268,8 +245,8 @@ const CableForm = (props) => {
               outline={"none"}
               type="tel"
               required
-              name="meter_number"
-              {...register("meter_number")}
+              name="customer"
+              {...register("customer")}
             />
           </FormControl>
           <FormControl>
@@ -316,25 +293,17 @@ const CableForm = (props) => {
             </FormLabel>
 
             <Select
-              {...register("wallet_from", { onChange: handleCurrencyChange })}
+              {...register("chain", { onChange: handleCurrencyChange })}
               required
             >
               <option>Select Coin</option>;
-              {wallets
-                .filter((wallet, index) => {
-                  return (
-                    wallet[0] === "Celo" ||
-                    wallet[0] === "Tron" ||
-                    wallet[0] === "naira"
-                  );
-                })
-                .map((wallet, index) => {
-                  return (
-                    <option value={wallet[0]} key={index}>
-                      {wallet[0]}
-                    </option>
-                  );
-                })}
+              {userWallets.map((wallet, index) => {
+                return (
+                  <option value={wallet[0]} key={index}>
+                    {wallet[0]}
+                  </option>
+                );
+              })}
             </Select>
             <Text mt={"10px"}>Balance: {walletBalance}</Text>
           </FormControl>
