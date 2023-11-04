@@ -27,6 +27,8 @@ const Data = (props) => {
 
   const [page, setPage] = useState("list");
   const [telco, setTelco] = useState(null);
+  const [name, setName] = useState(null);
+
   return (
     <>
       {page === "list" && (
@@ -41,6 +43,7 @@ const Data = (props) => {
                       action={() => {
                         setPage("buy");
                         setTelco(provider.id);
+                        setName(provider.name);
                       }}
                       name={provider.name}
                       logo={provider.logo}
@@ -55,6 +58,7 @@ const Data = (props) => {
         <DataForm
           telco={telco}
           onClose={props.action}
+          name={name}
           back={() => setPage("list")}
         />
       )}
@@ -81,8 +85,8 @@ const DataForm = (props) => {
   const [plans, setPlans] = useState([]);
   const [networkId, setNetworkId] = useState([]);
   const buyData = async (data) => {
-    data.amount = data.type.split(",")[1];
-    data.type = data.type.split(",")[0];
+    data.amount = parseInt(data.type.split(",")[1]);
+    data.bill_type = data.type.split(",")[0];
     data.country = "NG";
     console.log(data);
 
@@ -159,7 +163,9 @@ const DataForm = (props) => {
         rate = response.data;
         setIsLoading(false);
       })
-      .catch((error) => {});
+      .catch((error) => {
+        setIsLoading(false);
+      });
 
     return rate;
   };
