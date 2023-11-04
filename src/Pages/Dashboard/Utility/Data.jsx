@@ -19,10 +19,10 @@ import useWallets from "../../../Hooks/useWallets";
 
 const Data = (props) => {
   const telcos = [
-    { name: "mtn", logo: "/assets/images/mtn_logo.png", id: "BIL104" },
-    { name: "glo", logo: "/assets/images/glo_logo.webp", id: "BIL105" },
-    { name: "airtel", logo: "/assets/images/airtel_logo.png", id: "BIL106" },
-    { name: "9mobile", logo: "/assets/images/9mobile_logo.jpeg", id: "BIL107" },
+    { name: "mtn", logo: "/assets/images/mtn_logo.png", id: "BIL108" },
+    { name: "glo", logo: "/assets/images/glo_logo.webp", id: "BIL109" },
+    { name: "airtel", logo: "/assets/images/airtel_logo.png", id: "BIL110" },
+    { name: "9mobile", logo: "/assets/images/9mobile_logo.jpeg", id: "BIL111" },
   ];
 
   const [page, setPage] = useState("list");
@@ -113,6 +113,7 @@ const DataForm = (props) => {
           props.onClose();
         })
         .catch((error) => {
+          console.log(error);
           setIsLoading(false);
           toast({
             title: error.response.data.error,
