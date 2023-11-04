@@ -200,7 +200,7 @@ const DataForm = (props) => {
             textTransform={"uppercase"}
             width={"full"}
           >
-            BUY {props.telco} DATA
+            BUY {props.name} DATA
           </Text>
         </HStack>
       </HStack>
