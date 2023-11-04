@@ -832,22 +832,41 @@ const WalletModal = (props) => {
   };
   const [exchangeRate, setExchangeRate] = useState();
   const fetchNairaRate = async (coin) => {
-    if (coin === "btc") {
-      coin = "bitcoin";
-    }
     let rate;
-    setIsLoading(true);
-    await axios
-      .get(`${process.env.REACT_APP_BASE_URL}swap/naira/${coin}`, {
-        headers: {
-          Authorization: `Token ${localStorage.getItem("token")}`,
-        },
-      })
-      .then((response) => {
-        setIsLoading(false);
-        rate = response.data;
-      })
-      .catch((error) => {});
+
+    if (coin === "usdt_tron" || coin === "cusd") {
+      setIsLoading(true);
+      await axios
+        .get(`${process.env.REACT_APP_BASE_URL}swap/get-dollar-price`, {
+          headers: {
+            Authorization: `Token ${localStorage.getItem("token")}`,
+          },
+        })
+        .then((response) => {
+          setIsLoading(false);
+          rate = response.data;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } else {
+      if (coin === "btc") {
+        coin = "bitcoin";
+      }
+      setIsLoading(true);
+      await axios
+        .get(`${process.env.REACT_APP_BASE_URL}swap/naira/${coin}`, {
+          headers: {
+            Authorization: `Token ${localStorage.getItem("token")}`,
+          },
+        })
+        .then((response) => {
+          setIsLoading(false);
+          rate = response.data;
+        })
+        .catch((error) => {});
+    }
+
     return rate;
   };
   const SwapToNaira = async (data) => {
@@ -984,17 +1003,7 @@ const WalletModal = (props) => {
           <>
             {" "}
             <DrawerHeader color={"brand.700"} textAlign={"center"}>
-              {props.network} Wallet Address (
-              {props.network === "celo"
-                ? "Celo Network"
-                : props.network === "ethereum"
-                ? "ERC 20"
-                : props.network === "tron"
-                ? "TRC 20"
-                : props.network === "Bnb"
-                ? "Binance Chain"
-                : "Bitcoin"}
-              )
+              {props.network} Wallet Address
             </DrawerHeader>
             <DrawerBody>
               <Box textAlign={"center"} mt={"40px"}>

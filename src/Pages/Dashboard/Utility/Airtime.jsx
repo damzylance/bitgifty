@@ -113,7 +113,6 @@ const AirtimeForm = (props) => {
     // data.bill_type = props.networkId;
     data.bill_type = "AIRTIME";
     data.country = "NG";
-    data.amount = 1;
     // data.token_amount = tokenAmount;
     console.log(data);
     setIsLoading(true);
