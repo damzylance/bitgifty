@@ -512,7 +512,7 @@ function CoinRow(props) {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [page, setPage] = useState("deposit");
-  const [swapFee,setSwapFee] = useState("")
+  const [swapFee, setSwapFee] = useState("");
 
   return (
     <Flex
@@ -785,7 +785,7 @@ const AddWalletModal = (props) => {
   );
 };
 const WalletModal = (props) => {
-  const [withdrawalFee,setWithdrawalFee] = useState("")
+  const [withdrawalFee, setWithdrawalFee] = useState("");
   const btnRef = React.useRef();
   const {
     onOpen: bankModalOpen,
@@ -1288,7 +1288,7 @@ const WalletModal = (props) => {
                                 setErrors([]);
                                 setFloatAmount(toFloatAmount.toString());
                               }
-                            } else if (props.network === "tron") {
+                            } else if (props.network === "usdt_tron") {
                               let coinErrors = [];
                               if (toFloatAmount < 10) {
                                 coinErrors.push("Minimum withdrawal is 10  ");
@@ -1300,15 +1300,13 @@ const WalletModal = (props) => {
                             } else if (props.network === "cusd") {
                               let coinErrors = [];
                               if (toFloatAmount < 10) {
-                                coinErrors.push(
-                                  "Minimum withdrawal is 10  "
-                                );
+                                coinErrors.push("Minimum withdrawal is 10  ");
                                 setErrors(coinErrors);
                               } else {
                                 setErrors([]);
                                 setFloatAmount(toFloatAmount);
                               }
-                            } else if (props.network === "Ethereum") {
+                            } else if (props.network === "thereum") {
                               let coinErrors = [];
                               if (toFloatAmount < 0.001) {
                                 coinErrors.push(
@@ -1321,8 +1319,8 @@ const WalletModal = (props) => {
                               }
                             } else if (props.network === "naira") {
                               let coinErrors = [];
-                              if (toFloatAmount < 5) {
-                                coinErrors.push("Minimum withdrawal is 5  ");
+                              if (toFloatAmount < 1000) {
+                                coinErrors.push("Minimum withdrawal is 1000  ");
                                 setErrors(coinErrors);
                               } else {
                                 setErrors([]);
@@ -1507,7 +1505,7 @@ const WalletModal = (props) => {
                                 } else if (props.network === "celo") {
                                   let coinErrors = [];
                                   if (toFloatAmount < 1) {
-                                    coinErrors.push("Minimum amount is 1");
+                                    coinErrors.push("Minimum amount is 10");
                                     setErrors(coinErrors);
                                   } else {
                                     setErrors([]);
@@ -1516,28 +1514,28 @@ const WalletModal = (props) => {
                                 } else if (props.network === "ceur") {
                                   let coinErrors = [];
 
-                                  if (toFloatAmount < 2) {
-                                    coinErrors.push("Minimum amount is 2  ");
+                                  if (toFloatAmount < 10) {
+                                    coinErrors.push("Minimum amount is 10  ");
                                     setErrors(coinErrors);
                                   } else {
                                     setErrors([]);
                                     setFloatAmount(toFloatAmount.toString());
                                   }
-                                } else if (props.network === "tron") {
+                                } else if (props.network === "usdt_tron") {
                                   let coinErrors = [];
 
-                                  if (toFloatAmount < 2) {
-                                    coinErrors.push("Minimum amount is 2  ");
+                                  if (toFloatAmount < 10) {
+                                    coinErrors.push("Minimum amount is 10 ");
                                     setErrors(coinErrors);
                                   } else {
                                     setErrors([]);
                                     setFloatAmount(toFloatAmount.toString());
                                   }
-                                } else if (props.network === "Bnb") {
+                                } else if (props.network === "cusd") {
                                   let coinErrors = [];
-                                  if (toFloatAmount < 0.002) {
+                                  if (toFloatAmount < 10) {
                                     coinErrors.push(
-                                      "Minimum withdrawal is 0.002  "
+                                      "Minimum withdrawal is 10  "
                                     );
                                     setErrors(coinErrors);
                                   } else {
