@@ -512,6 +512,7 @@ function CoinRow(props) {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [page, setPage] = useState("deposit");
+  const [swapFee,setSwapFee] = useState("")
 
   return (
     <Flex
@@ -549,9 +550,7 @@ function CoinRow(props) {
             navigate("/utilities");
           }}
           disabled={
-            props.currency === "NAIRA" ||
-            props.currency === "ETHEREUM" ||
-            props.currency === "BITCOIN"
+            props.currency === "ETHEREUM" || props.currency === "BITCOIN"
               ? true
               : false
           }
@@ -786,6 +785,7 @@ const AddWalletModal = (props) => {
   );
 };
 const WalletModal = (props) => {
+  const [withdrawalFee,setWithdrawalFee] = useState("")
   const btnRef = React.useRef();
   const {
     onOpen: bankModalOpen,
@@ -1272,8 +1272,8 @@ const WalletModal = (props) => {
                             if (props.network === "Bitcoin") {
                               let btcErrors = [];
 
-                              if (toFloatAmount < 0.0005) {
-                                btcErrors.push("Minimum withdrawal is 0.0005 ");
+                              if (toFloatAmount < 0.005) {
+                                btcErrors.push("Minimum withdrawal is 0.005 ");
                                 setErrors(btcErrors);
                               } else {
                                 setErrors([]);
@@ -1281,27 +1281,27 @@ const WalletModal = (props) => {
                               }
                             } else if (props.network === "celo") {
                               let coinErrors = [];
-                              if (toFloatAmount < 2) {
-                                coinErrors.push("Minimum withdrawal is 2");
+                              if (toFloatAmount < 10) {
+                                coinErrors.push("Minimum withdrawal is 10");
                                 setErrors(coinErrors);
                               } else {
                                 setErrors([]);
                                 setFloatAmount(toFloatAmount.toString());
                               }
-                            } else if (props.network === "Tron") {
+                            } else if (props.network === "tron") {
                               let coinErrors = [];
-                              if (toFloatAmount < 2) {
-                                coinErrors.push("Minimum withdrawal is 2  ");
+                              if (toFloatAmount < 10) {
+                                coinErrors.push("Minimum withdrawal is 10  ");
                                 setErrors(coinErrors);
                               } else {
                                 setErrors([]);
                                 setFloatAmount(toFloatAmount.toString());
                               }
-                            } else if (props.network === "Bnb") {
+                            } else if (props.network === "cusd") {
                               let coinErrors = [];
-                              if (toFloatAmount < 0.002) {
+                              if (toFloatAmount < 10) {
                                 coinErrors.push(
-                                  "Minimum withdrawal is 0.002  "
+                                  "Minimum withdrawal is 10  "
                                 );
                                 setErrors(coinErrors);
                               } else {
@@ -1312,7 +1312,7 @@ const WalletModal = (props) => {
                               let coinErrors = [];
                               if (toFloatAmount < 0.001) {
                                 coinErrors.push(
-                                  "Minimum withdrawal is 0.001  "
+                                  "Minimum withdrawal is 0.005  "
                                 );
                                 setErrors(coinErrors);
                               } else {

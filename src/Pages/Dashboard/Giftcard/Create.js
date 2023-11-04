@@ -168,7 +168,7 @@ function Create() {
         setTemplatesLoading(false);
         setTemplates(response.data.results);
         setTemplate({
-          link: "/assets/images/giftcardtest.jpg",
+          link: "/assets/images/bitgifty-birthday01.jpg",
           // link: response.data.results[0].link,
           id: response.data.results[0].id,
         });
@@ -313,7 +313,7 @@ function Create() {
             >
               <Image
                 src={`${template.link}`}
-                width={["350px", "350px", "300px"]}
+                width={["350px", "350px", "320px"]}
                 height={"338px"}
                 // objectFit={"cover"}
                 position={"absolute"}

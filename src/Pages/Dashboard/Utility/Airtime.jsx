@@ -110,11 +110,10 @@ const AirtimeForm = (props) => {
 
   const buyAirtime = async (data) => {
     // data.type = "AIRTIME";
-    data.amount = 1;
     // data.bill_type = props.networkId;
     data.bill_type = "AIRTIME";
-    data.customer = "+23490803840303";
     data.country = "NG";
+    data.amount = 1;
     // data.token_amount = tokenAmount;
     console.log(data);
     setIsLoading(true);
@@ -149,6 +148,9 @@ const AirtimeForm = (props) => {
   const fetchRate = async (currency) => {
     let rate;
     setIsLoading(true);
+    if (currency === "usdt_tron") {
+      currency = "usd";
+    }
     await axios
       .get(`${process.env.REACT_APP_BASE_URL}utilities/v2/naira/${currency}`, {
         headers: { Authorization: `Token ${localStorage.getItem("token")}` },
@@ -159,7 +161,14 @@ const AirtimeForm = (props) => {
         setIsLoading(false);
         rate = response.data;
       })
-      .catch((error) => {});
+      .catch((error) => {
+        setIsLoading(false);
+        console.log(error);
+        toast({
+          title: error.response.data.error,
+          status: "warning",
+        });
+      });
     return rate;
   };
   //   const handleCurrencyChange = (e) =>
@@ -242,7 +251,7 @@ const AirtimeForm = (props) => {
               outline={"none"}
               fontSize={"16px"}
               type="number"
-              min={1}
+              min={100}
               required
               {...register("amount", {
                 onChange: handleAmountChange,
