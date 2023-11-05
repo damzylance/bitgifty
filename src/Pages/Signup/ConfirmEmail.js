@@ -20,7 +20,6 @@ import React, { useEffect, useState } from "react";
 
 function ConfirmEmail() {
   const params = useParams();
-  console.log(params);
   const token = params.token;
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -48,7 +47,6 @@ function ConfirmEmail() {
         }, 5000);
       })
       .catch(function (error) {
-        console.log(error);
         setIsLoading(false);
         setErrorMessage(
           "Verification failed. Your confirmation link is expired or invalid. Kindly check your email for the valid link"

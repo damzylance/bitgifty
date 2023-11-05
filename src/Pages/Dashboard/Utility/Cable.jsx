@@ -111,7 +111,6 @@ const CableForm = (props) => {
         }
       )
       .then((response) => {
-        console.log(response);
         setPlans(response.data.results);
       })
       .catch((error) => {});
@@ -139,8 +138,6 @@ const CableForm = (props) => {
     data.amount = data.plan.split(",")[1];
     delete data.plan;
 
-    console.log(data);
-
     //
     if (tokenAmount >= walletBalance) {
       toast({ title: "insufficient balance", status: "warning" });
@@ -158,14 +155,12 @@ const CableForm = (props) => {
           }
         )
         .then((response) => {
-          console.log(response);
           setIsLoading(false);
           toast({ title: "Airtime purchase successful", status: "success" });
           props.onClose();
         })
         .catch((error) => {
           setIsLoading(false);
-          console.log(error);
           toast({
             title: error.response.data.error,
             status: "warning",
@@ -184,7 +179,6 @@ const CableForm = (props) => {
         }
       )
       .then((response) => {
-        console.log(response.data);
         setIsLoading(false);
 
         setPlans(
@@ -193,9 +187,7 @@ const CableForm = (props) => {
           })
         );
       })
-      .catch((error) => {
-        console.log(error);
-      });
+      .catch((error) => {});
 
     // fetchPlans();
   }, []);

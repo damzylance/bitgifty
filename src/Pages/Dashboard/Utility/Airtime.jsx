@@ -114,7 +114,6 @@ const AirtimeForm = (props) => {
     data.bill_type = "AIRTIME";
     data.country = "NG";
     // data.token_amount = tokenAmount;
-    console.log(data);
     setIsLoading(true);
     await axios
       .post(
@@ -125,14 +124,12 @@ const AirtimeForm = (props) => {
         }
       )
       .then((response) => {
-        console.log(response);
         setIsLoading(false);
         toast({ title: "Airtime purchase successful", status: "success" });
         props.onClose();
       })
       .catch((error) => {
         setIsLoading(false);
-        console.log(error);
         toast({
           title: error.response.data.error,
           status: "warning",
@@ -155,14 +152,12 @@ const AirtimeForm = (props) => {
         headers: { Authorization: `Token ${localStorage.getItem("token")}` },
       })
       .then((response) => {
-        console.log(response);
         setTokenToNairaRate(response.data);
         setIsLoading(false);
         rate = response.data;
       })
       .catch((error) => {
         setIsLoading(false);
-        console.log(error);
         toast({
           title: error.response.data.error,
           status: "warning",
@@ -193,12 +188,9 @@ const AirtimeForm = (props) => {
         }
       )
       .then((response) => {
-        console.log(response);
         setIsLoading(false);
       })
-      .catch((error) => {
-        console.log(error);
-      });
+      .catch((error) => {});
   }, []);
   return (
     <VStack my={"40px"} gap={"20px"} width={"full"}>

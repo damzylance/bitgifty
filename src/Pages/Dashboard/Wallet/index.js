@@ -67,15 +67,9 @@ function Wallet() {
   const [totalInDollars, setTotalInDollars] = useState(0);
 
   const fetchWallets = async () => {
-    console.log(wallets);
     if (userWallets) {
       setIsLoading(false);
-      setWallets(userWallets);
-      setFiatWallets(
-        userWallets.filter((element) => {
-          return element[1].type === "fiat";
-        })
-      );
+
       const labels = [];
       const balances = [];
       let sum = 0;
@@ -87,7 +81,6 @@ function Wallet() {
             `BTC`,
             isNaN(balance) ? 0 : balance
           );
-          console.log("btc", btcInDollar);
           sum += btcInDollar;
           balances.push(btcInDollar);
           labels.push("BTC");
@@ -149,7 +142,6 @@ function Wallet() {
             },
           ],
         });
-        console.log(balances);
       }
     } else {
       alert("no wallets");
@@ -676,7 +668,6 @@ const AddWalletModal = (props) => {
   const createNewWallet = async (data) => {
     data.manual = true;
     data.owner = owner;
-    console.log(data);
     setIsLoading(true);
     await axios
       .post(
@@ -697,7 +688,6 @@ const AddWalletModal = (props) => {
         props.onClose();
       })
       .catch(function (error) {
-        console.log(error);
         setIsLoading(false);
         toast({
           title: "An error occured",
@@ -713,11 +703,9 @@ const AddWalletModal = (props) => {
         },
       })
       .then(function (response) {
-        console.log("response", response);
         setOwner(response.data.pk);
       })
       .catch(function (error) {
-        console.log(error);
         if (error?.response?.status === 500) {
           toast({ title: "Server error", status: "error" });
         } else if (error.response?.status === 403) {
@@ -846,9 +834,7 @@ const WalletModal = (props) => {
           setIsLoading(false);
           rate = response.data;
         })
-        .catch((error) => {
-          console.log(error);
-        });
+        .catch((error) => {});
     } else {
       if (coin === "btc") {
         coin = "bitcoin";
@@ -870,11 +856,9 @@ const WalletModal = (props) => {
     return rate;
   };
   const SwapToNaira = async (data) => {
-    console.log(withdrawAmount);
     data.swap_amount = floatAmount;
     data.swap_to = "naira";
     data.swap_from = props.network;
-    console.log(data);
     if (errors.length > 0) {
     } else {
       setIsLoading(true);
@@ -885,7 +869,6 @@ const WalletModal = (props) => {
           },
         })
         .then(function (response) {
-          console.log(response);
           setIsLoading(false);
           toast({
             title: "Swap Successful",
@@ -894,7 +877,6 @@ const WalletModal = (props) => {
           props.onClose();
         })
         .catch(function (error) {
-          console.log(error);
           setIsLoading(false);
           if (error.response.data.error.includes("Insufficient funds")) {
             toast({
@@ -913,7 +895,6 @@ const WalletModal = (props) => {
   const WithdrawFiat = async (data) => {
     data.amount = withdrawAmount;
     data.network = props.network;
-    console.log(data);
     if (errors.length > 0) {
     } else {
       setIsLoading(true);
@@ -932,7 +913,6 @@ const WalletModal = (props) => {
           withdrawalModalOpen();
         })
         .catch(function (error) {
-          console.log(error);
           setIsLoading(false);
           toast({
             title: "An error occured",
@@ -942,7 +922,6 @@ const WalletModal = (props) => {
     }
   };
   const WithdrawCrypto = async (data) => {
-    console.log("float", withdrawAmount);
     data.amount = withdrawAmount;
 
     if (props.network === "btc") {
@@ -952,7 +931,6 @@ const WalletModal = (props) => {
     }
     // data.fee = 0.0005;
     data.transaction_type = "crypto";
-    console.log(data);
     if (errors.length > 0) {
     } else {
       setIsLoading(true);
@@ -963,7 +941,6 @@ const WalletModal = (props) => {
           },
         })
         .then(function (response) {
-          console.log(response);
           setIsLoading(false);
           toast({
             title: "Withdrawal Successful",
@@ -972,7 +949,6 @@ const WalletModal = (props) => {
           props.onClose();
         })
         .catch(function (error) {
-          console.log(error);
           setIsLoading(false);
           toast({
             title: "An error occured",
@@ -1270,7 +1246,6 @@ const WalletModal = (props) => {
                             borderRadius: "5px",
                           }}
                           onChange={(e) => {
-                            console.log(e.target.value);
                             let amount = e.target.value;
                             setWithdrawAmount(amount);
                             let toFloatAmount;

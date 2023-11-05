@@ -93,9 +93,7 @@ function Create() {
         .then((response) => {
           setRate(response.data);
         })
-        .catch((error) => {
-          console.log(error);
-        });
+        .catch((error) => {});
     } else {
       setRate(1);
     }
@@ -103,7 +101,6 @@ function Create() {
 
   const handleCurrencyChange = async (e) => {
     const network = `${e.target.value}`;
-    console.log(network);
 
     for (let index = 0; index < userWallets.length; index++) {
       if (userWallets[index][0] === network) {
@@ -181,7 +178,6 @@ function Create() {
     data.image = template.id;
     data.amount = parseFloat(data.amount);
     data.quantity = 1;
-    console.log(data);
 
     setIsLoading(true);
     await axios
@@ -204,10 +200,7 @@ function Create() {
         }, 5000);
       })
       .catch(function (error) {
-        console.log(error);
         if (error.response?.status === 400) {
-          console.log(error.response.status);
-
           toast({ title: "Error", status: "error" });
         }
 

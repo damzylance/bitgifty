@@ -39,7 +39,6 @@ function Reedeem() {
     setWindowSize({ width: window.innerWidth, height: window.innerHeight });
   };
   const handleRedeem = async (data) => {
-    console.log(data);
     setIsLoading(true);
     await axios
       .post(`${process.env.REACT_APP_BASE_URL}gift_cards/v2/redeem/`, data, {
@@ -48,7 +47,6 @@ function Reedeem() {
         },
       })
       .then(function (response) {
-        console.log(response);
         setIsLoading(false);
         toast({
           title: "Giftcard redeemed to your wallet",
@@ -62,7 +60,6 @@ function Reedeem() {
         }, 5000);
       })
       .catch(function (error) {
-        console.log(error.response);
         if (error.response?.status === 400) {
           if (error.response?.data?.error === "gift card not found") {
             toast({ title: "Gift card code invalid", status: "error" });
@@ -83,9 +80,7 @@ function Reedeem() {
       .then(function (response) {
         setHistory(response.data.results);
       })
-      .catch(function (error) {
-        console.log(error.tron);
-      });
+      .catch(function (error) {});
     handleWindowResize();
   }, []);
   return (

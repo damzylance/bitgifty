@@ -146,7 +146,6 @@ const CableForm = (props) => {
     // data.wallet_from = data.wallet_from.toLowerCase();
     // data.token_amount = data.data.split(",")[1];
 
-    console.log(data);
     if (tokenAmount >= walletBalance) {
       toast({ title: "insufficient balance", status: "warning" });
     } else {
@@ -170,7 +169,6 @@ const CableForm = (props) => {
           props.onClose();
         })
         .catch((error) => {
-          console.log(error);
           setIsLoading(false);
           toast({
             title: error.response.data.error,
@@ -190,7 +188,6 @@ const CableForm = (props) => {
         }
       )
       .then((response) => {
-        console.log(response.data);
         setIsLoading(false);
 
         setPlans(
@@ -199,9 +196,7 @@ const CableForm = (props) => {
           })
         );
       })
-      .catch((error) => {
-        console.log(error);
-      });
+      .catch((error) => {});
 
     // fetchPlans();
   }, []);

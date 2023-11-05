@@ -88,7 +88,6 @@ const DataForm = (props) => {
     data.amount = parseInt(data.type.split(",")[1]);
     data.bill_type = data.type.split(",")[0];
     data.country = "NG";
-    console.log(data);
 
     // data.token_amount = data.data.split(",")[1];
     // delete data.network;
@@ -117,7 +116,6 @@ const DataForm = (props) => {
           props.onClose();
         })
         .catch((error) => {
-          console.log(error);
           setIsLoading(false);
           toast({
             title: error.response.data.error,
@@ -127,7 +125,6 @@ const DataForm = (props) => {
     }
   };
   const fetchDataPlans = async () => {
-    console.log(props.telco);
     await axios
       .get(
         `${process.env.REACT_APP_BASE_URL}utilities/v2/get-bill-category?bill-type=data_bundle`,
@@ -138,7 +135,6 @@ const DataForm = (props) => {
         }
       )
       .then((response) => {
-        console.log(response.data.data);
         setPlans(
           response.data.data.filter((plan) => {
             return plan.biller_code === props.telco;
@@ -146,9 +142,7 @@ const DataForm = (props) => {
         );
         setIsLoading(false);
       })
-      .catch((error) => {
-        console.log(error);
-      });
+      .catch((error) => {});
   };
 
   const fetchRate = async (currency) => {

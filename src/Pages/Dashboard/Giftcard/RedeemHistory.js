@@ -10,12 +10,8 @@ function RedeemHistory() {
           Authorization: `Token ${localStorage.getItem("token")}`,
         },
       })
-      .then(function (response) {
-        console.log(response.data);
-      })
-      .catch(function (error) {
-        console.log(error.tron);
-      });
+      .then(function (response) {})
+      .catch(function (error) {});
   }, []);
   return (
     <DashboardLayout>

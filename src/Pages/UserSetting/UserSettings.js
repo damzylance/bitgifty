@@ -34,11 +34,9 @@ function UserSetting() {
         },
       })
       .then(function (response) {
-        console.log(response);
         setUser(response.data);
       })
       .catch(function (error) {
-        console.log(error);
         if (error?.response?.status === 500) {
           toast({ title: "Server error", status: "error" });
         } else if (error.response?.status === 403) {
@@ -73,7 +71,6 @@ function UserSetting() {
       <Box width={"full"}>
         <form
           onSubmit={handleSubmit((data) => {
-            console.log(data);
             setIsLoading(true);
             axios
               .put(`${process.env.REACT_APP_BASE_URL}auth/user/`, data, {
@@ -83,11 +80,9 @@ function UserSetting() {
               })
               .then(function (response) {
                 setIsLoading(false);
-                console.log(response);
               })
               .catch(function (error) {
                 setIsLoading(false);
-                console.log(error);
               });
           })}
         >

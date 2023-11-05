@@ -43,14 +43,11 @@ const Wallet = () => {
       .then(function (response) {
         if (response.data) {
           setIsLoading(false);
-          console.log(response.data);
 
           setTransactions(response.data);
         }
       })
-      .catch(function (error) {
-        console.log(error);
-      });
+      .catch(function (error) {});
   };
 
   useEffect(() => {

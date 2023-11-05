@@ -50,7 +50,6 @@ const Payout = () => {
       })
       .catch((error) => {
         setLoading(false);
-        console.log(error);
       });
   };
   const fetchBankAccounts = async () => {
@@ -61,7 +60,6 @@ const Payout = () => {
         },
       })
       .then((response) => {
-        console.log(response);
         setBankAccounts(response.data.results);
         setLoading(false);
       })

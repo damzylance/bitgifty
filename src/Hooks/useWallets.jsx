@@ -13,15 +13,12 @@ const useWallets = () => {
         },
       })
       .then((response) => {
-        console.log(response);
         const entries = Object.entries(response.data);
-        console.log(entries);
         setWalletsLoading(false);
         setUserWallets(entries);
       })
       .catch((error) => {
         setWalletsLoading(false);
-        console.log(error);
       });
   };
   useEffect(() => {
