@@ -14,6 +14,7 @@ const useWallets = () => {
       })
       .then((response) => {
         const entries = Object.entries(response.data);
+        console.log(entries);
         setWalletsLoading(false);
         setUserWallets(entries);
       })

@@ -84,16 +84,26 @@ function Create() {
   // };
   const fetchRate = async (network) => {
     if (network !== "naira") {
-      await axios
-        .get(`${process.env.REACT_APP_BASE_URL}swap/get_usdt/${network}`, {
-          headers: {
-            Authorization: `Token ${localStorage.getItem("token")}`,
-          },
-        })
-        .then((response) => {
-          setRate(response.data);
-        })
-        .catch((error) => {});
+      if (network === "btc") {
+        network = "bitcoin";
+      }
+
+      if (network === "usdt_tron" || network === "cusd") {
+        setRate(1);
+      } else {
+        await axios
+          .get(`${process.env.REACT_APP_BASE_URL}swap/get_usdt/${network}`, {
+            headers: {
+              Authorization: `Token ${localStorage.getItem("token")}`,
+            },
+          })
+          .then((response) => {
+            setRate(response.data);
+          })
+          .catch((error) => {
+            toast({ title: error.response?.data?.error, status: "error" });
+          });
+      }
     } else {
       setRate(1);
     }
@@ -129,7 +139,7 @@ function Create() {
           setIsNaira(false);
 
           setFee(1);
-          setAmountMin(10);
+          setAmountMin(5);
           setTotalAmount(parseFloat(getValues("amount")) + fee);
         } else if (network === "ethereum") {
           setIsNaira(false);
@@ -137,7 +147,7 @@ function Create() {
           setAmountMin(0.003);
           setFee(0.0004);
           setTotalAmount(parseFloat(getValues("amount")) + fee);
-        } else if (network === "tron") {
+        } else if (network === "usdt_tron") {
           setIsNaira(false);
 
           setFee(1);
@@ -145,8 +155,18 @@ function Create() {
           setTotalAmount(parseFloat(getValues("amount")) + fee);
         } else if (network === "naira") {
           setFee(100);
-          setAmountMin(1000);
+          setAmountMin(500);
           setIsNaira(true);
+          setTotalAmount(parseFloat(getValues("amount")) + fee);
+        } else if (network === "cusd") {
+          setFee(1);
+          setAmountMin(5);
+          setIsNaira(false);
+          setTotalAmount(parseFloat(getValues("amount")) + fee);
+        } else if (network === "ceur") {
+          setFee(1);
+          setAmountMin(5);
+          setIsNaira(false);
           setTotalAmount(parseFloat(getValues("amount")) + fee);
         }
       }
@@ -171,7 +191,7 @@ function Create() {
         });
       })
       .catch((error) => {
-        toast({ title: "Error fetching templates" });
+        toast({ title: error.response?.data?.error, status: "error" });
       });
   };
   const onSubmit = async (data) => {
@@ -200,9 +220,7 @@ function Create() {
         }, 5000);
       })
       .catch(function (error) {
-        if (error.response?.status === 400) {
-          toast({ title: "Error", status: "error" });
-        }
+        toast({ title: error.response?.data?.error, status: "error" });
 
         setIsLoading(false);
       });
@@ -535,7 +553,7 @@ function Create() {
               <FormControl width={"full"}>
                 <FormLabel>Select Currency</FormLabel>
                 <Select
-                  textTransform={"capitalize"}
+                  textTransform={"uppercase"}
                   required
                   name="currency"
                   {...register("currency", { onChange: handleCurrencyChange })}
@@ -543,8 +561,12 @@ function Create() {
                   <option>Select Coin</option>;
                   {userWallets.map((wallet, index) => {
                     return (
-                      <option value={wallet[0]} key={index}>
-                        <Text textTransform={"capitalize"}>{wallet[0]}</Text>
+                      <option
+                        // style={{ textTransform: "u" }}
+                        value={wallet[0]}
+                        key={index}
+                      >
+                        {wallet[0]}
                       </option>
                     );
                   })}

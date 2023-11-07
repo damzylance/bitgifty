@@ -142,24 +142,67 @@ const DataForm = (props) => {
         );
         setIsLoading(false);
       })
-      .catch((error) => {});
+      .catch((error) => {
+        toast({
+          title: error.response.data.error,
+          status: "warning",
+        });
+      });
   };
 
   const fetchRate = async (currency) => {
     let rate;
-    setIsLoading(true);
-    await axios
-      .get(`${process.env.REACT_APP_BASE_URL}utilities/naira/${currency}`, {
-        headers: { Authorization: `Token ${localStorage.getItem("token")}` },
-      })
-      .then((response) => {
-        setTokenToNairaRate(response.data);
-        rate = response.data;
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        setIsLoading(false);
-      });
+    if (currency === "btc") {
+      currency = "bitcoin";
+    }
+
+    if (currency === "naira") {
+      rate = 1;
+      setTokenToNairaRate(parseFloat(1));
+    } else if (currency === "usdt_tron" || currency === "cusd") {
+      setIsLoading(true);
+      await axios
+        .get(`${process.env.REACT_APP_BASE_URL}swap/get-dollar-price`, {
+          headers: {
+            Authorization: `Token ${localStorage.getItem("token")}`,
+          },
+        })
+        .then((response) => {
+          setTokenToNairaRate(parseFloat(response.data));
+          setIsLoading(false);
+          rate = parseFloat(response.data);
+        })
+        .catch((error) => {
+          setIsLoading(false);
+          toast({
+            title: error.response.data.error,
+            status: "warning",
+          });
+        });
+    } else {
+      setIsLoading(true);
+      await axios
+        .get(
+          `${process.env.REACT_APP_BASE_URL}utilities/v2/naira/${currency}`,
+          {
+            headers: {
+              Authorization: `Token ${localStorage.getItem("token")}`,
+            },
+          }
+        )
+        .then((response) => {
+          setTokenToNairaRate(parseFloat(response.data));
+          setIsLoading(false);
+          rate = parseFloat(response.data);
+        })
+        .catch((error) => {
+          setIsLoading(false);
+          toast({
+            title: error.response.data.error,
+            status: "warning",
+          });
+        });
+    }
 
     return rate;
   };
@@ -171,10 +214,14 @@ const DataForm = (props) => {
         setWalletBalance(userWallets[index][1].balance.availableBalance);
       }
     }
+
     const rate = await fetchRate(e.target.value);
     // alert(currency);
-
-    setTokenAmount(rate * nairaAmount);
+    if (network === "usdt_tron" || network === "cusd") {
+      setTokenAmount(nairaAmount / rate);
+    } else {
+      setTokenAmount(rate * nairaAmount);
+    }
   };
   const handlePlanChange = (e) => {
     const nairaAmount = parseInt(e.target.value.split(",")[1]);
@@ -233,7 +280,11 @@ const DataForm = (props) => {
               mt={"5px"}
             >
               <Text fontSize={"xs"} textAlign={"right"}>
-                ≈ {tokenAmount.toFixed(2)} {currency}
+                ≈{" "}
+                {currency === "btc"
+                  ? tokenAmount.toFixed(6)
+                  : tokenAmount.toFixed(3)}{" "}
+                {currency}
               </Text>
               <Text color={"red"} fontSize={"xx-small"}>
                 {errors.amount && errors.amount.message}
@@ -283,13 +334,14 @@ const DataForm = (props) => {
             </FormLabel>
 
             <Select
+              textTransform={"uppercase"}
               {...register("chain", { onChange: handleCurrencyChange })}
               required
             >
               <option>Select Coin</option>;
               {userWallets
-                .filter((wallet, index) => {
-                  return wallet[0] === "celo" || wallet[0] === "tron";
+                .filter((wallet) => {
+                  return wallet[0] !== "eth";
                 })
                 .map((wallet, index) => {
                   return (

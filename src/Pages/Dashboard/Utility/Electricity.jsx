@@ -20,21 +20,21 @@ import useWallets from "../../../Hooks/useWallets";
 const Electricity = (props) => {
   const [page, setPage] = useState("list");
   const [merchants, setMerchants] = useState([
-    { name: "IKEDC TOP UP (PREPAID)", id: "BIL110" },
-    { name: "EKEDC PREPAID TOPUP", id: "BIL111" },
-    { name: "KANO DISCO PREPAID TOPUP", id: "BIL115" },
+    { name: "IKEDC PREPAID", id: "BIL113" },
+    { name: "EKEDC PREPAID TOPUP", id: "BIL112" },
     {
-      name: "PHC DISCO PREPAID TOPUP",
-      id: "114",
+      name: "ABUJA DISCO Prepaid",
+      id: "BIL204",
     },
-
     {
       name: "IBADAN DISCO ELECTRICITY PREPAID",
-      id: "BIL116",
+      id: "BIL114",
     },
+    { name: "KANO DISCO PREPAID TOPUP", id: "BIL120" },
+
     {
-      name: "KADUNA DISCO PREPAID TOPUP",
-      id: "BIL112",
+      name: "KADUNA PREPAID",
+      id: "BIL119",
     },
   ]);
 
@@ -102,8 +102,13 @@ const CableForm = (props) => {
   //     setTokenAmount(tokenToNairaRate * nairaAmount);
   //   };
   const handleAmountChange = (e) => {
-    setNairaAmount(e.target.value);
-    setTokenAmount(e.target.value * tokenToNairaRate);
+    const tempNairaAmount = e.target.value;
+    setNairaAmount(tempNairaAmount);
+    if (currency === "usdt_tron" || currency === "cusd") {
+      setTokenAmount(tempNairaAmount / tokenToNairaRate);
+    } else {
+      setTokenAmount(tokenToNairaRate * tempNairaAmount);
+    }
   };
   const handleCurrencyChange = async (e) => {
     const network = e.target.value;
@@ -113,29 +118,69 @@ const CableForm = (props) => {
         setWalletBalance(userWallets[index][1].balance.availableBalance);
       }
     }
-    if (network === "naira") {
-      setTokenAmount(0);
-    } else {
-      const rate = await fetchRate(e.target.value.toLowerCase());
-      // alert(currency);
 
+    const rate = await fetchRate(e.target.value);
+    // alert(currency);
+    if (network === "usdt_tron" || network === "cusd") {
+      setTokenAmount(nairaAmount / rate);
+    } else {
       setTokenAmount(rate * nairaAmount);
     }
   };
 
   const fetchRate = async (currency) => {
     let rate;
-    setIsLoading(true);
-    await axios
-      .get(`${process.env.REACT_APP_BASE_URL}utilities/naira/${currency}`, {
-        headers: { Authorization: `Token ${localStorage.getItem("token")}` },
-      })
-      .then((response) => {
-        setTokenToNairaRate(response.data);
-        rate = response.data;
-        setIsLoading(false);
-      })
-      .catch((error) => {});
+    if (currency === "btc") {
+      currency = "bitcoin";
+    }
+
+    if (currency === "naira") {
+      rate = 1;
+      setTokenToNairaRate(parseFloat(1));
+    } else if (currency === "usdt_tron" || currency === "cusd") {
+      setIsLoading(true);
+      await axios
+        .get(`${process.env.REACT_APP_BASE_URL}swap/get-dollar-price`, {
+          headers: {
+            Authorization: `Token ${localStorage.getItem("token")}`,
+          },
+        })
+        .then((response) => {
+          setTokenToNairaRate(parseFloat(response.data));
+          setIsLoading(false);
+          rate = parseFloat(response.data);
+        })
+        .catch((error) => {
+          setIsLoading(false);
+          toast({
+            title: error.response.data.error,
+            status: "warning",
+          });
+        });
+    } else {
+      setIsLoading(true);
+      await axios
+        .get(
+          `${process.env.REACT_APP_BASE_URL}utilities/v2/naira/${currency}`,
+          {
+            headers: {
+              Authorization: `Token ${localStorage.getItem("token")}`,
+            },
+          }
+        )
+        .then((response) => {
+          setTokenToNairaRate(parseFloat(response.data));
+          setIsLoading(false);
+          rate = parseFloat(response.data);
+        })
+        .catch((error) => {
+          setIsLoading(false);
+          toast({
+            title: error.response.data.error,
+            status: "warning",
+          });
+        });
+    }
 
     return rate;
   };
@@ -161,6 +206,7 @@ const CableForm = (props) => {
           }
         )
         .then((response) => {
+          console.log(response.data);
           setIsLoading(false);
           toast({
             title: "Purchase successful",
@@ -177,29 +223,29 @@ const CableForm = (props) => {
         });
     }
   };
-  useEffect(() => {
-    axios
-      .get(
-        `${process.env.REACT_APP_BASE_URL}utilities/v2/get-bill-category?bill-type=power`,
-        {
-          headers: {
-            Authorization: `Token ${localStorage.getItem("token")}`,
-          },
-        }
-      )
-      .then((response) => {
-        setIsLoading(false);
+  // useEffect(() => {
+  //   setIsLoading(true);
+  //   axios
+  //     .get(
+  //       `${process.env.REACT_APP_BASE_URL}utilities/v2/get-bill-category?bill-type=power`,
+  //       {
+  //         headers: {
+  //           Authorization: `Token ${localStorage.getItem("token")}`,
+  //         },
+  //       }
+  //     )
+  //     .then((response) => {
+  //       console.log(response);
+  //       setIsLoading(false);
 
-        setPlans(
-          response.data.data.filter((plan) => {
-            return plan.biller_code === props.cable;
-          })
-        );
-      })
-      .catch((error) => {});
-
-    // fetchPlans();
-  }, []);
+  //       setPlans(
+  //         response.data.data.filter((plan) => {
+  //           return plan.biller_code === props.cable;
+  //         })
+  //       );
+  //     })
+  //     .catch((error) => {});
+  // }, []);
 
   return (
     <VStack my={"40px"} gap={"20px"} width={"full"}>
@@ -258,10 +304,6 @@ const CableForm = (props) => {
               required
               {...register("amount", {
                 onChange: handleAmountChange,
-                max: {
-                  value: walletBalance / tokenToNairaRate,
-                  message: "Insufficient funds",
-                },
               })}
             />
             <HStack
@@ -271,7 +313,11 @@ const CableForm = (props) => {
               mt={"5px"}
             >
               <Text fontSize={"xs"} textAlign={"right"}>
-                ≈ {tokenAmount.toFixed(2)} {currency}
+                ≈{" "}
+                {currency === "btc"
+                  ? tokenAmount.toFixed(6)
+                  : tokenAmount.toFixed(3)}{" "}
+                {currency}
               </Text>
               <Text color={"red"} fontSize={"xx-small"}>
                 {errors.amount && errors.amount.message}
@@ -292,13 +338,17 @@ const CableForm = (props) => {
               required
             >
               <option>Select Coin</option>;
-              {userWallets.map((wallet, index) => {
-                return (
-                  <option value={wallet[0]} key={index}>
-                    {wallet[0]}
-                  </option>
-                );
-              })}
+              {userWallets
+                .filter((wallet) => {
+                  return wallet[0] !== "eth";
+                })
+                .map((wallet, index) => {
+                  return (
+                    <option value={wallet[0]} key={index}>
+                      {wallet[0]}
+                    </option>
+                  );
+                })}
             </Select>
             <Text mt={"10px"}>Balance: {walletBalance}</Text>
           </FormControl>

@@ -51,6 +51,7 @@ const Airtime = (props) => {
                       }}
                       name={provider.name}
                       logo={provider.logo}
+                      key={provider.id}
                     />
                   );
                 })
@@ -105,6 +106,7 @@ const AirtimeForm = (props) => {
   const [tokenToNairaRate, setTokenToNairaRate] = useState(0);
   const [tokenAmount, setTokenAmount] = useState(0);
   const [currency, setCurrency] = useState("");
+  const [minAmount, setMinAmount] = useState("");
 
   const { userWallets, walletsLoading } = useWallets();
 
@@ -138,31 +140,68 @@ const AirtimeForm = (props) => {
   };
 
   const handleAmountChange = (e) => {
-    setNairaAmount(e.target.value);
-    setTokenAmount(e.target.value * tokenToNairaRate);
+    const tempNairaAmount = e.target.value;
+    setNairaAmount(tempNairaAmount);
+    if (currency === "usdt_tron" || currency === "cusd") {
+      setTokenAmount(tempNairaAmount / tokenToNairaRate);
+    } else {
+      setTokenAmount(tokenToNairaRate * tempNairaAmount);
+    }
   };
   const fetchRate = async (currency) => {
     let rate;
-    setIsLoading(true);
-    if (currency === "usdt_tron") {
-      currency = "usd";
+    if (currency === "btc") {
+      currency = "bitcoin";
     }
-    await axios
-      .get(`${process.env.REACT_APP_BASE_URL}utilities/v2/naira/${currency}`, {
-        headers: { Authorization: `Token ${localStorage.getItem("token")}` },
-      })
-      .then((response) => {
-        setTokenToNairaRate(response.data);
-        setIsLoading(false);
-        rate = response.data;
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        toast({
-          title: error.response.data.error,
-          status: "warning",
+
+    if (currency === "naira") {
+      rate = 1;
+      setTokenToNairaRate(parseFloat(1));
+    } else if (currency === "usdt_tron" || currency === "cusd") {
+      setIsLoading(true);
+      await axios
+        .get(`${process.env.REACT_APP_BASE_URL}swap/get-dollar-price`, {
+          headers: {
+            Authorization: `Token ${localStorage.getItem("token")}`,
+          },
+        })
+        .then((response) => {
+          setTokenToNairaRate(parseFloat(response.data));
+          setIsLoading(false);
+          rate = parseFloat(response.data);
+        })
+        .catch((error) => {
+          setIsLoading(false);
+          toast({
+            title: error.response.data.error,
+            status: "warning",
+          });
         });
-      });
+    } else {
+      setIsLoading(true);
+      await axios
+        .get(
+          `${process.env.REACT_APP_BASE_URL}utilities/v2/naira/${currency}`,
+          {
+            headers: {
+              Authorization: `Token ${localStorage.getItem("token")}`,
+            },
+          }
+        )
+        .then((response) => {
+          setTokenToNairaRate(parseFloat(response.data));
+          setIsLoading(false);
+          rate = parseFloat(response.data);
+        })
+        .catch((error) => {
+          setIsLoading(false);
+          toast({
+            title: error.response.data.error,
+            status: "warning",
+          });
+        });
+    }
+
     return rate;
   };
   //   const handleCurrencyChange = (e) =>
@@ -174,24 +213,20 @@ const AirtimeForm = (props) => {
         setWalletBalance(userWallets[index][1].balance.availableBalance);
       }
     }
+    if (network === "btc") {
+      setMinAmount(5000);
+    } else {
+      setMinAmount(100);
+    }
     const rate = await fetchRate(e.target.value);
     // alert(currency);
-
-    setTokenAmount(rate * nairaAmount);
+    if (network === "usdt_tron" || network === "cusd") {
+      setTokenAmount(nairaAmount / rate);
+    } else {
+      setTokenAmount(rate * nairaAmount);
+    }
   };
-  useEffect(() => {
-    axios
-      .get(
-        `${process.env.REACT_APP_BASE_URL}utilities/v2/get-bill-category?bill-type=airtime`,
-        {
-          headers: { Authorization: `Token ${localStorage.getItem("token")}` },
-        }
-      )
-      .then((response) => {
-        setIsLoading(false);
-      })
-      .catch((error) => {});
-  }, []);
+
   return (
     <VStack my={"40px"} gap={"20px"} width={"full"}>
       <HStack width={"full"} alignItems={"center"}>
@@ -242,13 +277,16 @@ const AirtimeForm = (props) => {
               outline={"none"}
               fontSize={"16px"}
               type="number"
-              min={100}
               required
               {...register("amount", {
                 onChange: handleAmountChange,
-                max: {
-                  value: walletBalance / tokenToNairaRate,
-                  message: "Insufficient funds",
+                // max: {
+                //   value: walletBalance / tokenToNairaRate,
+                //   message: "Insufficient funds",
+                // },
+                min: {
+                  value: minAmount,
+                  message: `Minimum recharge amount is ${minAmount}`,
                 },
               })}
             />
@@ -259,7 +297,11 @@ const AirtimeForm = (props) => {
               mt={"5px"}
             >
               <Text fontSize={"xs"} textAlign={"right"}>
-                ≈ {tokenAmount.toFixed(2)} {currency}
+                ≈{" "}
+                {currency === "btc"
+                  ? tokenAmount.toFixed(6)
+                  : tokenAmount.toFixed(4)}{" "}
+                {currency}
               </Text>
               <Text color={"red"} fontSize={"xx-small"}>
                 {errors.amount && errors.amount.message}
@@ -281,13 +323,17 @@ const AirtimeForm = (props) => {
               required
             >
               <option>Select Coin</option>;
-              {userWallets.map((wallet, index) => {
-                return (
-                  <option value={wallet[0]} key={index}>
-                    {wallet[0].toUpperCase()}
-                  </option>
-                );
-              })}
+              {userWallets
+                .filter((wallet) => {
+                  return wallet[0] !== "eth";
+                })
+                .map((wallet, index) => {
+                  return (
+                    <option value={wallet[0]} key={index}>
+                      {wallet[0].toUpperCase()}
+                    </option>
+                  );
+                })}
             </Select>
             <Text mt={"10px"}>Balance: {walletBalance}</Text>
             <FormErrorMessage></FormErrorMessage>

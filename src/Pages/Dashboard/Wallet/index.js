@@ -42,7 +42,7 @@ import { AiFillPlusSquare } from "react-icons/ai";
 import { PayoutModal } from "../../UserSetting/Payout";
 import useWallets from "../../../Hooks/useWallets";
 import { RxEyeClosed } from "react-icons/rx";
-import { AddIcon } from "@chakra-ui/icons";
+import { AddIcon, CopyIcon } from "@chakra-ui/icons";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -61,192 +61,117 @@ function Wallet() {
   };
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const [wallets, setWallets] = useState([]);
+  const [wallets, setWallets] = useState(userWallets);
   const [isLoading, setIsLoading] = useState(walletsLoading);
   const [fiatWallets, setFiatWallets] = useState([]);
   const [totalInDollars, setTotalInDollars] = useState(0);
 
   const fetchWallets = async () => {
-    if (userWallets) {
-      setIsLoading(false);
-
-      const labels = [];
-      const balances = [];
-      let sum = 0;
-      for (let index = 0; index < userWallets.length; index++) {
-        const coinWallet = userWallets[index];
-        const balance = coinWallet[1].balance.availableBalance;
-        if (coinWallet[0] === "btc") {
-          const btcInDollar = await BalanceToDollar(
-            `BTC`,
-            isNaN(balance) ? 0 : balance
-          );
-          sum += btcInDollar;
-          balances.push(btcInDollar);
-          labels.push("BTC");
-        } else if (coinWallet[0] === "celo") {
-          const celoInDollar = await BalanceToDollar(
-            `CELO`,
-            isNaN(balance) ? 0 : balance
-          );
-          sum += celoInDollar;
-          balances.push(celoInDollar);
-          labels.push("CELO");
-        } else if (coinWallet[0] === "tron") {
-          const tronInDollar = await BalanceToDollar(
-            `TRON`,
-            isNaN(balance) ? 0 : balance
-          );
-          sum += tronInDollar;
-          balances.push(tronInDollar);
-          labels.push("BTC");
-        } else if (coinWallet[0] === "ethereum") {
-          const ethInDollar = await BalanceToDollar(
-            `ETH`,
-            isNaN(balance) ? 0 : balance
-          );
-          sum += ethInDollar;
-          balances.push(ethInDollar);
-          labels.push("ETH");
-        } else if (coinWallet[0] === "naira") {
-          const balance = Math.round(coinWallet[1].balance) / 850;
-          sum += isNaN(balance) ? 0 : balance;
-          balances.push(balance);
-          labels.push("NGN");
-        }
-
-        setTotalInDollars(sum.toFixed(2));
-        setChartData({
-          labels: labels,
-          datasets: [
-            {
-              label: "Balance",
-              data: balances,
-              backgroundColor: [
-                "#492b7c",
-                "#ff8600",
-                "#fff",
-                "#f8a6e4",
-                "#6A6BD5",
-                "#624CAB",
-              ],
-              borderColor: [
-                "rgba(255, 99, 132, 1)",
-                "rgba(54, 162, 235, 1)",
-                "rgba(255, 206, 86, 1)",
-                "rgba(75, 192, 192, 1)",
-                "rgba(153, 102, 255, 1)",
-                "rgba(255, 159, 64, 1)",
-              ],
-              borderWidth: 1,
+    const labels = [];
+    const balances = [];
+    let sum = 0;
+    for (let index = 0; index < userWallets.length; index++) {
+      const coinWallet = userWallets[index];
+      const balance = coinWallet[1].balance.availableBalance;
+      if (coinWallet[0] === "btc") {
+        const btcInDollar = await BalanceToDollar(
+          `BTC`,
+          isNaN(balance) ? 0 : balance
+        );
+        sum += btcInDollar;
+        balances.push(btcInDollar);
+        labels.push("BTC");
+      } else if (coinWallet[0] === "celo") {
+        const celoInDollar = await BalanceToDollar(
+          `CELO`,
+          isNaN(balance) ? 0 : balance
+        );
+        sum += celoInDollar;
+        balances.push(celoInDollar);
+        labels.push("CELO");
+      } else if (coinWallet[0] === "cusd") {
+        const cusdInDollar = await BalanceToDollar(
+          `CUSD`,
+          isNaN(balance) ? 0 : balance
+        );
+        sum += cusdInDollar;
+        balances.push(cusdInDollar);
+        labels.push("CUSD");
+      } else if (coinWallet[0] === "ceur") {
+        const ceurInDollar = await BalanceToDollar(
+          `CEUR`,
+          isNaN(balance) ? 0 : balance
+        );
+        sum += ceurInDollar;
+        balances.push(ceurInDollar);
+        labels.push("CEUR");
+      } else if (coinWallet[0] === "usdt_tron") {
+        const usdtInDollar = await BalanceToDollar(
+          `USDT`,
+          isNaN(balance) ? 0 : balance
+        );
+        sum += usdtInDollar;
+        balances.push(usdtInDollar);
+        labels.push("USDT");
+      } else if (coinWallet[0] === "eth") {
+        const ethInDollar = await BalanceToDollar(
+          `ETH`,
+          isNaN(balance) ? 0 : balance
+        );
+        sum += ethInDollar;
+        balances.push(ethInDollar);
+        labels.push("ETH");
+      } else if (coinWallet[0] === "naira") {
+        const dollarToNaira = await axios
+          .get(`${process.env.REACT_APP_BASE_URL}swap/get-dollar-price`, {
+            headers: {
+              Authorization: `Token ${localStorage.getItem("token")}`,
             },
-          ],
-        });
+          })
+          .then((response) => {
+            setIsLoading(false);
+            return response.data;
+          })
+          .catch((error) => {});
+        const balance =
+          Math.round(coinWallet[1].balance.availableBalance) / dollarToNaira;
+        sum += isNaN(balance) ? 0 : balance;
+        balances.push(balance);
+        labels.push("NGN");
       }
-    } else {
-      alert("no wallets");
+
+      setTotalInDollars(sum.toFixed(2));
+      setChartData({
+        labels: labels,
+        datasets: [
+          {
+            label: "Balance",
+            data: balances,
+            backgroundColor: [
+              "#492b7c",
+              "#ff8600",
+              "#fff",
+              "#f8a6e4",
+              "#6A6BD5",
+              "#624CAB",
+              "#624CBB",
+            ],
+            borderColor: [
+              "rgba(255, 99, 132, 1)",
+              "rgba(54, 162, 235, 1)",
+              "rgba(255, 206, 86, 1)",
+              "rgba(75, 192, 192, 1)",
+              "rgba(153, 102, 255, 1)",
+              "rgba(255, 159, 64, 1)",
+              "rgba(255, 150, 63, 1)",
+            ],
+            borderWidth: 1,
+          },
+        ],
+      });
+      console.table(balances);
     }
-    // await axios
-    //   .get(`${process.env.REACT_APP_BASE_URL}wallets/`, {
-    //     headers: {
-    //       Authorization: `Token ${localStorage.getItem("token")}`,
-    //     },
-    //   })
-    //   .then(async function (response) {
-    //     const entries = Object.entries(response.data);
-    //     if (response.data) {
-    //       setIsLoading(false);
-    //       setWallets(entries);
-    //       setFiatWallets(
-    //         entries.filter((element) => {
-    //           return element[1].type === "fiat";
-    //         })
-    //       );
-    //       const labels = [];
-    //       const balances = [];
-    //       let sum = 0;
-    //       for (let index = 0; index < entries.length; index++) {
-    //         const coinWallet = entries[index];
-    //         if (coinWallet[0] === "Bitcoin") {
-    //           const balance =
-    //             coinWallet[1].info.incoming - coinWallet[1].info.outgoing;
-    //           const btcInDollar = await BalanceToDollar(
-    //             `BTC`,
-    //             isNaN(balance) ? 0 : balance
-    //           );
-    //           sum += btcInDollar;
-    //           balances.push(btcInDollar);
-    //           labels.push("BTC");
-    //         } else if (coinWallet[0] === "Bnb") {
-    //           sum += 0;
-    //           balances.push(0);
-    //           labels.push("BNB");
-    //         } else if (coinWallet[0] === "Celo") {
-    //           const balance = coinWallet[1].info.celo;
-
-    //           const celoInDollar = await BalanceToDollar(
-    //             `CELO`,
-    //             isNaN(balance) ? 0 : balance
-    //           );
-    //           sum += celoInDollar;
-    //           balances.push(celoInDollar);
-    //           labels.push("CELO");
-    //         } else if (coinWallet[0] === "Ethereum") {
-    //           const balance = coinWallet[1].info.balance;
-    //           const ethInDollar = await BalanceToDollar(
-    //             `ETH`,
-    //             isNaN(balance) ? 0 : balance
-    //           );
-    //           sum += ethInDollar;
-    //           balances.push(ethInDollar);
-    //           labels.push("ETH");
-    //         } else if (coinWallet[0] === "Tron") {
-    //           const balance = coinWallet[1].info.balance / 1000000;
-    //           const trxInDollar = await BalanceToDollar(
-    //             `TRON`,
-    //             isNaN(balance) ? 0 : balance
-    //           );
-    //           sum += trxInDollar;
-    //           balances.push(trxInDollar);
-    //           labels.push("TRON");
-    //         } else if (coinWallet[0] === "naira") {
-    //           const balance = Math.round(coinWallet[1].balance) / 850;
-    //           sum += isNaN(balance) ? 0 : balance;
-    //           balances.push(balance);
-    //           labels.push("NGN");
-    //         }
-
-    //         setTotalInDollars(sum.toFixed(2));
-    //         setChartData({
-    //           labels: labels,
-    //           datasets: [
-    //             {
-    //               label: "Balance",
-    //               data: balances,
-    //               backgroundColor: [
-    //                 "#492b7c",
-    //                 "#ff8600",
-    //                 "#fff",
-    //                 "#f8a6e4",
-    //                 "#6A6BD5",
-    //                 "#624CAB",
-    //               ],
-    //               borderColor: [
-    //                 "rgba(255, 99, 132, 1)",
-    //                 "rgba(54, 162, 235, 1)",
-    //                 "rgba(255, 206, 86, 1)",
-    //                 "rgba(75, 192, 192, 1)",
-    //                 "rgba(153, 102, 255, 1)",
-    //                 "rgba(255, 159, 64, 1)",
-    //               ],
-    //               borderWidth: 1,
-    //             },
-    //           ],
-    //         });
-    //       }
-    //     }
-    //   })
-    //   .catch(function (error) {});
+    setIsLoading(false);
   };
   const [chartData, setChartData] = useState({
     labels: [],
@@ -301,7 +226,7 @@ function Wallet() {
 
   useEffect(() => {
     fetchWallets();
-  }, []);
+  }, [userWallets]);
 
   const BalanceToDollar = async (coin, balance) => {
     let rate;
@@ -353,13 +278,20 @@ function Wallet() {
                 <Text fontSize={"40px"} fontWeight={"600"}>
                   {totalInDollars} cUSD
                 </Text>
-                <Text fontSize={"18px"} fontWeight={"600"}>
-                  ${totalInDollars}
-                </Text>
+                {walletsLoading ? (
+                  <Spinner />
+                ) : (
+                  <Text fontSize={"18px"} fontWeight={"600"}>
+                    ${totalInDollars}
+                  </Text>
+                )}
               </VStack>
               <Box width={"150px"}>
-                {" "}
-                <Doughnut options={chartOptions} data={chartData} />
+                {walletsLoading ? (
+                  <Spinner />
+                ) : (
+                  <Doughnut options={chartOptions} data={chartData} />
+                )}
               </Box>
             </HStack>
           </VStack>
@@ -884,10 +816,7 @@ const WalletModal = (props) => {
               status: "warning",
             });
           } else {
-            toast({
-              title: "An error occured",
-              status: "warning",
-            });
+            toast({ title: error.response?.data?.error, status: "error" });
           }
         });
     }
@@ -951,8 +880,8 @@ const WalletModal = (props) => {
         .catch(function (error) {
           setIsLoading(false);
           toast({
-            title: "An error occured",
-            status: "warning",
+            title: error.response?.data?.error,
+            status: "error",
           });
         });
     }
@@ -978,7 +907,11 @@ const WalletModal = (props) => {
         {props.page === "deposit" && (
           <>
             {" "}
-            <DrawerHeader color={"brand.700"} textAlign={"center"}>
+            <DrawerHeader
+              color={"brand.700"}
+              textAlign={"center"}
+              textTransform={"uppercase"}
+            >
               {props.network} Wallet Address
             </DrawerHeader>
             <DrawerBody>
@@ -992,9 +925,23 @@ const WalletModal = (props) => {
                   >
                     {props.address}
                   </Text>
-                  <Text fontSize={"s"}>
-                    Copy wallet address to deposit coin
-                  </Text>
+                  <HStack>
+                    <Text fontSize={"s"}>
+                      Copy wallet address to deposit coin
+                    </Text>
+                    <CopyIcon
+                      fontSize={"2xl"}
+                      cursor={"pointer"}
+                      _hover={{ color: "blue" }}
+                      onClick={() => {
+                        navigator.clipboard.writeText(props.address);
+                        toast({
+                          title: "Wallet address copied",
+                          status: "success",
+                        });
+                      }}
+                    />
+                  </HStack>
                 </VStack>
               </Box>{" "}
             </DrawerBody>
@@ -1265,7 +1212,7 @@ const WalletModal = (props) => {
                               }
                             } else if (props.network === "celo") {
                               let coinErrors = [];
-                              if (toFloatAmount < 20) {
+                              if (toFloatAmount < 1) {
                                 coinErrors.push("Minimum withdrawal is 20");
                                 setErrors(coinErrors);
                               } else {
@@ -1275,7 +1222,7 @@ const WalletModal = (props) => {
                             } else if (props.network === "usdt_tron") {
                               let coinErrors = [];
                               if (toFloatAmount < 10) {
-                                coinErrors.push("Minimum withdrawal is 0  ");
+                                coinErrors.push("Minimum withdrawal is 10  ");
                                 setErrors(coinErrors);
                               } else {
                                 setErrors([]);
@@ -1283,7 +1230,7 @@ const WalletModal = (props) => {
                               }
                             } else if (props.network === "cusd") {
                               let coinErrors = [];
-                              if (toFloatAmount < 10) {
+                              if (toFloatAmount < 1) {
                                 coinErrors.push("Minimum withdrawal is 10  ");
                                 setErrors(coinErrors);
                               } else {
@@ -1384,7 +1331,11 @@ const WalletModal = (props) => {
         )}
         {props.page === "swap" && (
           <>
-            <DrawerHeader color={"brand.700"} textAlign={"center"}>
+            <DrawerHeader
+              color={"brand.700"}
+              textAlign={"center"}
+              textTransform={"uppercase"}
+            >
               Swap {props.network} to NGN
             </DrawerHeader>
             <DrawerBody>
@@ -1488,7 +1439,7 @@ const WalletModal = (props) => {
                                   }
                                 } else if (props.network === "celo") {
                                   let coinErrors = [];
-                                  if (toFloatAmount < 20) {
+                                  if (toFloatAmount < 1) {
                                     coinErrors.push("Minimum amount is 20");
                                     setErrors(coinErrors);
                                   } else {
@@ -1508,7 +1459,7 @@ const WalletModal = (props) => {
                                 } else if (props.network === "usdt_tron") {
                                   let coinErrors = [];
 
-                                  if (toFloatAmount < 20) {
+                                  if (toFloatAmount < 1) {
                                     coinErrors.push("Minimum amount is 20 ");
                                     setErrors(coinErrors);
                                   } else {
@@ -1517,7 +1468,7 @@ const WalletModal = (props) => {
                                   }
                                 } else if (props.network === "cusd") {
                                   let coinErrors = [];
-                                  if (toFloatAmount < 10) {
+                                  if (toFloatAmount < 1) {
                                     coinErrors.push(
                                       "Minimum withdrawal is 10  "
                                     );
@@ -1526,7 +1477,7 @@ const WalletModal = (props) => {
                                     setErrors([]);
                                     setFloatAmount(toFloatAmount);
                                   }
-                                } else if (props.network === "Ethereum") {
+                                } else if (props.network === "eth") {
                                   let coinErrors = [];
                                   if (toFloatAmount < 0.001) {
                                     coinErrors.push(

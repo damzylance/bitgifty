@@ -19,8 +19,8 @@ import useWallets from "../../../Hooks/useWallets";
 const Cable = (props) => {
   const [page, setPage] = useState("list");
   const [merchants, setMerchants] = useState([
-    { name: "DSTV", logo: "/assets/images/dstv.png", id: "BIL119" },
-    { name: "GOTV", logo: "/assets/images/gotv.png", id: "BIL120" },
+    { name: "DSTV", logo: "/assets/images/dstv.png", id: "BIL121" },
+    { name: "GOTV", logo: "/assets/images/gotv.png", id: "BIL122" },
     { name: "STARTIMES", logo: "/assets/images/startimes.png", id: "BIL123" },
   ]);
 
@@ -74,7 +74,7 @@ const CableForm = (props) => {
     formState: { errors },
     getValues,
   } = useForm();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(walletsLoading);
   const [plans, setPlans] = useState([]);
   const [tokenAmount, setTokenAmount] = useState(0);
   const [nairaAmount, setNairaAmount] = useState();
@@ -100,35 +100,86 @@ const CableForm = (props) => {
 
     setTokenAmount(rate * nairaAmount);
   };
-  const fetchPlans = async () => {
+  const fetchDataPlans = async () => {
+    setIsLoading(true);
     await axios
       .get(
-        `${
-          process.env.REACT_APP_BASE_URL
-        }utilities/cable-plan/?cable__name=${props.name.toUpperCase()}`,
+        `${process.env.REACT_APP_BASE_URL}utilities/v2/get-bill-category?bill-type=cable`,
         {
-          headers: { Authorization: `Token ${localStorage.getItem("token")}` },
+          headers: {
+            Authorization: `Token ${localStorage.getItem("token")}`,
+          },
         }
       )
       .then((response) => {
-        setPlans(response.data.results);
-      })
-      .catch((error) => {});
-  };
-
-  const fetchRate = async (currency) => {
-    let rate;
-    setIsLoading(true);
-    await axios
-      .get(`${process.env.REACT_APP_BASE_URL}utilities/naira/${currency}`, {
-        headers: { Authorization: `Token ${localStorage.getItem("token")}` },
-      })
-      .then((response) => {
-        setTokenToNairaRate(response.data);
-        rate = response.data;
+        console.log(response);
+        setPlans(
+          response.data.data.filter((plan) => {
+            return plan.biller_code === props.cable;
+          })
+        );
         setIsLoading(false);
       })
-      .catch((error) => {});
+      .catch((error) => {
+        toast({
+          title: error.response.data.error,
+          status: "warning",
+        });
+      });
+  };
+  const fetchRate = async (currency) => {
+    let rate;
+    if (currency === "btc") {
+      currency = "bitcoin";
+    }
+
+    if (currency === "naira") {
+      rate = 1;
+      setTokenToNairaRate(parseFloat(1));
+    } else if (currency === "usdt_tron" || currency === "cusd") {
+      setIsLoading(true);
+      await axios
+        .get(`${process.env.REACT_APP_BASE_URL}swap/get-dollar-price`, {
+          headers: {
+            Authorization: `Token ${localStorage.getItem("token")}`,
+          },
+        })
+        .then((response) => {
+          setTokenToNairaRate(parseFloat(response.data));
+          setIsLoading(false);
+          rate = parseFloat(response.data);
+        })
+        .catch((error) => {
+          setIsLoading(false);
+          toast({
+            title: error.response.data.error,
+            status: "warning",
+          });
+        });
+    } else {
+      setIsLoading(true);
+      await axios
+        .get(
+          `${process.env.REACT_APP_BASE_URL}utilities/v2/naira/${currency}`,
+          {
+            headers: {
+              Authorization: `Token ${localStorage.getItem("token")}`,
+            },
+          }
+        )
+        .then((response) => {
+          setTokenToNairaRate(parseFloat(response.data));
+          setIsLoading(false);
+          rate = parseFloat(response.data);
+        })
+        .catch((error) => {
+          setIsLoading(false);
+          toast({
+            title: error.response.data.error,
+            status: "warning",
+          });
+        });
+    }
 
     return rate;
   };
@@ -137,7 +188,7 @@ const CableForm = (props) => {
     data.bill_type = data.plan.split(",")[0];
     data.amount = data.plan.split(",")[1];
     delete data.plan;
-
+    console.log(data);
     //
     if (tokenAmount >= walletBalance) {
       toast({ title: "insufficient balance", status: "warning" });
@@ -156,7 +207,7 @@ const CableForm = (props) => {
         )
         .then((response) => {
           setIsLoading(false);
-          toast({ title: "Airtime purchase successful", status: "success" });
+          toast({ title: response.data.message, status: "success" });
           props.onClose();
         })
         .catch((error) => {
@@ -169,25 +220,7 @@ const CableForm = (props) => {
     }
   };
   useEffect(() => {
-    axios
-      .get(
-        `${process.env.REACT_APP_BASE_URL}utilities/v2/get-bill-category?bill-type=cable`,
-        {
-          headers: {
-            Authorization: `Token ${localStorage.getItem("token")}`,
-          },
-        }
-      )
-      .then((response) => {
-        setIsLoading(false);
-
-        setPlans(
-          response.data.data.filter((plan) => {
-            return plan.biller_code === props.cable;
-          })
-        );
-      })
-      .catch((error) => {});
+    fetchDataPlans();
 
     // fetchPlans();
   }, []);
@@ -235,7 +268,11 @@ const CableForm = (props) => {
               mt={"5px"}
             >
               <Text fontSize={"xs"} textAlign={"right"}>
-                ≈ {tokenAmount.toFixed(2)} {currency}
+                ≈{" "}
+                {currency === "btc"
+                  ? tokenAmount.toFixed(6)
+                  : tokenAmount.toFixed(3)}{" "}
+                {currency}
               </Text>
               <Text color={"red"} fontSize={"xx-small"}>
                 {errors.amount && errors.amount.message}
@@ -267,8 +304,8 @@ const CableForm = (props) => {
             >
               <option>Select Coin</option>;
               {userWallets
-                .filter((wallet, index) => {
-                  return wallet[0] === "celo" || wallet[0] === "tron";
+                .filter((wallet) => {
+                  return wallet[0] !== "eth";
                 })
                 .map((wallet, index) => {
                   return (

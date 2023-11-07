@@ -61,7 +61,6 @@ function Dashboard() {
               fontWeight={"700"}
               justifyContent={"space-between"}
               variant={"solid"}
-              rightIcon={<ArrowForwardIcon />}
               onClick={() => navigate("/giftcard/create")}
               _hover={{
                 bg: "linear-gradient(106deg, #103D96 60.69%, #306FE9 102.01%)",
@@ -80,7 +79,6 @@ function Dashboard() {
               fontWeight={"700"}
               justifyContent={"space-between"}
               variant={"solid"}
-              rightIcon={<ArrowForwardIcon />}
               onClick={() => navigate("/giftcard/create")}
             >
               <Text>Redeem Gift Card</Text>
