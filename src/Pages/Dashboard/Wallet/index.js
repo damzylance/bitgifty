@@ -55,7 +55,7 @@ const chartOptions = {
 };
 
 function Wallet() {
-  const { userWallets, walletsLoading } = useWallets();
+  const { userWallets, walletsLoading, newWallets } = useWallets();
   const options = {
     headers: { "x-api-key": process.env.REACT_APP_RATE_KEY },
   };
@@ -169,7 +169,6 @@ function Wallet() {
           },
         ],
       });
-      console.table(balances);
     }
     setIsLoading(false);
   };
@@ -406,24 +405,30 @@ function Wallet() {
                       );
                     })
                 )}
-                <VStack
-                  bg={"brand.700"}
-                  color={"#fff"}
-                  width={"100px"}
-                  justifyContent={"center"}
-                  borderRadius={"full"}
-                  height={"100px"}
-                  alignItems={"center"}
-                  cursor={"pointer"}
-                  alignSelf={"flex-end"}
-                  onClick={() => onOpen()}
-                >
-                  <AddIcon />
-                  <Text fontSize={"xs"}>Add Currency</Text>
-                </VStack>
+                {newWallets.length > 0 && (
+                  <VStack
+                    bg={"brand.700"}
+                    color={"#fff"}
+                    width={"100px"}
+                    justifyContent={"center"}
+                    borderRadius={"full"}
+                    height={"100px"}
+                    alignItems={"center"}
+                    cursor={"pointer"}
+                    alignSelf={"flex-end"}
+                    onClick={() => onOpen()}
+                  >
+                    <AddIcon />
+                    <Text fontSize={"xs"}>Add Currency</Text>
+                  </VStack>
+                )}
               </VStack>
             </VStack>
-            <AddWalletModal isOpen={isOpen} onClose={onClose} />
+            <AddWalletModal
+              isOpen={isOpen}
+              onClose={onClose}
+              wallets={newWallets}
+            />
           </VStack>
         </VStack>
       </VStack>
@@ -673,13 +678,21 @@ const AddWalletModal = (props) => {
           <form onSubmit={handleSubmit(createNewWallet)} width="100%">
             <VStack width={"full"} gap={"20px"}>
               {" "}
-              <Select fontSize={"16px"} {...register("chain")} required>
+              <Select
+                fontSize={"16px"}
+                textTransform={"uppercase"}
+                {...register("chain")}
+                required
+              >
+                {" "}
                 <option>Select Wallet</option>;
-                <option value={"cusd"}>CUSD</option>
-                <option value={"ceur"}>CEUR</option>
-                <option value={"tron"}>TRON</option>
-                <option value={"eth"}>ETH</option>
-                <option value={"usdt_tron"}>USDT</option>
+                {props.wallets.map((wallet, id) => {
+                  return (
+                    <option key={id} value={wallet}>
+                      {wallet}
+                    </option>
+                  );
+                })}
               </Select>
               <Button
                 isLoading={isLoading}
@@ -1221,8 +1234,8 @@ const WalletModal = (props) => {
                               }
                             } else if (props.network === "usdt_tron") {
                               let coinErrors = [];
-                              if (toFloatAmount < 1000) {
-                                coinErrors.push("Minimum withdrawal is 10  ");
+                              if (toFloatAmount < 1) {
+                                coinErrors.push("Minimum withdrawal is 1  ");
                                 setErrors(coinErrors);
                               } else {
                                 setErrors([]);

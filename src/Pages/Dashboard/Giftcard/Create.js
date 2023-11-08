@@ -559,17 +559,21 @@ function Create() {
                   {...register("currency", { onChange: handleCurrencyChange })}
                 >
                   <option>Select Coin</option>;
-                  {userWallets.map((wallet, index) => {
-                    return (
-                      <option
-                        // style={{ textTransform: "u" }}
-                        value={wallet[0]}
-                        key={index}
-                      >
-                        {wallet[0]}
-                      </option>
-                    );
-                  })}
+                  {userWallets
+                    .filter((wallet) => {
+                      return wallet[0] !== "eth";
+                    })
+                    .map((wallet, index) => {
+                      return (
+                        <option
+                          // style={{ textTransform: "u" }}
+                          value={wallet[0]}
+                          key={index}
+                        >
+                          {wallet[0]}
+                        </option>
+                      );
+                    })}
                 </Select>
               </FormControl>
               <VStack

@@ -2,8 +2,10 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 
 const useWallets = () => {
+  const supportedWallets = ["btc", "cusd", "usdt_tron", "eth", "ceur", "celo"];
   const [walletsLoading, setWalletsLoading] = useState(true);
   const [userWallets, setUserWallets] = useState([]);
+  const [newWallets, setNewWallets] = useState([]);
   const fetchVirtualWallets = async () => {
     setWalletsLoading(true);
     await axios
@@ -14,7 +16,20 @@ const useWallets = () => {
       })
       .then((response) => {
         const entries = Object.entries(response.data);
-        console.log(entries);
+        const cryptowallets = entries.filter((wallet) => {
+          return wallet[1].type === "crypto";
+        });
+        let t = [];
+        for (let i = 0; i < cryptowallets.length; i++) {
+          const element = cryptowallets[i][0];
+          t.push(element);
+        }
+
+        setNewWallets(
+          supportedWallets.filter((n) => {
+            return !t.includes(n);
+          })
+        );
         setWalletsLoading(false);
         setUserWallets(entries);
       })
@@ -25,7 +40,7 @@ const useWallets = () => {
   useEffect(() => {
     fetchVirtualWallets();
   }, []);
-  return { userWallets, walletsLoading };
+  return { userWallets, walletsLoading, newWallets };
 };
 
 export default useWallets;

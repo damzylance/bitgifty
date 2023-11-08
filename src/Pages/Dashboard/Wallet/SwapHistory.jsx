@@ -9,7 +9,7 @@ const SwapHistory = () => {
 
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_BASE_URL}swap/`, {
+      .get(`${process.env.REACT_APP_BASE_URL}swap/v2`, {
         headers: {
           Authorization: `Token ${localStorage.getItem("token")}`,
         },
