@@ -864,7 +864,8 @@ const WalletModal = (props) => {
     }
   };
   const WithdrawCrypto = async (data) => {
-    data.amount = withdrawAmount;
+    data.amount = withdrawAmount.replaceAll(",", "");
+    console.log(data);
 
     if (props.network === "btc") {
       data.network = "bitcoin";

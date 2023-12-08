@@ -51,7 +51,6 @@ function Create() {
   const [fee, setFee] = useState(0);
   const [amountMin, setAmountMin] = useState(0.0003);
   const [balance, setBalance] = useState(0);
-  const [showBalance, setShowBalance] = useState("");
   const [isNaira, setIsNaira] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [templatesLoading, setTemplatesLoading] = useState(true);
@@ -61,7 +60,7 @@ function Create() {
   const [dollarAmount, setDollarAmount] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
   const [rate, setRate] = useState(0);
-  const [ribbonAmount, setRibbonAmount] = useState(0);
+  const [ribbonAmount, setRibbonAmount] = useState();
   // const fetchWallets = async () => {
   //   await axios
   //     .get(`${process.env.REACT_APP_BASE_URL}wallets/`, {
@@ -91,6 +90,7 @@ function Create() {
       if (network === "usdt_tron" || network === "cusd") {
         setRate(1);
       } else {
+        setIsLoading(true);
         await axios
           .get(`${process.env.REACT_APP_BASE_URL}swap/get_usdt/${network}`, {
             headers: {
@@ -99,8 +99,10 @@ function Create() {
           })
           .then((response) => {
             setRate(response.data);
+            setIsLoading(false);
           })
           .catch((error) => {
+            setIsLoading(false);
             toast({ title: error.response?.data?.error, status: "error" });
           });
       }
@@ -118,7 +120,7 @@ function Create() {
 
         if (network === "btc") {
           setIsNaira(false);
-
+          setIsLoading(true);
           await axios
             .post(
               "https://api.tatum.io/v3/tatum/rate/",
@@ -130,7 +132,7 @@ function Create() {
                 parseFloat(100.0 / parseFloat(response.data[0].value))
               );
               setFee(0.0008);
-              setTotalAmount(parseFloat(getValues("amount")) + 0.0008);
+              setTotalAmount(parseFloat(getValues("amount")) + 0.0003);
             })
             .catch((errors) => {
               toast({ title: "Error Fetching Fees", status: "warning" });
@@ -173,6 +175,8 @@ function Create() {
       setTotalAmount(parseFloat(getValues("amount")) + fee);
     }
     await fetchRate(e.target.value);
+    // console.log(ribbonAmount * rate);
+    // setDollarAmount(ribbonAmount * rate);
   };
   const fetchCardTemplates = async () => {
     await axios
@@ -234,7 +238,8 @@ function Create() {
   }, []);
   useEffect(() => {
     setTotalAmount(parseFloat(getValues("amount")) + fee);
-  }, [fee, totalAmount, getValues]);
+    setDollarAmount(parseFloat(getValues("amount")) * rate);
+  }, [fee, totalAmount, getValues, rate]);
   return (
     <DashboardLayout>
       {confetti && (
@@ -589,7 +594,7 @@ function Create() {
                   >
                     <FormLabel>Enter Amount</FormLabel>
                     <Text mt={"20px"} fontSize={"sm"}>
-                      {isNaira ? "N" : "$"}
+                      {isNaira ? <span>&#8358;</span> : "$"}
                       {isNaN(dollarAmount) ? 0 : dollarAmount.toFixed(2)}
                     </Text>
                   </HStack>
@@ -601,7 +606,7 @@ function Create() {
                     {...register("amount", {
                       onChange: (e) => {
                         setTotalAmount(parseFloat(e.target.value) + fee);
-                        setDollarAmount(parseFloat(e.target.value) * rate);
+                        // setDollarAmount(parseFloat(e.target.value) * rate);
                         setRibbonAmount(e.target.value);
                       },
                       max: { value: balance, message: "Insufficient funds" },
@@ -616,56 +621,7 @@ function Create() {
                     {errors.amount && errors.amount.message}
                   </FormErrorMessage>
                 </FormControl>
-                {/* <Flex
-                justifyContent={"space-between"}
-                width="full"
-                color={"brand.tx1"}
-              >
-                <Box
-                  sx={{
-                    py: "12px",
-                    px: "24px",
-                    textAlign: "center",
-                    bg: "brand.200",
-                    borderRadius: "4px",
-                  }}
-                >
-                  25%
-                </Box>
-                <Box
-                  sx={{
-                    py: "12px",
-                    px: "24px",
-                    textAlign: "center",
-                    bg: "brand.200",
-                    borderRadius: "4px",
-                  }}
-                >
-                  50%
-                </Box>
-                <Box
-                  sx={{
-                    py: "12px",
-                    px: "24px",
-                    textAlign: "center",
-                    bg: "brand.200",
-                    borderRadius: "4px",
-                  }}
-                >
-                  75%
-                </Box>
-                <Box
-                  sx={{
-                    py: "12px",
-                    px: "24px",
-                    textAlign: "center",
-                    bg: "brand.200",
-                    borderRadius: "4px",
-                  }}
-                >
-                  100%
-                </Box>
-              </Flex> */}
+
                 <Flex color="brand.300" gap={2}>
                   <Text fontSize={"sm"}>Wallet Balance:</Text>
                   <Text fontSize={"sm"}>{balance}</Text>
