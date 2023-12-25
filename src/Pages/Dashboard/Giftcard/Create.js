@@ -189,8 +189,7 @@ function Create() {
         setTemplatesLoading(false);
         setTemplates(response.data.results);
         setTemplate({
-          link: "/assets/images/bitgifty-birthday01.jpg",
-          // link: response.data.results[0].link,
+          link: response.data.results[0].link,
           id: response.data.results[0].id,
         });
       })
@@ -525,12 +524,13 @@ function Create() {
                     return (
                       <Box key={index}>
                         <HStack
-                          width={"100px"}
+                          width={"80px"}
                           height={"70px "}
                           key={image.id}
                           bgImage={`url(${image.link})`}
-                          backgroundSize={"contain"}
+                          backgroundSize={"cover"}
                           backgroundPosition={"center"}
+                          backgroundRepeat={"no-repeat"}
                           borderRadius={"base"}
                           cursor={"pointer"}
                           border={
