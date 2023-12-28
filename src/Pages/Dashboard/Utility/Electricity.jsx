@@ -20,7 +20,7 @@ import useWallets from "../../../Hooks/useWallets";
 const Electricity = (props) => {
   const [page, setPage] = useState("list");
   const [merchants, setMerchants] = useState([
-    { name: "IKEDC PREPAID", id: "BIL113" },
+    { name: "IKEDC  PREPAID", id: "BIL113" },
     { name: "EKEDC PREPAID TOPUP", id: "BIL112" },
     {
       name: "ABUJA DISCO Prepaid",
