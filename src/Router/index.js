@@ -47,7 +47,7 @@ function Router() {
         <Route exact path="/giftcard/redeem" element={<Reedeem />} />
         <Route exact path="/wallet" element={<Wallet />} />
         <Route exact path="/utilities" element={<Utility />} />
-        <Route exact path="/coin-details/:currency" element={<CoinDetails />} />
+        <Route exact path="/transaction-history/" element={<CoinDetails />} />
         <Route exact path="/swap-history" element={<SwapHistory />} />
         <Route exact path="/fiat-history" element={<FiatHistory />} />
 

@@ -42,7 +42,7 @@ import { AiFillPlusSquare } from "react-icons/ai";
 import { PayoutModal } from "../../UserSetting/Payout";
 import useWallets from "../../../Hooks/useWallets";
 import { RxEyeClosed } from "react-icons/rx";
-import { AddIcon, CopyIcon } from "@chakra-ui/icons";
+import { AddIcon, ChevronRightIcon, CopyIcon } from "@chakra-ui/icons";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -61,10 +61,9 @@ function Wallet() {
   };
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const [wallets, setWallets] = useState(userWallets);
   const [isLoading, setIsLoading] = useState(walletsLoading);
-  const [fiatWallets, setFiatWallets] = useState([]);
   const [totalInDollars, setTotalInDollars] = useState(0);
+  const navigate = useNavigate();
 
   const fetchWallets = async () => {
     const labels = [];
@@ -260,12 +259,26 @@ function Wallet() {
             justifyContent={"flex-start"}
             width={"full"}
           >
-            <HStack justifyContent={"space-between"} alignItems={"center"}>
-              <Text fontSize={"18px"} fontWeight={"400"}>
-                Total Balance
-              </Text>
+            <HStack width={"full"} justifyContent={"space-between"}>
+              <HStack justifyContent={"space-between"} alignItems={"center"}>
+                <Text fontSize={"18px"} fontWeight={"400"}>
+                  Total Balance
+                </Text>
 
-              <RxEyeClosed cursor={"pointer"} />
+                <RxEyeClosed cursor={"pointer"} />
+              </HStack>
+              <HStack
+                cursor={"pointer"}
+                _hover={{ borderBottom: "1px solid #0B2A65" }}
+                onClick={() => {
+                  navigate(`/transaction-history/`);
+                }}
+              >
+                <Text fontSize={"sm"} fontWeight={"500"}>
+                  Transaction History
+                </Text>
+                <ChevronRightIcon fontSize={"20px"} />
+              </HStack>
             </HStack>
 
             <HStack
@@ -344,10 +357,9 @@ function Wallet() {
                     .map((wallet, index) => {
                       // const { address, network } = wallet;
                       const coinWallet = wallet;
-                      const balance = Math.floor(
+                      const balance = parseFloat(
                         coinWallet[1].balance.availableBalance
-                      );
-
+                      ).toFixed(2);
                       return (
                         <CoinRow
                           key={index}
@@ -391,7 +403,9 @@ function Wallet() {
                     .map((wallet, index) => {
                       // const { address, network } = wallet;
                       const coinWallet = wallet;
-                      const balance = coinWallet[1].balance.availableBalance;
+                      const balance = parseFloat(
+                        coinWallet[1].balance.availableBalance
+                      ).toFixed(4);
                       return (
                         <CoinRow
                           key={index}
@@ -571,7 +585,7 @@ function CoinRow(props) {
             if (props.type === "fiat") {
               navigate(`/fiat-history/`);
             } else {
-              navigate(`/coin-details/${props.currency.toLowerCase()}`);
+              navigate(`/transaction-history`);
             }
           }}
           disabled={
@@ -837,6 +851,7 @@ const WalletModal = (props) => {
   const WithdrawFiat = async (data) => {
     data.amount = withdrawAmount;
     data.network = props.network;
+    console.log(data);
     if (errors.length > 0) {
     } else {
       setIsLoading(true);
@@ -855,6 +870,7 @@ const WalletModal = (props) => {
           withdrawalModalOpen();
         })
         .catch(function (error) {
+          console.log(error);
           setIsLoading(false);
           toast({
             title: "An error occured",

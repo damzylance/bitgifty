@@ -20,12 +20,6 @@ const mobileStyle = {
 
 const Wallet = () => {
   const navigate = useNavigate();
-  const buttonStyle = {
-    borderRadius: "10px",
-    background: "#e2e8f0",
-
-    backgroundSize: "200%",
-  };
 
   const { currency } = useParams();
   const currencies = ["btc", "usdt", "bnb", "celo", "cusd", "tron", "ethereum"];
@@ -41,6 +35,7 @@ const Wallet = () => {
         },
       })
       .then(function (response) {
+        console.log(response);
         if (response.data) {
           setIsLoading(false);
 
@@ -51,9 +46,6 @@ const Wallet = () => {
   };
 
   useEffect(() => {
-    if (!paramsMatch) {
-      navigate("/wallet");
-    }
     fetchTransactions();
   }, []);
   return (
@@ -139,15 +131,12 @@ const Wallet = () => {
                   <Spinner />
                 ) : transactions.length > 0 ? (
                   transactions.map((transaction, index) => {
-                    let txid;
-                    let amount = 0;
                     let wallet;
                     let date;
-                    let type;
+
                     let day;
                     let time;
-                    let coin;
-                    let scanner;
+
                     date = new Date(transaction.created);
                     day = date
                       .toLocaleDateString("en-NG")
@@ -172,9 +161,17 @@ const Wallet = () => {
                         {" "}
                         <TransactionRow
                           time={date.toString()}
-                          type={transaction.operationType}
-                          asset={transaction.currency}
-                          amount={transaction.amount}
+                          type={
+                            transaction.senderNote
+                              ? transaction.senderNote
+                              : transaction.operationType
+                          }
+                          asset={
+                            transaction.currency === "VC__BITGIFTY_NAIRA"
+                              ? "NAIRA"
+                              : transaction.currency
+                          }
+                          amount={parseFloat(transaction.amount).toFixed(3)}
                           wallet={wallet}
                           txid={transaction.reference}
                           status="Completed"
