@@ -8,11 +8,13 @@ import {
   Image,
   Img,
   Input,
+  Select,
   Text,
   Textarea,
   VStack,
 } from "@chakra-ui/react";
 import React, { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   AiFillFacebook,
   AiFillInstagram,
@@ -38,6 +40,13 @@ const navStyle = {
 const ContactUs = () => {
   const navigate = useNavigate();
   const [openMenu, setOpenMenu] = useState(false);
+  const { t, i18n } = useTranslation();
+
+  const handleLanguageChange = (e) => {
+    const languageValue = e.target.value;
+    localStorage.setItem("localeLang", languageValue);
+    i18n.changeLanguage(languageValue);
+  };
   const showMobileMenu = () => {
     setOpenMenu(!openMenu);
   };
@@ -60,7 +69,7 @@ const ContactUs = () => {
         left={["none", "none", "0"]}
         p={"10px"}
         background={["brand.700", "brand.700", "#FAFCFF"]}
-        boxShadow={["none", "none", "1px 3px 5px -1px rgba(169,170,176,0.47)"]}
+        boxShadow={["none", "none", "2px 3px 5px -1px rgba(169,170,176,0.47)"]}
       >
         <Box
           width={"full"}
@@ -143,70 +152,119 @@ const ContactUs = () => {
                   </Text>
                   <RxCaretRight fontSize={"24px"} />
                 </HStack>
+                <HStack
+                  width={"full"}
+                  justifyContent={"space-between"}
+                  alignItems={"center"}
+                  py={"10px"}
+                  borderBottom={"1px solid #eae8e8"}
+                  onClick={() => {
+                    navigate("/login");
+                  }}
+                >
+                  <Text sx={navStyle} _hover={navHoverStyle}>
+                    Login
+                  </Text>
+                  <RxCaretRight fontSize={"24px"} />
+                </HStack>
+                <HStack
+                  width={"full"}
+                  justifyContent={"space-between"}
+                  alignItems={"center"}
+                  py={"10px"}
+                  borderBottom={"1px solid #eae8e8"}
+                  onClick={() => {
+                    scrollToSection("/register");
+                  }}
+                >
+                  <Text sx={navStyle} _hover={navHoverStyle}>
+                    Sign Up
+                  </Text>
+                  <RxCaretRight fontSize={"24px"} />
+                </HStack>
               </VStack>
             </VStack>
           )}
         </Box>
         <Container maxWidth={["full", "full", "95%", "80%"]}>
-          <VStack width={"full"}>
-            <HStack
-              width={"full"}
-              justifyContent={"space-between"}
-              display={["none", "none", "flex", "flex"]}
-              alignItems={"cener"}
-            >
-              <Link to={"/"}>
-                <Image
-                  width={"150px"}
-                  src="/assets/images/logo-inline-whitebg.png"
-                />
-              </Link>
-              <HStack gap={"20px"} alignItems={"center"}>
-                <Text
-                  onClick={() => {
-                    scrollToSection(about);
-                  }}
-                  sx={navStyle}
-                  _hover={navHoverStyle}
-                >
-                  About
-                </Text>
-                <Text
-                  onClick={() => {
-                    scrollToSection(howItWorks);
-                  }}
-                  sx={navStyle}
-                  _hover={navHoverStyle}
-                >
-                  How it works
-                </Text>
+          <HStack
+            width={"full"}
+            justifyContent={"space-between"}
+            display={["none", "none", "flex", "flex"]}
+            alignItems={"cener"}
+          >
+            <Box>
+              <Image
+                width={"150px"}
+                src="/assets/images/logo-inline-whitebg.png"
+              />
+            </Box>
+            <HStack gap={"20px"} alignItems={"center"}>
+              <Text
+                onClick={() => {
+                  scrollToSection(about);
+                }}
+                sx={navStyle}
+                _hover={navHoverStyle}
+              >
+                About
+              </Text>
+              <Text
+                onClick={() => {
+                  scrollToSection(howItWorks);
+                }}
+                sx={navStyle}
+                _hover={navHoverStyle}
+              >
+                How it works
+              </Text>
 
-                <Text
-                  onClick={() => {
-                    scrollToSection(faq);
-                  }}
-                  sx={navStyle}
-                  _hover={navHoverStyle}
-                >
-                  FAQ
-                </Text>
-                <Button
-                  onClick={() => navigate("/register")}
-                  background={"brand.700"}
-                  size={"lg"}
-                >
-                  Get Started
-                </Button>
-                {/* <Text fontSize={"64px"} fontWeight={700}>
-                  SEND THE GIFT OF CRYPTO WITH EASE
-                </Text>
-                <Text fontSize={"24px"}>
-                  Give the Gift of Choice: Create and redeem your crypto gift
-                  cards here at Gifty!
-                </Text> */}
-              </HStack>
+              <Text
+                onClick={() => {
+                  scrollToSection(faq);
+                }}
+                sx={navStyle}
+                _hover={navHoverStyle}
+              >
+                FAQ
+              </Text>
+
+              <Button
+                onClick={() => navigate("/login")}
+                borderRadius={"none"}
+                background={
+                  " linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)"
+                }
+                _hover={{
+                  background:
+                    "linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)",
+                }}
+                variant={"solid"}
+              >
+                Login
+              </Button>
+              <Button
+                onClick={() => navigate("/register")}
+                background={"#fff"}
+                color={"brand.700"}
+                borderColor={"brand.700"}
+                borderWidth={"1px"}
+                borderStyle={"solid"}
+                _hover={{ color: "brand.700" }}
+              >
+                Sign Up
+              </Button>
+              <Select
+                defaultValue={localStorage.getItem("localeLang")}
+                onChange={handleLanguageChange}
+                width={"70px"}
+                style={{ fontSize: "14px", border: "1px solid gray" }}
+              >
+                <option value={"en"}>EN</option>
+                <option value={"es"}>ES</option>
+              </Select>
             </HStack>
-          </VStack>
+          </HStack>
         </Container>
       </Box>
       <Box
@@ -260,7 +318,7 @@ const ContactUs = () => {
           </VStack>
         </Container>
       </Box>
-      <Box width={"full"} py={"40px"}>
+      <Box width={"full"} py={"40px"} bg={"#103D96"} color={"#fff"}>
         <Container maxWidth={["full", "full", "95%", "80%"]}>
           <HStack
             flexDir={["column", "column", "row", "row"]}
@@ -268,7 +326,7 @@ const ContactUs = () => {
             width={"full"}
             justifyContent={"space-between"}
           >
-            <VStack width={"full"} alignItems={"flex-start"}>
+            <VStack width={"full"} alignItems={"flex-start"} gap={"20px"}>
               <Text
                 fontSize={["24px", "24px", "32px"]}
                 fontWeight={"700"}
@@ -280,6 +338,17 @@ const ContactUs = () => {
                 Give the Gift of Choice: Create and redeem your crypto gift
                 cards here at Gifty!
               </Text>
+              <HStack width={"full"} alignItems={"center"}>
+                <a href={"https://twitter.com/BitGifty"}>
+                  <AiFillTwitterSquare fontSize={"24px"} />
+                </a>
+                <a href={"https://www.instagram.com/bitgifty/"}>
+                  <AiFillInstagram fontSize={"24px"} />
+                </a>
+                <a href={"https://www.linkedin.com/company/bitgifty/"}>
+                  <AiFillLinkedin fontSize={"24px"} />
+                </a>
+              </HStack>
             </VStack>
             <HStack
               flexDir={["column", "column", "row", "row"]}
@@ -293,7 +362,7 @@ const ContactUs = () => {
                 </Text>
                 <Link to={"/privacy-policy"} style={{ fontSize: "14px" }}>
                   Privacy Policy
-                </Link>
+                </Link>{" "}
                 <Link style={{ fontSize: "14px" }}>Help Center</Link>
                 <Link style={{ fontSize: "14px" }}>Terms and Condition</Link>
               </VStack>
@@ -311,20 +380,6 @@ const ContactUs = () => {
                   About Us
                 </Text>
                 <Link to={"/contact-us"}>Contact Us</Link>
-              </VStack>
-              <VStack width={"full"} alignItems={"center"}>
-                <Text fontSize={["16px", "16px", "24px"]} fontWeight={"700"}>
-                  Socials
-                </Text>
-                <a href={"https://twitter.com/BitGifty"}>
-                  <AiFillTwitterSquare fontSize={"24px"} />
-                </a>
-                <a href={"https://www.instagram.com/bitgifty/"}>
-                  <AiFillInstagram fontSize={"24px"} />
-                </a>
-                <a href={"https://www.linkedin.com/company/bitgifty/"}>
-                  <AiFillLinkedin fontSize={"24px"} />
-                </a>
               </VStack>
             </HStack>
           </HStack>
