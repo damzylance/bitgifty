@@ -104,8 +104,11 @@ const Home = () => {
   return (
     <VStack
       width={"full"}
+      alignItems={"center"}
       background={"#FAFCFF"}
       pt={[0, 0, "0px", "0px"]}
+      maxWidth={"1920px"}
+      margin={"auto"}
       gap={"40px"}
     >
       <Box
@@ -316,15 +319,11 @@ const Home = () => {
       </Box>
 
       <Box width={"full"}>
-        <Container
-          maxWidth={["full", "full", "95%", "80%"]}
-          pb={["50px", "50px", "100px", "100px", "100px"]}
-        >
+        <Container maxWidth={["full", "full", "95%", "80%"]}>
           <HStack
             width={"full"}
-            flexDir={["column-reverse", "column-reverse", "row"]}
-            flexWrap={["wrap", "wrap", "nowrap"]}
-            gap={["40px", "40px", 0]}
+            flexDir={["column", "column", "column", "row", "row"]}
+            gap={["40px", "40px", "40px", 0, 0]}
           >
             <VStack width={"full"} alignItems={"flex-start"} gap={"50px"}>
               <VStack width={"full"}>
@@ -493,7 +492,7 @@ const Home = () => {
             </VStack>
             <VStack
               width={"full"}
-              alignItems={["center", "center", "flex-end"]}
+              alignItems={["center", "center", "center", "flex-end"]}
             >
               <Image src="/assets/images/hero-1.png" />
             </VStack>
@@ -501,14 +500,11 @@ const Home = () => {
         </Container>
       </Box>
       <Box width={"full"}>
-        <Container
-          maxWidth={["full", "full", "95%", "80%"]}
-          pb={["50px", "50px", "100px", "100px", "100px"]}
-        >
+        <Container maxWidth={["full", "full", "95%", "80%"]} py={["20px"]}>
           <HStack
             width={"full"}
-            flexWrap={["wrap", "wrap", "nowrap"]}
-            gap={["40px", "40px", ""]}
+            flexDir={["column", "column", "column", "column", "row"]}
+            gap={["40px", "40px", "0"]}
           >
             <Image
               display={["flex", "flex", "none"]}
@@ -581,17 +577,14 @@ const Home = () => {
         </Container>
       </Box>
       <Box width={"full"}>
-        <Container
-          maxWidth={["full", "full", "95%", "80%"]}
-          pb={["50px", "50px", "100px", "100px", "100px"]}
-        >
+        <Container maxWidth={["full", "full", "95%", "80%"]} py={["20px"]}>
           <HStack
             width={"full"}
-            flexWrap={["wrap", "wrap", "nowrap"]}
-            gap={["40px", "40px", ""]}
+            flexDir={["column", "column", "column", "column", "row"]}
+            gap={["40px", "40px", "0"]}
             alignItems={"flex-start"}
           >
-            <VStack alignItems={"flex-start"} width={"318px"}>
+            <VStack alignItems={"flex-start"}>
               <HStack>
                 {" "}
                 <Box height={"8px"} width={"60px"} bg={"#103D96"}></Box>
@@ -753,7 +746,11 @@ const Home = () => {
             <VStack gap={"60px"} alignItems={"flex-start"}>
               <HStack gap={"120px"}>
                 <VStack alignItems={"flex-start"}>
-                  <Text fontSize={"48px"} color={"#103D96"} fontWeight={"600"}>
+                  <Text
+                    fontSize={["32px", "32px", "48px"]}
+                    color={"#103D96"}
+                    fontWeight={"600"}
+                  >
                     200+
                   </Text>
                   <Text fontSize={"20px"} fontWeight={"500"} color={"#333"}>
@@ -761,7 +758,11 @@ const Home = () => {
                   </Text>
                 </VStack>
                 <VStack alignItems={"flex-start"}>
-                  <Text fontSize={"48px"} color={"#103D96"} fontWeight={"600"}>
+                  <Text
+                    fontSize={["32px", "32px", "48px"]}
+                    color={"#103D96"}
+                    fontWeight={"600"}
+                  >
                     200+
                   </Text>
                   <Text fontSize={"20px"} fontWeight={"500"} color={"#333"}>
@@ -771,7 +772,11 @@ const Home = () => {
               </HStack>
               <HStack gap={"120px"}>
                 <VStack alignItems={"flex-start"}>
-                  <Text fontSize={"48px"} color={"#103D96"} fontWeight={"600"}>
+                  <Text
+                    fontSize={["32px", "32px", "48px"]}
+                    color={"#103D96"}
+                    fontWeight={"600"}
+                  >
                     100+
                   </Text>
                   <Text fontSize={"20px"} fontWeight={"500"} color={"#333"}>
@@ -779,7 +784,11 @@ const Home = () => {
                   </Text>
                 </VStack>
                 <VStack alignItems={"flex-start"}>
-                  <Text fontSize={"48px"} color={"#103D96"} fontWeight={"600"}>
+                  <Text
+                    fontSize={["32px", "32px", "48px"]}
+                    color={"#103D96"}
+                    fontWeight={"600"}
+                  >
                     $10k+
                   </Text>
                   <Text fontSize={"20px"} fontWeight={"500"} color={"#333"}>
@@ -1035,7 +1044,7 @@ const Home = () => {
           width={"450px"}
           right={190}
           bottom={0}
-          display={["none", "none", "block", "block"]}
+          display={["none", "none", "none", "none", "block"]}
         />
       </Box>
       <Box
@@ -1290,11 +1299,12 @@ const Home = () => {
           <HStack
             width={"full"}
             gap={"40px"}
-            flexDir={["column", "column", "row"]}
+            flexDir={["column", "column", "column", "column", "row"]}
+            alignItems={"center"}
           >
             <Image src="/assets/images/giftcardowner.png" />
             <VStack width={"full"} gap={"50px"}>
-              <VStack align={"flex-start"}>
+              <VStack width={"full"}>
                 <HStack>
                   <Box height={"8px"} width={"60px"} bg={"#103D96"}></Box>
                   <Text fontSize={"32px"} fontWeight={"600"} color={"#050505"}>
@@ -1306,7 +1316,7 @@ const Home = () => {
                   the dopest
                 </Text>
               </VStack>
-              <HStack width={"full"}>
+              <HStack width={"full"} justifyContent={"center"}>
                 <Input
                   borderRadius={"none"}
                   border={"2px solid #103D96 !important"}
@@ -1351,6 +1361,7 @@ const Home = () => {
             </VStack>
             <HStack
               width={"full"}
+              overflow={"scroll"}
               flexDir={["column", "column", "row"]}
               gap={["10px", "10px", "auto"]}
             >
