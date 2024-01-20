@@ -21,6 +21,7 @@ import {
   Button,
 } from "@chakra-ui/react";
 import GiftCardTemplate from "./GiftCardTemplate";
+import ExchangeConnect from "../../../Components/ExchangeConnect";
 
 function MyCards() {
   const toast = useToast();
@@ -64,6 +65,7 @@ function MyCards() {
   }, []);
   return (
     <GiftCardTemplate>
+      <ExchangeConnect />
       <Box mt={"30px"} cursor={"pointer"}>
         <SimpleGrid columns={[2, 2, 4]} spacing="4">
           {" "}

@@ -13,6 +13,8 @@ import {
   Textarea,
   VStack,
 } from "@chakra-ui/react";
+import { useForm } from "react-hook-form";
+
 import React, { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -23,6 +25,7 @@ import {
 } from "react-icons/ai";
 import { RxCaretRight, RxCross1, RxHamburgerMenu } from "react-icons/rx";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 const navHoverStyle = {
   background: "brand.700",
   color: "#fff",
@@ -38,9 +41,16 @@ const navStyle = {
   cursor: "pointer",
 };
 const ContactUs = () => {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
   const navigate = useNavigate();
-  const [openMenu, setOpenMenu] = useState(false);
   const { t, i18n } = useTranslation();
+  const [openMenu, setOpenMenu] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleLanguageChange = (e) => {
     const languageValue = e.target.value;
@@ -59,6 +69,24 @@ const ContactUs = () => {
       behavior: "smooth",
     });
   };
+
+  const submitForm = async () => {
+    console.log("submited");
+    setIsLoading(true);
+    await axios
+      .post(`${process.env.REACT_APP_BASE_URL}contacts`)
+      .then((response) => {
+        setIsLoading(false);
+        console.log(response);
+        reset();
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        console.log(error);
+        
+      });
+  };
+
   return (
     <VStack width={"full"} background={"#FAFCFF"} pt={[0, 0, "0px", "0px"]}>
       <Box
@@ -280,42 +308,62 @@ const ContactUs = () => {
           maxWidth={["full", "full", "50%", "50%"]}
           position={"relative"}
         >
-          <VStack width={"full"} alignContent={"flex-start"} gap={"30px"}>
-            <VStack width={"full"} alignContent={"flex-start"} gap={"10px"}>
-              <Text fontSize={["lg", "xl"]} fontWeight={"bold"}>
-                We'd Love to help
-              </Text>
-              <Text fontSize={"sm"}>
-                Reach out and we'll get in touch within 24 hours
-              </Text>
+          <form onSubmit={handleSubmit(submitForm)}>
+            <VStack width={"full"} alignContent={"flex-start"} gap={"30px"}>
+              <VStack width={"full"} alignContent={"flex-start"} gap={"10px"}>
+                <Text fontSize={["lg", "xl"]} fontWeight={"bold"}>
+                  We'd Love to help
+                </Text>
+                <Text fontSize={"sm"}>
+                  Reach out and we'll get in touch within 24 hours
+                </Text>
+              </VStack>
+              <VStack width={"full"} alignItems={"center"}>
+                <HStack
+                  flexDir={["column", "column", "row"]}
+                  gap={["30px", "30px", ""]}
+                  width={"full"}
+                  justifyContent={"flex-start"}
+                >
+                  <FormControl width={"full"}>
+                    <FormLabel>Full Name</FormLabel>
+                    <Input
+                      name="full_name"
+                      bg={"#fff"}
+                      type="text"
+                      placeholder="Full Name"
+                      required
+                      {...register("full_name")}
+                    />
+                  </FormControl>
+                </HStack>
+              </VStack>
+              <FormControl width={"full"}>
+                <FormLabel>Email</FormLabel>
+                <Input
+                  name="email"
+                  bg={"#fff"}
+                  type="email"
+                  placeholder="Email Address"
+                  required
+                  {...register("email")}
+                />
+              </FormControl>
+              <FormControl width={"full"}>
+                <FormLabel>Message</FormLabel>
+                <Textarea
+                  name="message"
+                  bg={"#fff"}
+                  placeholder="Leave us a message...."
+                  required
+                  {...register("message")}
+                />
+              </FormControl>
+              <Button type="submit" width={"full"} isLoading={isLoading}>
+                Send Message
+              </Button>
             </VStack>
-            <VStack width={"full"} alignItems={"center"}>
-              <HStack
-                flexDir={["column", "column", "row"]}
-                gap={["30px", "30px", ""]}
-                width={"full"}
-                justifyContent={"flex-start"}
-              >
-                <FormControl width={"full"}>
-                  <FormLabel>First Name</FormLabel>
-                  <Input bg={"#fff"} type="text" placeholder="First Name" />
-                </FormControl>
-                <FormControl width={"full"}>
-                  <FormLabel>Last Name</FormLabel>
-                  <Input bg={"#fff"} type="text" placeholder="Last Name" />
-                </FormControl>
-              </HStack>
-            </VStack>
-            <FormControl width={"full"}>
-              <FormLabel>Email</FormLabel>
-              <Input bg={"#fff"} type="email" placeholder="Email Address" />
-            </FormControl>
-            <FormControl width={"full"}>
-              <FormLabel>Message</FormLabel>
-              <Textarea bg={"#fff"} placeholder="Leave us a message...." />
-            </FormControl>
-            <Button width={"full"}>Send Message</Button>
-          </VStack>
+          </form>
         </Container>
       </Box>
       <Box width={"full"} py={"40px"} bg={"#103D96"} color={"#fff"}>

@@ -107,6 +107,8 @@ const Home = () => {
       alignItems={"center"}
       background={"#FAFCFF"}
       pt={[0, 0, "0px", "0px"]}
+      maxWidth={"1920px"}
+      margin={"auto"}
       gap={"40px"}
     >
       <Box
