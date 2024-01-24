@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { templates } from "../../../utils";
 import Confetti from "react-confetti";
 import {
   Button,
@@ -53,9 +54,9 @@ function Create() {
   const [balance, setBalance] = useState(0);
   const [isNaira, setIsNaira] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [templatesLoading, setTemplatesLoading] = useState(true);
-  const [templates, setTemplates] = useState([]);
-  const [template, setTemplate] = useState();
+  const [templatesLoading, setTemplatesLoading] = useState(false);
+  const [designs, setDesigns] = useState(templates);
+  const [template, setTemplate] = useState(templates[0]);
   const [checkEmail, setCheckEmail] = useState(false);
   const [dollarAmount, setDollarAmount] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
@@ -178,25 +179,7 @@ function Create() {
     // console.log(ribbonAmount * rate);
     // setDollarAmount(ribbonAmount * rate);
   };
-  const fetchCardTemplates = async () => {
-    await axios
-      .get(`${process.env.REACT_APP_BASE_URL}gift_cards/images`, {
-        headers: {
-          Authorization: `Token ${localStorage.getItem("token")}`,
-        },
-      })
-      .then((response) => {
-        setTemplatesLoading(false);
-        setTemplates(response.data.results);
-        setTemplate({
-          link: response.data.results[0].link,
-          id: response.data.results[0].id,
-        });
-      })
-      .catch((error) => {
-        toast({ title: error.response?.data?.error, status: "error" });
-      });
-  };
+  
   const onSubmit = async (data) => {
     data.image = template.id;
     data.amount = parseFloat(data.amount);
@@ -233,7 +216,7 @@ function Create() {
   };
   useEffect(() => {
     window.onresize = () => handleWindowResize();
-    fetchCardTemplates();
+    
   }, []);
   useEffect(() => {
     setTotalAmount(parseFloat(getValues("amount")) + fee);
@@ -313,7 +296,7 @@ function Create() {
         >
           {templatesLoading ? (
             <Spinner />
-          ) : templates.length > 0 ? (
+          ) : designs.length > 0 ? (
             <VStack
               as={motion.div}
               initial={{ opacity: 0 }}
@@ -519,8 +502,8 @@ function Create() {
               >
                 {templatesLoading ? (
                   <Spinner />
-                ) : templates.length > 0 ? (
-                  templates.map((image, index) => {
+                ) : designs.length > 0 ? (
+                  designs.map((image, index) => {
                     return (
                       <Box key={index}>
                         <HStack

@@ -40,7 +40,6 @@ function Router() {
           path="/auth/password/password-reset-confirm/:uid/:token"
           element={<PasswordResetConFirm />}
         />
-
         <Route exact path="/dashboard" element={<Dashboard />} />
         <Route exact path="/giftcard/cards" element={<MyCards />} />
         <Route exact path="/giftcard/create" element={<Create />} />
@@ -48,9 +47,9 @@ function Router() {
         <Route exact path="/wallet" element={<Wallet />} />
         <Route exact path="/utilities" element={<Utility />} />
         <Route exact path="/transaction-history/" element={<CoinDetails />} />
+        <Route exact path="/transaction-history/:currency" element={<CoinDetails />} />
         <Route exact path="/swap-history" element={<SwapHistory />} />
         <Route exact path="/fiat-history" element={<FiatHistory />} />
-
         <Route exact path="/setting" element={<SettingsLayout />} />
         <Route exact path="/setting/payout" element={<Payout />} />
         <Route path="/*" element={<Notfound />} />

@@ -12,6 +12,7 @@ import {
   Text,
   Textarea,
   VStack,
+  useToast
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 
@@ -47,6 +48,7 @@ const ContactUs = () => {
     reset,
     formState: { errors },
   } = useForm();
+  const toast =useToast()
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const [openMenu, setOpenMenu] = useState(false);
@@ -70,18 +72,20 @@ const ContactUs = () => {
     });
   };
 
-  const submitForm = async () => {
+  const submitForm = async (data) => {
     console.log("submited");
     setIsLoading(true);
     await axios
-      .post(`${process.env.REACT_APP_BASE_URL}contacts`)
+      .post(`${process.env.REACT_APP_BASE_URL}contacts/`,data)
       .then((response) => {
         setIsLoading(false);
         console.log(response);
+        toast({title:"Email sent successfully",status:"success"})
         reset();
       })
       .catch((error) => {
         setIsLoading(false);
+        toast({title:error.response.data.error|| error.message|| "An error occurred",status:"warning"})
         console.log(error);
         
       });
