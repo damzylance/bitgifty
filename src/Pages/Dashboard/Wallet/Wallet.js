@@ -22,7 +22,7 @@ const Wallet = () => {
   const navigate = useNavigate();
 
   const { currency } = useParams();
-  const currencies = ["btc", "usdt", "bnb", "celo", "cusd", "tron", "ethereum"];
+  const currencies = ["btc", "usdt", "bnb", "celo", "cusd", "tron", "eth"];
   const paramsMatch = currencies.includes(currency);
   const [transactions, setTransactions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -35,11 +35,16 @@ const Wallet = () => {
         },
       })
       .then(function (response) {
-        console.log(response);
         if (response.data) {
           setIsLoading(false);
-
-          setTransactions(response.data);
+          if(paramsMatch){
+            setTransactions(response.data.filter((transaction)=>{
+              return transaction.currency === currency.toUpperCase()
+            }))
+          }else{
+            setTransactions(response.data);
+          }
+          
         }
       })
       .catch(function (error) {});

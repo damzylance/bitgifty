@@ -585,7 +585,7 @@ function CoinRow(props) {
             if (props.type === "fiat") {
               navigate(`/fiat-history/`);
             } else {
-              navigate(`/transaction-history`);
+              navigate(`/transaction-history/${props.currency.toLowerCase()}`);
             }
           }}
           disabled={

@@ -43,11 +43,17 @@ function Login() {
         navigate(busStop === "/giftcard/redeem" ? busStop : "/dashboard");
       })
       .catch(function (error) {
+        console.log(error)
         if (error.response?.status === 400) {
           toast({
             title: "Incorrect email or password",
             status: "error",
-          });
+          })
+        }else{
+          toast({
+            title: `${error.message}` ||`${error?.response?.data?.response}` ||  `An error occurred`,
+            status: "error",
+          })
         }
         // if (error.response?.data?.non_field_errors) {
         //   toast({

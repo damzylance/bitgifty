@@ -65,7 +65,7 @@ function MyCards() {
   }, []);
   return (
     <GiftCardTemplate>
-      <ExchangeConnect />
+      {/* <ExchangeConnect /> */}
       <Box mt={"30px"} cursor={"pointer"}>
         <SimpleGrid columns={[2, 2, 4]} spacing="4">
           {" "}
