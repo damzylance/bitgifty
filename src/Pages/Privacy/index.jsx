@@ -12,7 +12,7 @@ import {
   Textarea,
   VStack,
 } from "@chakra-ui/react";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   AiFillFacebook,
   AiFillInstagram,
@@ -21,6 +21,7 @@ import {
 } from "react-icons/ai";
 import { RxCaretRight, RxCross1, RxHamburgerMenu } from "react-icons/rx";
 import { Link, useNavigate } from "react-router-dom";
+import ContactButton from "../../Components/ContactButton";
 const navHoverStyle = {
   background: "brand.700",
   color: "#fff",
@@ -50,8 +51,13 @@ const Privacy = () => {
       behavior: "smooth",
     });
   };
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
   return (
     <VStack width={"full"} background={"#FAFCFF"} pt={[0, 0, "0px", "0px"]}>
+      <ContactButton/>
       <Box
         width={"full"}
         position={["relative", "relative", "sticky"]}

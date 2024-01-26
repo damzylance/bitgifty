@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   AiFillFacebook,
@@ -25,8 +25,9 @@ import {
   AiFillTwitterSquare,
 } from "react-icons/ai";
 import { RxCaretRight, RxCross1, RxHamburgerMenu } from "react-icons/rx";
-import { Link, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import axios from "axios";
+import ContactButton from "../../Components/ContactButton";
 const navHoverStyle = {
   background: "brand.700",
   color: "#fff",
@@ -62,15 +63,8 @@ const ContactUs = () => {
   const showMobileMenu = () => {
     setOpenMenu(!openMenu);
   };
-  const howItWorks = useRef(null);
-  const about = useRef(null);
-  const faq = useRef(null);
-  const scrollToSection = (elementRef) => {
-    window.scrollTo({
-      top: elementRef.current.offsetTop,
-      behavior: "smooth",
-    });
-  };
+
+
 
   const submitForm = async (data) => {
     console.log("submited");
@@ -90,9 +84,13 @@ const ContactUs = () => {
         
       });
   };
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
 
   return (
     <VStack width={"full"} background={"#FAFCFF"} pt={[0, 0, "0px", "0px"]}>
+      <ContactButton/>
       <Box
         width={"full"}
         position={["relative", "relative", "sticky"]}
@@ -115,14 +113,14 @@ const ContactUs = () => {
             alignItems="center"
             py={"10px"}
           >
-            <Link to={"/"}>
+            <NavLink to={"/"}>
               <Box>
                 <Img
                   src="/assets/images/logo-inline-transparent.png"
                   width={"100px"}
                 />
               </Box>
-            </Link>
+            </NavLink>
             {openMenu ? (
               <RxCross1 onClick={showMobileMenu} fontSize={"24px"} />
             ) : (
@@ -144,7 +142,6 @@ const ContactUs = () => {
                   py={"10px"}
                   borderBottom={"1px solid #eae8e8"}
                   onClick={() => {
-                    scrollToSection(howItWorks);
                   }}
                 >
                   <Text sx={navStyle} _hover={navHoverStyle}>
@@ -155,7 +152,6 @@ const ContactUs = () => {
 
                 <HStack
                   onClick={() => {
-                    scrollToSection(about);
                   }}
                   width={"full"}
                   justifyContent={"space-between"}
@@ -176,7 +172,6 @@ const ContactUs = () => {
                   py={"10px"}
                   borderBottom={"1px solid #eae8e8"}
                   onClick={() => {
-                    scrollToSection(faq);
                   }}
                 >
                   <Text sx={navStyle} _hover={navHoverStyle}>
@@ -206,7 +201,7 @@ const ContactUs = () => {
                   py={"10px"}
                   borderBottom={"1px solid #eae8e8"}
                   onClick={() => {
-                    scrollToSection("/register");
+                    
                   }}
                 >
                   <Text sx={navStyle} _hover={navHoverStyle}>
@@ -225,16 +220,17 @@ const ContactUs = () => {
             display={["none", "none", "flex", "flex"]}
             alignItems={"cener"}
           >
-            <Box>
-              <Image
+                        <Box>
+              <NavLink to={"/"}> <Image
                 width={"150px"}
                 src="/assets/images/logo-inline-whitebg.png"
-              />
+              /></NavLink>
+              
             </Box>
             <HStack gap={"20px"} alignItems={"center"}>
               <Text
                 onClick={() => {
-                  scrollToSection(about);
+                 
                 }}
                 sx={navStyle}
                 _hover={navHoverStyle}
@@ -243,7 +239,6 @@ const ContactUs = () => {
               </Text>
               <Text
                 onClick={() => {
-                  scrollToSection(howItWorks);
                 }}
                 sx={navStyle}
                 _hover={navHoverStyle}
@@ -253,7 +248,6 @@ const ContactUs = () => {
 
               <Text
                 onClick={() => {
-                  scrollToSection(faq);
                 }}
                 sx={navStyle}
                 _hover={navHoverStyle}
@@ -299,9 +293,8 @@ const ContactUs = () => {
           </HStack>
         </Container>
       </Box>
-      <Box
+      <VStack
         width={"full"}
-        position={"relative"}
         px={[0, 0, "20px"]}
         py={"20px"}
         bg={"#EDFAFD"}
@@ -313,7 +306,7 @@ const ContactUs = () => {
           position={"relative"}
         >
           <form onSubmit={handleSubmit(submitForm)}>
-            <VStack width={"full"} alignContent={"flex-start"} gap={"30px"}>
+            <VStack width={"full"} alignContent={"flex-start"} py={"100px"} gap={"30px"}>
               <VStack width={"full"} alignContent={"flex-start"} gap={"10px"}>
                 <Text fontSize={["lg", "xl"]} fontWeight={"bold"}>
                   We'd Love to help
@@ -369,7 +362,7 @@ const ContactUs = () => {
             </VStack>
           </form>
         </Container>
-      </Box>
+      </VStack>
       <Box width={"full"} py={"40px"} bg={"#103D96"} color={"#fff"}>
         <Container maxWidth={["full", "full", "95%", "80%"]}>
           <HStack
@@ -412,26 +405,25 @@ const ContactUs = () => {
                 <Text fontSize={["16px", "16px", "24px"]} fontWeight={"700"}>
                   Legal
                 </Text>
-                <Link to={"/privacy-policy"} style={{ fontSize: "14px" }}>
+                <NavLink to={"/privacy-policy"} style={{ fontSize: "14px" }}>
                   Privacy Policy
-                </Link>{" "}
-                <Link style={{ fontSize: "14px" }}>Help Center</Link>
-                <Link style={{ fontSize: "14px" }}>Terms and Condition</Link>
+                </NavLink>{" "}
+                <NavLink style={{ fontSize: "14px" }}>Help Center</NavLink>
+                <NavLink style={{ fontSize: "14px" }}>Terms and Condition</NavLink>
               </VStack>
               <VStack width={"full"} alignItems={"flex-start"}>
                 <Text fontSize={["16px", "16px", "24px"]} fontWeight={"700"}>
                   Company
                 </Text>
-                <Link>FAQ</Link>
+                <NavLink>FAQ</NavLink>
                 <Text
                   onClick={() => {
-                    scrollToSection(about);
                   }}
                   cursor={"pointer"}
                 >
                   About Us
                 </Text>
-                <Link to={"/contact-us"}>Contact Us</Link>
+                <NavLink to={"/contact-us"}>Contact Us</NavLink>
               </VStack>
             </HStack>
           </HStack>

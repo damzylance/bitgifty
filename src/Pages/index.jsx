@@ -28,8 +28,8 @@ import {
 } from "@chakra-ui/react";
 import { motion, wrap } from "framer-motion";
 
-import React, { useState, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useRef, useEffect } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import {
   RxHamburgerMenu,
   RxCross1,
@@ -44,6 +44,7 @@ import {
   AiFillTwitterSquare,
 } from "react-icons/ai";
 import { MdArrowLeft } from "react-icons/md";
+import ContactButton from "../Components/ContactButton";
 
 const animationKeyframes = keyframes`
   0% {
@@ -101,6 +102,9 @@ const Home = () => {
     });
   };
   const heroText = t("heroText").toLowerCase().split("bitcoin");
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
   return (
     <VStack
       width={"full"}
@@ -111,6 +115,7 @@ const Home = () => {
       margin={"auto"}
       gap={"40px"}
     >
+      <ContactButton/>
       <Box
         width={"full"}
         position={["relative", "relative", "sticky"]}
@@ -244,10 +249,11 @@ const Home = () => {
             alignItems={"cener"}
           >
             <Box>
-              <Image
+              <NavLink to={"/"}> <Image
                 width={"150px"}
                 src="/assets/images/logo-inline-whitebg.png"
-              />
+              /></NavLink>
+              
             </Box>
             <HStack gap={"20px"} alignItems={"center"}>
               <Text

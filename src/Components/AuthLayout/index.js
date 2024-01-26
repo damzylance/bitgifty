@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useToast } from "@chakra-ui/react";
 import { Box } from "@chakra-ui/react";
 import { ArrowBackIcon } from "@chakra-ui/icons";
+import ContactButton from "../ContactButton";
 
 function AuthLayout(props) {
   const toast = useToast();
@@ -56,6 +57,7 @@ function AuthLayout(props) {
   }, []);
   return (
     <>
+    <ContactButton/>
       {isLoading ? (
         <Container>
           <VStack justifyContent={"center"} height={"100vh"} width={"full"}>
