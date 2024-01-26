@@ -19,6 +19,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { SettingsIcon } from "@chakra-ui/icons";
+import ContactButton from "../ContactButton";
 
 function DashboardLayout({ notifications, increment, decrement, children }) {
   const page = window.location.pathname.split("/")[2];
@@ -45,6 +46,7 @@ function DashboardLayout({ notifications, increment, decrement, children }) {
   };
   return (
     <Box width={"full"}>
+      <ContactButton/>
       <Box width={"full"} bg={"brand.700"}>
         <Container px={[2, 2, 0]} py={4} maxW={["100%", "100%", "90%"]}>
           <Box
