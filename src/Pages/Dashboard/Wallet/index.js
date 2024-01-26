@@ -1498,6 +1498,16 @@ const WalletModal = (props) => {
                                     setErrors([]);
                                     setFloatAmount(toFloatAmount.toString());
                                   }
+                                }else if (props.network === "tron") {
+                                  let coinErrors = [];
+
+                                  if (toFloatAmount < 5) {
+                                    coinErrors.push("Minimum amount is 5 ");
+                                    setErrors(coinErrors);
+                                  } else {
+                                    setErrors([]);
+                                    setFloatAmount(toFloatAmount.toString());
+                                  }
                                 } else if (props.network === "cusd") {
                                   let coinErrors = [];
                                   if (toFloatAmount < 5) {
