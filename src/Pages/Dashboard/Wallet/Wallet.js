@@ -22,7 +22,7 @@ const Wallet = () => {
   const navigate = useNavigate();
 
   const { currency } = useParams();
-  const currencies = ["btc", "usdt", "bnb", "celo", "cusd", "tron", "eth"];
+  const currencies = ["btc", "bnb", "celo", "cusd", "usdt_tron", "eth", "naira"];
   const paramsMatch = currencies.includes(currency);
   const [transactions, setTransactions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
