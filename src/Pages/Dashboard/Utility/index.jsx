@@ -121,7 +121,7 @@ const UtilityCard = (props) => {
 };
 const UtilityModal = (props) => {
   return (
-    <Modal isOpen={props.isOpen} onClose={props.onClose}>
+    <Modal closeOnOverlayClick={false} isOpen={props.isOpen} onClose={props.onClose}>
       <ModalOverlay />
       <ModalContent>
         <ModalCloseButton />

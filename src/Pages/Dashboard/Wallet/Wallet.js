@@ -39,7 +39,12 @@ const Wallet = () => {
           setIsLoading(false);
           if(paramsMatch){
             setTransactions(response.data.filter((transaction)=>{
-              return transaction.currency === currency.toUpperCase()
+              if (currency==="naira"){
+                return transaction.currency === "VC__BITGIFTY_NAIRA"
+              }else{
+                return transaction.currency === currency.toUpperCase()
+              }
+              
             }))
           }else{
             setTransactions(response.data);
