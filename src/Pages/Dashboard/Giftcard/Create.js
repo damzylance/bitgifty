@@ -497,7 +497,7 @@ function Create() {
               <HStack
                 columns={4}
                 gap={"4px"}
-                width={["full", "full", "500px"]}
+                width={["full", "full","full", "640px"]}
                 overflowX={"scroll"}
               >
                 {templatesLoading ? (

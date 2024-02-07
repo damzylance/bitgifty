@@ -12,34 +12,44 @@ import {
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { ProviderCard } from "./Airtime";
-import { ArrowBackIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon, InfoIcon } from "@chakra-ui/icons";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import useWallets from "../../../Hooks/useWallets";
 
 const Electricity = (props) => {
   const [page, setPage] = useState("list");
-  const [merchants, setMerchants] = useState([
-    { name: "IKEDC  PREPAID", id: "BIL113" },
-    { name: "EKEDC PREPAID TOPUP", id: "BIL112" },
+  const [merchants, setMerchants] =  useState([
+    { name: "IKEDC  PREPAID", id: "BIL113", item_code: "UB159" },
+    { name: "EKEDC PREPAID TOPUP", id: "BIL112", item_code: "UB157" },
     {
       name: "ABUJA DISCO Prepaid",
       id: "BIL204",
+      item_code: "UB584",
     },
     {
       name: "IBADAN DISCO ELECTRICITY PREPAID",
       id: "BIL114",
+      item_code: "UB161",
     },
-    { name: "KANO DISCO PREPAID TOPUP", id: "BIL120" },
+    { name: "KANO DISCO PREPAID TOPUP", id: "BIL120", item_code: "UB169" },
 
     {
-      name: "KADUNA PREPAID",
+      name: "KADUNA DISCO ELECTRICITY BILLS",
       id: "BIL119",
+      item_code: "UB602",
+    },
+    {
+      name: "ENUGU DISCO ELECTRIC BILLS PREPAID TOPUP",
+      id: "BIL115",
+      item_code: "UB163",
     },
   ]);
 
   const [merchantName, setMerchantName] = useState(null);
   const [merchantId, setMerchantId] = useState(null);
+  const [itemCode, setItemCode] = useState("");
+
   return (
     <>
       {page === "list" && (
@@ -57,7 +67,8 @@ const Electricity = (props) => {
                       action={() => {
                         setPage("buy");
                         setMerchantId(provider.id);
-                        setMerchantName(provider.name);
+                        setMerchantName(provider.name)
+                        setItemCode(provider.item_code);;
                       }}
                       name={provider.name}
                       logo={"/assets/images/idea.png"}
@@ -71,6 +82,7 @@ const Electricity = (props) => {
       {page === "buy" && (
         <CableForm
           onClose={props.action}
+          item_code={itemCode}
           name={merchantName}
           disco={merchantId}
           back={() => setPage("list")}
@@ -95,6 +107,7 @@ const CableForm = (props) => {
   const [tokenToNairaRate, setTokenToNairaRate] = useState(0);
   const [currency, setCurrency] = useState("");
   const [walletBalance, setWalletBalance] = useState(null);
+  const [loadingMessage,setLoadingMessage] = useState("")
 
   //   const handlePlanChange = (e) => {
   //     const nairaAmount = parseInt(e.target.value.split(",")[1]);
@@ -127,7 +140,17 @@ const CableForm = (props) => {
       setTokenAmount(rate * nairaAmount);
     }
   };
+  const rotateMessages = ()=>{
+    if(loadingMessage === "Connecting To Provider..."){
+      setTimeout(()=>{
+        setLoadingMessage("Processing Payment...")
+      },2000)
+      
+    }
+    
+  }
 
+  setInterval(rotateMessages, 1000);
   const fetchRate = async (currency) => {
     let rate;
     if (currency === "btc") {
@@ -185,16 +208,35 @@ const CableForm = (props) => {
     return rate;
   };
   const buyCable = async (data) => {
+     setLoadingMessage("Validating Meter Number...");
     data.bill_type = props.name;
     data.country = "NG";
 
     // data.wallet_from = data.wallet_from.toLowerCase();
     // data.token_amount = data.data.split(",")[1];
-
+    
     if (tokenAmount >= walletBalance) {
       toast({ title: "insufficient balance", status: "warning" });
     } else {
       setIsLoading(true);
+      const validate = await axios
+    .get(
+      `${process.env.REACT_APP_BASE_URL}utilities/v2/validate-bill-service/?item-code=${props.item_code}&biller-code=${props.disco}&customer=${data.customer}`,{
+        headers: {
+          Authorization: `Token ${localStorage.getItem("token")}`,
+        },
+      }
+    )
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error;
+    });
+    
+  
+    if (validate?.data?.data?.response_message === "Successful"){
+      setLoadingMessage("Connecting To Provider...")
       await axios
         .post(
           `${process.env.REACT_APP_BASE_URL}utilities/v2/initialize-payment/`,
@@ -221,31 +263,17 @@ const CableForm = (props) => {
             status: "warning",
           });
         });
+    }else{
+      setIsLoading(false);
+        toast({
+          title: "Could not verify meter number",
+          status: "warning",
+        });
+    }
+      
     }
   };
-  // useEffect(() => {
-  //   setIsLoading(true);
-  //   axios
-  //     .get(
-  //       `${process.env.REACT_APP_BASE_URL}utilities/v2/get-bill-category?bill-type=power`,
-  //       {
-  //         headers: {
-  //           Authorization: `Token ${localStorage.getItem("token")}`,
-  //         },
-  //       }
-  //     )
-  //     .then((response) => {
-  //       console.log(response);
-  //       setIsLoading(false);
-
-  //       setPlans(
-  //         response.data.data.filter((plan) => {
-  //           return plan.biller_code === props.cable;
-  //         })
-  //       );
-  //     })
-  //     .catch((error) => {});
-  // }, []);
+  
 
   return (
     <VStack my={"40px"} gap={"20px"} width={"full"}>
@@ -268,13 +296,6 @@ const CableForm = (props) => {
       </HStack>
       <form style={{ width: "100%" }} onSubmit={handleSubmit(buyCable)}>
         <VStack width={"full"} gap={"20px"}>
-          <FormControl>
-            <FormLabel>Select Meter Type</FormLabel>
-            <Select fontSize={"16px"} disabled>
-              <option value={"prepaid"}>Prepaid</option>
-              <option value={"postpaid"}>Postpaid</option>
-            </Select>
-          </FormControl>
           <FormControl>
             <FormLabel fontSize={"sm"} color={"blackAlpha.700"}>
               Meter Number
@@ -300,10 +321,14 @@ const CableForm = (props) => {
               outline={"none"}
               fontSize={"16px"}
               type="number"
-              min={50}
+              min={1000}
               required
               {...register("amount", {
                 onChange: handleAmountChange,
+                min: {
+                  value: 1000,
+                  message: `Minimum recharge amount is N1000`,
+                },
               })}
             />
             <HStack
@@ -354,6 +379,8 @@ const CableForm = (props) => {
           </FormControl>
           <Button
             isLoading={isLoading}
+            loadingText={loadingMessage}
+
             type="submit"
             width={"full"}
             borderRadius={"none"}
@@ -366,8 +393,11 @@ const CableForm = (props) => {
             }}
             variant={"solid"}
           >
-            Pay
+            Buy Electricity
           </Button>
+          
+          <HStack fontSize={"sm"} fontWeight={400} color={"#4d4c4c"}> <InfoIcon/> <Text>This may take up to 15 seconds</Text> </HStack>
+
         </VStack>
       </form>
     </VStack>

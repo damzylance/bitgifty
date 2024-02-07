@@ -20,7 +20,7 @@ import {
   AiFillTwitterSquare,
 } from "react-icons/ai";
 import { RxCaretRight, RxCross1, RxHamburgerMenu } from "react-icons/rx";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import ContactButton from "../../Components/ContactButton";
 const navHoverStyle = {
   background: "brand.700",
@@ -547,7 +547,7 @@ const Privacy = () => {
           </VStack>
         </Container>
       </Box>
-      <Box width={"full"} py={"40px"}>
+      <Box width={"full"} py={"40px"} bg={"#103D96"} color={"#fff"}>
         <Container maxWidth={["full", "full", "95%", "80%"]}>
           <HStack
             flexDir={["column", "column", "row", "row"]}
@@ -555,7 +555,7 @@ const Privacy = () => {
             width={"full"}
             justifyContent={"space-between"}
           >
-            <VStack width={"full"} alignItems={"flex-start"}>
+            <VStack width={"full"} alignItems={"flex-start"} gap={"20px"}>
               <Text
                 fontSize={["24px", "24px", "32px"]}
                 fontWeight={"700"}
@@ -567,6 +567,17 @@ const Privacy = () => {
                 Give the Gift of Choice: Create and redeem your crypto gift
                 cards here at Gifty!
               </Text>
+              <HStack width={"full"} alignItems={"center"}>
+                <a href={"https://twitter.com/BitGifty"}>
+                  <AiFillTwitterSquare fontSize={"24px"} />
+                </a>
+                <a href={"https://www.instagram.com/bitgifty/"}>
+                  <AiFillInstagram fontSize={"24px"} />
+                </a>
+                <a href={"https://www.linkedin.com/company/bitgifty/"}>
+                  <AiFillLinkedin fontSize={"24px"} />
+                </a>
+              </HStack>
             </VStack>
             <HStack
               flexDir={["column", "column", "row", "row"]}
@@ -578,40 +589,25 @@ const Privacy = () => {
                 <Text fontSize={["16px", "16px", "24px"]} fontWeight={"700"}>
                   Legal
                 </Text>
-                <Link to={"/privacy-policy"} style={{ fontSize: "14px" }}>
+                <NavLink to={"/privacy-policy"} style={{ fontSize: "14px" }}>
                   Privacy Policy
-                </Link>
-                <Link style={{ fontSize: "14px" }}>Help Center</Link>
-                <Link style={{ fontSize: "14px" }}>Terms and Condition</Link>
+                </NavLink>{" "}
+                <NavLink style={{ fontSize: "14px" }}>Help Center</NavLink>
+                <NavLink style={{ fontSize: "14px" }}>Terms and Condition</NavLink>
               </VStack>
               <VStack width={"full"} alignItems={"flex-start"}>
                 <Text fontSize={["16px", "16px", "24px"]} fontWeight={"700"}>
                   Company
                 </Text>
-                <Link>FAQ</Link>
+                <NavLink>FAQ</NavLink>
                 <Text
                   onClick={() => {
-                    scrollToSection(about);
                   }}
                   cursor={"pointer"}
                 >
                   About Us
                 </Text>
-                <Link to={"/contact-us"}>Contact Us</Link>
-              </VStack>
-              <VStack width={"full"} alignItems={"center"}>
-                <Text fontSize={["16px", "16px", "24px"]} fontWeight={"700"}>
-                  Socials
-                </Text>
-                <a href={"https://twitter.com/BitGifty"}>
-                  <AiFillTwitterSquare fontSize={"24px"} />
-                </a>
-                <a href={"https://www.instagram.com/bitgifty/"}>
-                  <AiFillInstagram fontSize={"24px"} />
-                </a>
-                <a href={"https://www.linkedin.com/company/bitgifty/"}>
-                  <AiFillLinkedin fontSize={"24px"} />
-                </a>
+                <NavLink to={"/contact-us"}>Contact Us</NavLink>
               </VStack>
             </HStack>
           </HStack>
@@ -623,7 +619,7 @@ const Privacy = () => {
 
 export default Privacy;
 
-const PrivacySection = (props) => {
+ const PrivacySection = (props) => {
   return (
     <VStack
       width={"full"}

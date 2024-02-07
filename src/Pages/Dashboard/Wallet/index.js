@@ -582,11 +582,9 @@ function CoinRow(props) {
           }}
           variant={"outline"}
           onClick={() => {
-            if (props.type === "fiat") {
-              navigate(`/fiat-history/`);
-            } else {
+           
               navigate(`/transaction-history/${props.currency.toLowerCase()}`);
-            }
+            
           }}
           disabled={
             props.currency === "ETHEREUM" || props.currency === "BITCOIN"
