@@ -313,6 +313,7 @@ function Create() {
                 src={`${template.link}`}
                 width={["350px", "350px", "320px"]}
                 height={"338px"}
+                loading={"lazy"}
                 // objectFit={"cover"}
                 position={"absolute"}
                 left={["6%", "6%", "10%"]}
@@ -495,7 +496,6 @@ function Create() {
             <FormControl>
               <FormLabel>Select your gift card design</FormLabel>
               <HStack
-                columns={4}
                 gap={"4px"}
                 width={["full", "full","full", "640px"]}
                 overflowX={"scroll"}
@@ -505,16 +505,14 @@ function Create() {
                 ) : designs.length > 0 ? (
                   designs.map((image, index) => {
                     return (
-                      <Box key={index}>
-                        <HStack
+                      
+                        <Image
                           width={"80px"}
                           height={"70px "}
                           key={image.id}
-                          bgImage={`url(${image.link})`}
-                          backgroundSize={"cover"}
-                          backgroundPosition={"center"}
-                          backgroundRepeat={"no-repeat"}
+                          src={`${image.link}`}
                           borderRadius={"base"}
+                          loading={"lazy"}
                           cursor={"pointer"}
                           border={
                             image.link === template.link ? "1px solid #fff" : ""
@@ -523,8 +521,8 @@ function Create() {
                           onClick={() => {
                             setTemplate({ link: image.link, id: image.id });
                           }}
-                        ></HStack>
-                      </Box>
+                        />
+                      
                     );
                   })
                 ) : (

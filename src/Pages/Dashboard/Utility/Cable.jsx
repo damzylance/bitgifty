@@ -187,6 +187,7 @@ const CableForm = (props) => {
     data.country = "NG";
     data.bill_type = data.plan.split(",")[0];
     data.amount = data.plan.split(",")[1];
+    const itemCode = data.plan.split(",")[2];
     delete data.plan;
     console.log(data);
     //
@@ -194,7 +195,21 @@ const CableForm = (props) => {
       toast({ title: "insufficient balance", status: "warning" });
     } else {
       setIsLoading(true);
+      const validate = await axios
+      .get(
+        `${process.env.REACT_APP_BASE_URL}utilities/v2/validate-bill-service/?item-code=${itemCode}&biller-code=${props.cable}&customer=${data.customer}`,{headers: {
+          Authorization: `Token ${localStorage.getItem("token")}`,
+        },}
+      )
+      .then((response) => {
+        return response;
+      })
+      .catch((error) => {
+        return error;
+      });
+    console.log(validate);
 
+    if (validate?.data?.data?.response_message === "Successful"){
       await axios
         .post(
           `${process.env.REACT_APP_BASE_URL}utilities/v2/initialize-payment/`,
@@ -217,6 +232,15 @@ const CableForm = (props) => {
             status: "warning",
           });
         });
+    }else {
+      setIsLoading(false);
+      toast({
+        title: "Invalid smart card number",
+        status: "warning",
+      });
+    }
+
+      
     }
   };
   useEffect(() => {
@@ -255,7 +279,7 @@ const CableForm = (props) => {
               <option>Choose Plan</option>;
               {plans.map((plan, index) => {
                 return (
-                  <option value={[plan.biller_name, plan.amount]} key={index}>
+                  <option value={[plan.biller_name, plan.amount,plan.item_code]} key={index}>
                     {plan.biller_name} {plan.validity} (N{plan.amount})
                   </option>
                 );
@@ -290,7 +314,7 @@ const CableForm = (props) => {
               outline={"none"}
               required
               name="customer"
-              {...register("customer")}
+              {...register("customer",{minLength:{value:10,message:"Smart card number should be 10 digits"},maxLength:{value:10,message:"Smart card number should be 10 digits"}})}
             />
           </FormControl>
           <FormControl>
