@@ -1506,7 +1506,7 @@ const Home = () => {
                 <Link to={"/privacy-policy"} style={{ fontSize: "14px" }}>
                   Privacy Policy
                 </Link>{" "}
-                <Link style={{ fontSize: "14px" }}>Help Center</Link>
+                <Link to={"/aml"} style={{ fontSize: "14px" }}>AML</Link>
                 <Link style={{ fontSize: "14px" }}>Terms and Condition</Link>
               </VStack>
               <VStack width={"full"} alignItems={"flex-start"}>

@@ -534,7 +534,7 @@ const Privacy = () => {
                   <Text>
                     If you have any questions, comments, or concerns regarding
                     our Privacy Policy and/or practices as it or they relate to
-                    the Platform, please contact us at contact@bitgifty.com. If
+                    the Platform, please contact us at contact@bitgiftyapp.com. If
                     you have a complaint about how your Personal Information has
                     been used, please contact us in the first instance. If we
                     cannot resolve your complaint to your satisfaction, you may

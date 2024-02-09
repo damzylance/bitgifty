@@ -469,7 +469,7 @@ import {
                     
                   </PrivacySection>
                   <PrivacySection>
-                    <Text fontSize={"2xl"} fontWeight={"bold"}>
+                    <Text fontSize={"3xl"} fontWeight={"bold"}>
                     6. GENERAL CUSTOMER DUE DILIGENCE
                     </Text>
                     <Text>
@@ -489,13 +489,109 @@ import {
                     </ol>
                   </PrivacySection>
                   <PrivacySection>
+                    <Text fontSize={"3xl"} fontWeight={"bold"}>
+                     7. CUSTOMER DUE DILIGENCE AND ENHANCED DUE DILIGENCE REQUIREMENTS FOR PRIVATE BANKING ACCOUNTS/SENIOR FOREIGN POLITICAL FIGURES
+                    </Text>
+                    <Text>
+                    We do not open or maintain private banking accounts.
+                    </Text>
+                    </PrivacySection>
+                    <PrivacySection>
+                    <Text fontSize={"3xl"} fontWeight={"bold"}>8. MONITORING ACCOUNTS FOR SUSPICIOUS ACTIVITY</Text>
+                    <Text>
+                    We will monitor account activity for unusual size, volume, pattern or type of transactions, taking into account risk factors and red flags that are appropriate to our business. (Red flags are identified in Section 7.b. below.) The MLRO or his or her designee will be responsible for this monitoring, will review any activity that our monitoring system detects, will determine whether any additional steps are required, will document when and how this monitoring is carried out, and will report suspicious activities to the appropriate authorities. The MLRO or his or her designee will conduct an appropriate investigation and review relevant information from internal or third-party sources before the authorities are notified.
+                    </Text>
+                    <Text fontSize={"2xl"} fontWeight={"bold"}>1. Emergency Notification to Law Enforcement by Telephone In situations involving violations that require immediate attention, such as terrorist financing or ongoing money laundering schemes, we will immediately call an appropriate law enforcement authority. </Text>
+                    <Text fontSize={"2xl"} fontWeight={"bold"}>2. Red Flags Red flags that signal possible money laundering or terrorist financing include, but are not limited to: Customers </Text>
+                    <ul>
+                      <li>Insufficient or Suspicious Information</li>
+                      <li>Provides unusual or suspicious identification documents that cannot be readily verified. </li>
+                      <li>Reluctant to provide complete information about nature and purpose of business, prior banking relationships, anticipated account activity, officers and directors or business location.</li>
+                      <li>Refuses to identify a legitimate source for funds or information is false, misleading or substantially incorrect.</li> 
+                      <li> Background is questionable or differs from expectations based on business activities.</li>
+                      <li>Customer with no discernible reason for using BITGIFTY.COM’s service.</li>
+                      <li>Efforts to Avoid Reporting and Recordkeeping</li>
+                      <li>Reluctant to provide information needed to file reports or fails to proceed with transaction.</li>
+                      <li>Tries to persuade an employee not to file required reports or not to maintain required records.</li>
+                      <li>“Structures” deposits, withdrawals or purchase of monetary instruments below a certain amount to avoid reporting or recordkeeping requirements.</li>
+                      <li>Unusual concern with BITGIFTY.COM’s compliance with government reporting requirements and BITGIFTY.COM’s AML/CFT policies. Certain Funds Transfer Activities</li>
+                      <li>Wire transfers to/from financial secrecy havens or high-risk geographic location without an apparent business reason.</li>
+                      <li>Many small, incoming wire transfers or deposits made using checks and money orders. Almost immediately withdrawn or wired out in manner inconsistent with customer’s business or history. May indicate a Ponzi scheme.</li>
+                      <li>Wire activity that is unexplained, repetitive, unusually large or shows unusual patterns or with no apparent business purpose. Activity Inconsistent With Business</li>
+                      <li>Transactions patterns show a sudden change inconsistent with normal activities</li>
+                      <li>Unusual transfers of funds or journal entries among accounts without any apparent business purpose.</li>
+                      <li>Maintains multiple accounts, or maintains accounts in the names of family members or corporate entities with no apparent business or other purpose.</li>
+                      <li>Appears to be acting as an agent for an undisclosed principal, but is reluctant to provide information. Other Suspicious Customer Activity</li>
+                      <li> Unexplained high level of account activity with very low levels of securities transactions.</li>
+                      <li>Funds deposits for purchase of a long-term investment followed shortly by a request to liquidate the position and transfer the proceeds out of the account.</li>
+                      <li>Law enforcement requests.</li>
+                    </ul>
+
+                    <Text fontSize={"2xl"} fontWeight={"bold"}>Responding to Red Flags and Suspicious Activity </Text>
+                    <Text>When an employee of BITGIFTY.COM detects any red flag, or other activity that may be suspicious, he or she will notify the MLRO. Under the direction of the MLRO, BITGIFTY.COM will determine whether or not and how to further investigate the matter. This may include gathering additional information internally or from third-party sources, contacting the government, freezing the account and/or informing the authorities. </Text>
+                    </PrivacySection>
+                    
+                    <PrivacySection>
+                    <Text fontSize={"3xl"} fontWeight={"bold"}>9. SUSPICIOUS TRANSACTIONS REPORTING</Text>
+                      <Text>a. Filing a report with the FSC or FCU We will file a report with the authorities for any transactions (including deposits and transfers) conducted or attempted by, at or through BITGIFTY.COM involving $10,000 or more of funds (either individually or in the aggregate) where we know, suspect or have reason to suspect: (1)the transaction involves funds derived from illegal activity or is intended or conducted in order to hide or disguise funds or assets derived from illegal activity as part of a plan to violate or evade law or regulation or to avoid any transaction reporting requirement under law or regulation; (2)the transaction is designed, whether through structuring or otherwise, to evade any requirements of the regulations; (3)the transaction has no business or apparent lawful purpose or is not the sort in which the customer would normally be expected to engage, and after examining the background, possible purpose of the transaction and other facts, we know of no reasonable explanation for the transaction; or (4)the transaction involves the use of BITGIFTY.COM to facilitate criminal activity. We will also file a report and notify the appropriate law enforcement authority in situations involving violations that require immediate attention, such as terrorist financing or ongoing money laundering schemes. We may file a voluntary report for any suspicious transaction that we believe is relevant to the possible violation of any law or regulation but that is not required to be reported by us. It is our policy that all suspicious activities will be reported regularly to the Board of Directors and appropriate senior management.</Text>
+                      <Text>b. Currency Transaction Reports BITGIFTY.COM only allows FIAT currency transactions once accounts are activated. Any transfers over $10,000 may be reported to the authorities.</Text>
+                      <Text>
+                      c.Currency Transportation BITGIFTY.COM prohibits both the receipt of currency or other monetary instruments that have been transported, mailed or shipped to us. BITGIFTY.COM only accepts currency transactions through financial institutions and internationally recognised payment platforms.
+                      </Text>
+                      <Text>
+                      d.Monetary Instrument Purchases We do not issue bank checks or drafts, cashier’s checks, money orders or traveller’s checks.
+                      </Text>
+                    </PrivacySection>
+                    <PrivacySection>
+                    <Text fontSize={"3xl"} fontWeight={"bold"}>10. AML/CFT RECORDKEEPING </Text>
+                    <Text>a.Responsibility for Required AML Records Our MLRO and his or her designee will be responsible for ensuring that AML/CFT records are maintained properly. In addition, as part of our AML/CFT program, BITGIFTY.COM will create and maintain all relevant documentation on customer identity and verification (See Section 4 above) and funds transmittals. We will maintain all documentation for at least five years.</Text>
+                    <Text>
+                    b.AML/CFT Reporting Maintenance and Confidentiality We will hold reports and any supporting documentation confidential. We will not inform anyone outside of the authorities or other appropriate law enforcement or regulatory agency about a report. We will segregate report filings and copies of supporting documentation from other firm books and records to avoid disclosing information. Our MLRO will handle all requests for reports. We may share information with another financial institution about suspicious transactions in order to determine whether we will jointly file a report according to the rules and regulations of the authorities. In cases in which we file a joint report for a transaction that has been handled both by us and another financial institution, both financial institutions will maintain a copy of the filed report.
+                    </Text>
+                    <Text>
+                    c.Additional Records We shall retain either the original or a microfilm or other copy or reproduction of each of the following: –A record of each advice, request or instruction received or given regarding any transaction resulting (or intended to result and later cancelled if such a record is normally made) in the transfer of currency or other monetary instruments, funds of more than $10,000; –A record of each advice, request or instruction given to another financial institution (which includes broker-dealers) or other person, regarding a transaction intended to result in the transfer of funds, or of currency, other monetary instruments, of more than $10,000; –Each document granting signature or trading authority over each customer’s account; –A record of each remittance or transfer of funds, or of currency of more than $10,000 to a person, account or place; and –A record of each receipt of currency and of each transfer of funds of more than $10,000 received on any one occasion directly and not through a domestic financial institution, from any person, account or place. 
+                    </Text>
+                    </PrivacySection>
+                    <PrivacySection>
+                    <Text fontSize={"3xl"} fontWeight={"bold"}>11. CLEARING/INTRODUCING RELATIONSHIPS</Text>
+                    <Text>
+                    We will work closely with all collaborating institutions to detect money laundering. We will exchange information, records and data as necessary to comply with AML/CFT laws. 
+                    </Text>
+                    </PrivacySection>
+                    <PrivacySection>
+                    <Text fontSize={"3xl"} fontWeight={"bold"}>12. TRAINING PROGRAMS </Text>
+                    <Text>
+                    We will develop ongoing employee training under the leadership of the MLRO and senior management. Our training will occur on at least an annual basis. It will be based on our firm’s size, its customer base, and its resources and be updated as necessary to reflect any new developments in the law. Our training will include, at a minimum: (1) how to identify red flags and signs of money laundering and/or the financing of terrorism that arise during the course of the employees’ duties; (2) what to do once the risk is identified (including how, when and to whom to escalate unusual customer activity or other red flags for analysis and, where appropriate, the filing of reports to the authorities; (3) what employees’ roles are in BITGIFTY.COM’s compliance efforts and how to perform them; (4) BITGIFTY.COM’s record retention policy; and (5) the disciplinary consequences (including civil and criminal penalties) for non-compliance with the FSC regulations. We will develop training in our firm, or contract for it. Delivery of the training may include educational pamphlets, videos, intranet systems, in-person lectures and explanatory memos. We will maintain records to show the persons trained, the dates of training and the subject matter of their training. We will review our operations to see if certain employees, such as those in compliance, margin and corporate security, require specialised additional training. Our written procedures will be updated to reflect any such changes.
+                    </Text>
+                    </PrivacySection>
+                    <PrivacySection>
+                    <Text fontSize={"3xl"} fontWeight={"bold"}>13. PROGRAM TO INDEPENDENTLY TEST AML/CFT PROGRAM</Text>
+                    <Text>Staffing The testing of our AML/CFT program will be performed at least annually (on a calendar year basis) by the testing officer, personnel of BITGIFTY.COM, who is not the MLRO nor does he perform the AML/CFT functions being tested nor does he report to any such persons. His qualifications include a working knowledge of applicable requirements under the FSC rules and regulations. To ensure that he remains independent, we will separate his functions from other AML/CFT activities. Independent testing will be performed more frequently if circumstances warrant. Evaluation and Reporting After we have completed the independent testing, staff will report its findings to an internal audit committee. We will promptly address each of the resulting recommendations and keep a record of how each noted deficiency was resolved </Text>
+                    </PrivacySection>
+                    <PrivacySection>
+                    <Text fontSize={"3xl"} fontWeight={"bold"}>14. MONITORING EMPLOYEE CONDUCT AND ACCOUNTS</Text>
+                    <Text>We will subject employee accounts to the same AML/CFT procedures as customer accounts, under the supervision of the MLRO. We will also review the AML/CFT performance of supervisors, as part of their annual performance review. The MLRO’s accounts will be reviewed by the testing officer</Text>
+                    </PrivacySection>
+                    <PrivacySection>
+                    <Text fontSize={"3xl"} fontWeight={"bold"}>15. CONFIDENTIAL REPORTING OF AML/CFT NON-COMPLIANCE</Text>
+                    <Text>Employees will promptly report any potential violations of BITGIFTY.COM’s AML/CFT compliance program to the MLRO, unless the violations implicate the MLRO, in which case the employee shall report to the testing officer. Such reports will be confidential, and the employee will suffer no retaliation for making them. </Text>
+                    </PrivacySection>
+                    <PrivacySection>
+                    <Text fontSize={"3xl"} fontWeight={"bold"}>16. ADDITIONAL RISK AREAS </Text>
+                    <Text>BITGIFTY.COM has reviewed all areas of its business to identify potential money laundering and/or financing of terrorism risks that may not be covered in the procedures described above. The major additional areas of risk include future changes to regulations and hacking attempts on BITGIFTY.COM’s servers. Additional procedures to address these major risks are maintaining constant contact with the FSC and performing daily security checks on BITGIFTY.COM’s server security procedures, performed by a dedicated server security specialist. </Text>
+                    </PrivacySection>
+                    <PrivacySection>
+                    <Text fontSize={"3xl"} fontWeight={"bold"}>17. SENIOR MANAGER APPROVAL  </Text>
+                    <Text>Senior management has approved this AML/CFT compliance program in writing as reasonably designed to achieve and monitor our firm’s ongoing compliance with the requirements of the FSC and the implementing regulations under it. This approval is indicated by signatures below.</Text>
+                    </PrivacySection>
+                  <PrivacySection>
                     <Text fontSize={"2xl"} fontWeight={"bold"}>
                       CONTACT US
                     </Text>
                     <Text>
                       If you have any questions, comments, or concerns regarding
                       our Privacy Policy and/or practices as it or they relate to
-                      the Platform, please contact us at contact@bitgifty.com. If
+                      the Platform, please contact us at contact@bitgiftyapp.com. If
                       you have a complaint about how your Personal Information has
                       been used, please contact us in the first instance. If we
                       cannot resolve your complaint to your satisfaction, you may
@@ -553,7 +649,7 @@ import {
                   <NavLink to={"/privacy-policy"} style={{ fontSize: "14px" }}>
                     Privacy Policy
                   </NavLink>{" "}
-                  <NavLink style={{ fontSize: "14px" }}>Help Center</NavLink>
+                  <NavLink to={"/aml"} style={{ fontSize: "14px" }}>AML</NavLink>                  
                   <NavLink style={{ fontSize: "14px" }}>Terms and Condition</NavLink>
                 </VStack>
                 <VStack width={"full"} alignItems={"flex-start"}>
