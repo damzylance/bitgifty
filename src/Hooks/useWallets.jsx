@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 
 const useWallets = () => {
-  const supportedWallets = ["btc", "cusd", "usdt_tron", "eth", "ceur", "celo"];
+  const supportedWallets = ["btc", "cusd", "eth", "ceur", "celo",];
   const [walletsLoading, setWalletsLoading] = useState(true);
   const [userWallets, setUserWallets] = useState([]);
   const [newWallets, setNewWallets] = useState([]);

@@ -498,7 +498,7 @@ function Create() {
               <HStack
                 gap={"4px"}
                 width={["full", "full","full", "640px"]}
-                overflowX={"scroll"}
+                overflow={"scroll"}
               >
                 {templatesLoading ? (
                   <Spinner />
@@ -509,6 +509,9 @@ function Create() {
                         <Image
                           width={"80px"}
                           height={"70px "}
+                          bg={"url(/assets/images/giftcard-placeholder.png)"}
+                          bgRepeat={"no-repeat"}
+                          bgSize={"auto"}
                           key={image.id}
                           src={`${image.link}`}
                           borderRadius={"base"}
@@ -517,6 +520,8 @@ function Create() {
                           border={
                             image.link === template.link ? "1px solid #fff" : ""
                           }
+
+                          boxSizing={"border-box"}
                           _hover={{ border: "1px solid blue" }}
                           onClick={() => {
                             setTemplate({ link: image.link, id: image.id });

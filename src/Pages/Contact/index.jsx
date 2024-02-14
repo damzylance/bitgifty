@@ -408,7 +408,7 @@ const ContactUs = () => {
                 <NavLink to={"/privacy-policy"} style={{ fontSize: "14px" }}>
                   Privacy Policy
                 </NavLink>{" "}
-                <NavLink style={{ fontSize: "14px" }}>Help Center</NavLink>
+                <NavLink to={"/aml"} style={{ fontSize: "14px" }}>AML</NavLink>
                 <NavLink style={{ fontSize: "14px" }}>Terms and Condition</NavLink>
               </VStack>
               <VStack width={"full"} alignItems={"flex-start"}>

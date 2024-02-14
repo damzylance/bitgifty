@@ -20,6 +20,8 @@ import Utility from "../Pages/Dashboard/Utility";
 import Reedeem from "../Pages/Dashboard/Giftcard/Reedeem";
 import MyCards from "../Pages/Dashboard/Giftcard/MyCards";
 import SettingsLayout from "../Pages/UserSetting/SettingsLayout";
+import Aml from "../Pages/Aml";
+import TermsAndConditions from "../Pages/Terms/TermsAndConditions";
 function Router() {
   return (
     <BrowserRouter>
@@ -27,6 +29,8 @@ function Router() {
         <Route exact path="/" element={<Home />} />
         <Route exact path="/contact-us" element={<ContactUs />} />
         <Route exact path="/privacy-policy" element={<Privacy />} />
+        <Route exact path="/aml" element={<Aml/>} />
+        <Route exact path="/tnc" element={<TermsAndConditions/>} />
         <Route exact path="/login" element={<Login />} />
         <Route exact path="/register" element={<Signup />} />
         <Route

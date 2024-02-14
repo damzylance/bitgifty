@@ -419,6 +419,12 @@ function Wallet() {
                       );
                     })
                 )}
+                {newWallets.length>0 && newWallets.map((wallet)=>{
+                  console.log(wallet)
+                  return (
+                    <InactiveCoinRow wallet={wallet}/>
+                  )
+                })}
                 {newWallets.length > 0 && (
                   <VStack
                     bg={"brand.700"}
@@ -448,6 +454,119 @@ function Wallet() {
       </VStack>
     </DashboardLayout>
   );
+}
+
+const InactiveCoinRow=(props)=>{
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  return (
+    <Flex
+      width={"full"}
+      gap="2"
+      justifyContent={"space-between"}
+      alignItems={"center"}
+      flexDir={["column", "column", "row"]}
+      background={"#fff"}
+      padding={["24px 10px", "24px 10px", "24px 10px", "24px 30px"]}
+      boxShadow={"0px 1px 4px 0px rgba(0, 0, 0, 0.10)"}
+    >
+      <HStack width={"full"} justifyContent="space-between">
+        <Text textTransform={"uppercase"}>{props.wallet}</Text>
+        <Text ml={["", "", "150px"]}>0</Text>
+      </HStack>
+
+      <HStack
+        width={"full"}
+        gap={["0", "0", "0"]}
+        justifyContent={["space-between", "space-between", "flex-end"]}
+      >
+        <Button
+          size={["xs", "sm", "md"]}
+          borderRadius={"none"}
+          background={
+            " linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)"
+          }
+          _hover={{
+            background:
+              "linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)",
+          }}
+          variant={"solid"}
+          onClick={() => {
+            onOpen()
+          }}
+          
+        >
+          Spend
+        </Button>
+        <Button
+          size={["xs", "sm", "md"]}
+          borderRadius={"none"}
+          _hover={{
+            background:
+              "linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)",
+            color: "#fff",
+          }}
+          variant={"outline"}
+          onClick={() => {
+            
+          }}
+          disabled={
+            props.currency === "NAIRA" ||
+            props.currency === "ETHEREUM" ||
+            props.currency === "BITCOIN"
+              ? true
+              : false
+          }
+        >
+          Deposit
+        </Button>
+        <Button
+          size={["xs", "sm", "md"]}
+          borderRadius={"none"}
+          _hover={{
+            background:
+              "linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)",
+            color: "#fff",
+          }}
+          variant={"outline"}
+      
+           
+        >
+          Swap
+        </Button>
+        <Button
+          size={["xs", "sm", "md"]}
+          borderRadius={"none"}
+          _hover={{
+            background:
+              "linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)",
+            color: "#fff",
+          }}
+          variant={"outline"}
+          onClick={() => {
+            
+          }}
+         
+        >
+          Withdraw
+        </Button>
+
+        <Button
+          size={["xs", "sm", "md"]}
+          borderRadius={"none"}
+          _hover={{
+            background:
+              "linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)",
+            color: "#fff",
+          }}
+          variant={"outline"}
+          disabled
+        >
+          History
+        </Button>
+      </HStack>
+    <AddWalletModal2 isOpen = {isOpen} onClose={onClose} wallet={props.wallet}/>
+    </Flex>
+  )
 }
 
 function CoinRow(props) {
@@ -608,6 +727,104 @@ function CoinRow(props) {
     </Flex>
   );
 }
+const AddWalletModal2 = (props) => {
+  const navigate = useNavigate();
+  const { register, handleSubmit } = useForm();
+  const toast = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [owner, setOwner] = useState("");
+  const createNewWallet = async () => {
+    const data ={manual:true,owner:owner,chain:props.wallet}
+    data.manual = true;
+    data.owner = owner;
+
+    setIsLoading(true);
+    await axios
+      .post(
+        `${process.env.REACT_APP_BASE_URL}wallets/virtual-account-create/`,
+        data,
+        {
+          headers: {
+            Authorization: `Token ${localStorage.getItem("token")}`,
+          },
+        }
+      )
+      .then(function (response) {
+        setIsLoading(false);
+        toast({
+          title: "Wallet creation successfull",
+          status: "success",
+        });
+        props.onClose();
+      })
+      .catch(function (error) {
+        setIsLoading(false);
+        toast({
+          title: "An error occured",
+          status: "warning",
+        });
+      });
+  };
+  const fetchUser = async () => {
+    await axios
+      .get(`${process.env.REACT_APP_BASE_URL}auth/user/`, {
+        headers: {
+          Authorization: `Token ${localStorage.getItem("token")}`,
+        },
+      })
+      .then(function (response) {
+        setOwner(response.data.pk);
+      })
+      .catch(function (error) {
+        if (error?.response?.status === 500) {
+          toast({ title: "Server error", status: "error" });
+        } else if (error.response?.status === 403) {
+          toast({
+            title: "session expired. Please sign in again",
+            status: "warning",
+          });
+          navigate("/login");
+        } else if (error.response?.status === 401) {
+          toast({
+            title: "Unautorised. Please sign in again",
+            status: "warning",
+          });
+          navigate("/login");
+        } else {
+          toast({
+            title: "An error occured",
+            status: "warning",
+          });
+        }
+      });
+  };
+  useEffect(() => {
+    fetchUser();
+  }, []);
+  return (
+    <Modal isOpen={props.isOpen} onClose={props.onClose}>
+      <ModalOverlay />
+      <ModalContent py={"40px"} width={"full"}>
+        <ModalHeader textAlign={"center"}>Add New Wallet</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody width={"full"} >
+          <VStack width={"full"} gap={"10px"} alignItems={"center"} textAlign={"center"}>
+          <Text fontSize={"xl"}>Create <span style={{textTransform:"uppercase"}}>{props.wallet}</span> Wallet</Text>
+         <Text>You need to create <span style={{textTransform:"uppercase"}}>{props.wallet}</span> wallet receive, send or spend.</Text>
+         <Button borderRadius={"none"}
+         bg={"linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)"}
+          _hover={{
+            background:
+              "linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)",
+            color: "#fff",
+          }} width={"full"} isLoading={isLoading} disabled={isLoading} onClick={()=>createNewWallet()}>Create</Button>
+          </VStack>
+        
+        </ModalBody>
+      </ModalContent>
+    </Modal>
+  );
+};
 const AddWalletModal = (props) => {
   const navigate = useNavigate();
   const { register, handleSubmit } = useForm();
@@ -1028,9 +1245,9 @@ const WalletModal = (props) => {
                                   if (toFloatAmount > props.balance) {
                                     coinErrors.push("Insufficient Balance");
                                   } else {
-                                    if (toFloatAmount < 5) {
+                                    if (toFloatAmount < 1000) {
                                       coinErrors.push(
-                                        "Minimum withdrawal is 5  "
+                                        "Minimum withdrawal is 1000  "
                                       );
                                       setErrors(coinErrors);
                                     } else {
