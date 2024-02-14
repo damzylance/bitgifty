@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { templates } from "../../../utils";
 import Confetti from "react-confetti";
+import { AsyncImage } from 'loadable-image'
 import {
   Button,
   Flex,
@@ -505,28 +506,44 @@ function Create() {
                 ) : designs.length > 0 ? (
                   designs.map((image, index) => {
                     return (
+                      <Box width={"80px"} height={"70px"} cursor={"pointer"}> 
                       
-                        <Image
-                          width={"80px"}
-                          height={"70px "}
-                          bg={"url(/assets/images/giftcard-placeholder.png)"}
-                          bgRepeat={"no-repeat"}
-                          bgSize={"auto"}
-                          key={image.id}
-                          src={`${image.link}`}
-                          borderRadius={"base"}
-                          loading={"lazy"}
-                          cursor={"pointer"}
-                          border={
-                            image.link === template.link ? "1px solid #fff" : ""
-                          }
+                      <AsyncImage src={image.link}
+                      style={{width:"80px",height:"70px",borderRadius:"6px"}}
+                    
+                      key={image.id}
+                      onClick={() => {
+                      setTemplate({ link: image.link, id: image.id });
+                    }}
+                    loader={<div style={{ background: '#888' }}/>}
+                    error={<div style={{ background: '#eee' }}/>}
+                  
+                     /></Box>
+                     
+                    //   {/* <Image
+                    //   width={"80px"}
+                    //   height={"70px "}
+                    //   bg={"url(/assets/images/giftcard-placeholder.png)"}
+                    //   bgRepeat={"no-repeat"}
+                    //   bgSize={"auto"}
+                    //   key={image.id}
+                    //   src={`${image.link}`}
+                    //   borderRadius={"base"}
+                    //   loading={"lazy"}
+                    //   cursor={"pointer"}
+                    //   border={
+                    //     image.link === template.link ? "1px solid #fff" : ""
+                    //   }
 
-                          boxSizing={"border-box"}
-                          _hover={{ border: "1px solid blue" }}
-                          onClick={() => {
-                            setTemplate({ link: image.link, id: image.id });
-                          }}
-                        />
+                    //   boxSizing={"border-box"}
+                    //   _hover={{ border: "1px solid blue" }}
+                    //   onClick={() => {
+                    //     setTemplate({ link: image.link, id: image.id });
+                    //   }}
+                    // /> */}
+                    
+                      
+                      
                       
                     );
                   })

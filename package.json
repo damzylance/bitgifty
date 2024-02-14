@@ -15,6 +15,7 @@
     "chart.js": "^4.3.0",
     "framer-motion": "^8.5.5",
     "i18next": "^23.5.0",
+    "loadable-image": "^3.1.1",
     "react": "^18.2.0",
     "react-chartjs-2": "^5.2.0",
     "react-confetti": "^6.1.0",
