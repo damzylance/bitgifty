@@ -22,7 +22,7 @@ const Wallet = () => {
   const navigate = useNavigate();
 
   const { currency } = useParams();
-  const currencies = ["btc", "bnb", "celo", "cusd", "usdt_tron", "eth", "naira"];
+  const currencies = ["btc", "bnb", "celo", "cusd","ceur", "usdt_tron", "eth", "naira"];
   const paramsMatch = currencies.includes(currency);
   const [transactions, setTransactions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -35,6 +35,7 @@ const Wallet = () => {
         },
       })
       .then(function (response) {
+        console.log(response)
         if (response.data) {
           setIsLoading(false);
           if(paramsMatch){
@@ -188,7 +189,11 @@ const Wallet = () => {
                         />
                         <MobileTransactionRow
                           time={date.toString()}
-                          type={transaction.operationType}
+                          type={
+                            transaction.senderNote
+                              ? transaction.senderNote
+                              : transaction.operationType
+                          }
                           asset={transaction.currency}
                           amount={transaction.amount}
                           wallet={wallet}

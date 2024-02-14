@@ -108,6 +108,7 @@ const CableForm = (props) => {
   const [currency, setCurrency] = useState("");
   const [walletBalance, setWalletBalance] = useState(null);
   const [loadingMessage,setLoadingMessage] = useState("")
+  const [customerDetails,setCustomerDetails] = useState("")
 
   //   const handlePlanChange = (e) => {
   //     const nairaAmount = parseInt(e.target.value.split(",")[1]);
@@ -207,6 +208,43 @@ const CableForm = (props) => {
 
     return rate;
   };
+  const validateMeter = async (e)=>{
+    setLoadingMessage("Validating Meter Number...");
+    setIsLoading(true)
+    const customer =e.target.value
+    if(customer.length===11){
+      const validate = await axios
+      .get(
+        `${process.env.REACT_APP_BASE_URL}utilities/v2/validate-bill-service/?item-code=${props.item_code}&biller-code=${props.disco}&customer=${customer}`,
+        {headers: {
+          Authorization: `Token ${localStorage.getItem("token")}`,
+        }}
+      )
+      .then((response) => {
+        return response;
+      })
+      .catch((error) => {
+        return error;
+      }).finally(()=>{
+        setIsLoading(false)
+      });
+    console.log(validate);
+    if (validate?.data?.data?.response_message === "Successful") {
+      console.log(validate.data.data.response_message)
+      setCustomerDetails(`${validate.data.data.name}`)
+    } else {
+      setIsLoading(false);
+      toast({
+        title: "Could not verify meter number",
+        status: "warning",
+      });
+    }
+    }else{
+      setIsLoading(false)
+      setCustomerDetails("")
+    }
+    
+  }
   const buyCable = async (data) => {
      setLoadingMessage("Validating Meter Number...");
     data.bill_type = props.name;
@@ -219,23 +257,6 @@ const CableForm = (props) => {
       toast({ title: "insufficient balance", status: "warning" });
     } else {
       setIsLoading(true);
-      const validate = await axios
-    .get(
-      `${process.env.REACT_APP_BASE_URL}utilities/v2/validate-bill-service/?item-code=${props.item_code}&biller-code=${props.disco}&customer=${data.customer}`,{
-        headers: {
-          Authorization: `Token ${localStorage.getItem("token")}`,
-        },
-      }
-    )
-    .then((response) => {
-      return response;
-    })
-    .catch((error) => {
-      return error;
-    });
-    
-  
-    if (validate?.data?.data?.response_message === "Successful"){
       setLoadingMessage("Connecting To Provider...")
       await axios
         .post(
@@ -263,13 +284,6 @@ const CableForm = (props) => {
             status: "warning",
           });
         });
-    }else{
-      setIsLoading(false);
-        toast({
-          title: "Could not verify meter number",
-          status: "warning",
-        });
-    }
       
     }
   };
@@ -308,8 +322,18 @@ const CableForm = (props) => {
               type="tel"
               required
               name="customer"
-              {...register("customer")}
+              {...register("customer",{onChange:validateMeter,minLength:{value:11,message:"Meter number should be 11 digits"},maxLength:{value:11,message:"Meter number should be 11 digits"}})}
             />
+            <HStack width={"fulll"} mt={"5px"} justifyContent={"space-between"}>
+
+<Text fontSize={"xs"} color={"blackAlpha.700"}>
+    {customerDetails}
+</Text>
+  
+  <Text color={"red"} fontSize={"xs"}>
+    {errors.customer && errors.customer.message}
+  </Text>
+  </HStack>
           </FormControl>
           <FormControl>
             <FormLabel fontSize={"sm"} color={"blackAlpha.700"}>

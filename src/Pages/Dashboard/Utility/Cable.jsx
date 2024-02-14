@@ -77,15 +77,28 @@ const CableForm = (props) => {
   const [isLoading, setIsLoading] = useState(walletsLoading);
   const [plans, setPlans] = useState([]);
   const [tokenAmount, setTokenAmount] = useState(0);
-  const [nairaAmount, setNairaAmount] = useState();
+  const [nairaAmount, setNairaAmount] = useState(0);
   const [tokenToNairaRate, setTokenToNairaRate] = useState(0);
   const [currency, setCurrency] = useState("");
   const [walletBalance, setWalletBalance] = useState(null);
+  const [itemCode,setItemCode] = useState("")
+  const [loadingMessage,setLoadingMessage]= useState("")
+  const [customerDetails,setCustomerDetails] =useState("")
 
   const handlePlanChange = (e) => {
-    const nairaAmount = parseInt(e.target.value.split(",")[1]);
+    const tempNairaAmount = parseInt(e.target.value.split(",")[1]);
     setNairaAmount(parseInt(e.target.value.split(",")[1]));
-    setTokenAmount(tokenToNairaRate * nairaAmount);
+    setItemCode(e.target.value.split(",")[2])
+    if(tokenToNairaRate===0||undefined||null){
+      setTokenAmount(0)
+    }else{
+      if(currency==="cusd"||currency==="usdt_tron"){
+        setTokenAmount(tempNairaAmount/tokenToNairaRate)
+      }else{
+        setTokenAmount(tokenToNairaRate * tempNairaAmount);
+      }
+    }
+   
   };
   const handleCurrencyChange = async (e) => {
     const network = e.target.value;
@@ -96,9 +109,12 @@ const CableForm = (props) => {
       }
     }
     const rate = await fetchRate(e.target.value);
-    // alert(currency);
+    if(network==="cusd"||network==="usdt_tron"){
+      setTokenAmount(nairaAmount/rate)
+    }else{
+      setTokenAmount(rate * nairaAmount);
 
-    setTokenAmount(rate * nairaAmount);
+    }
   };
   const fetchDataPlans = async () => {
     setIsLoading(true);
@@ -183,6 +199,44 @@ const CableForm = (props) => {
 
     return rate;
   };
+  const validateSmartCard = async (e) =>{
+    setLoadingMessage("Validating Meter Number...");
+    setIsLoading(true)
+    const customer =e.target.value
+    if(customer.length===10){
+      const validate = await axios
+      .get(
+        `${process.env.REACT_APP_BASE_URL}utilities/v2/validate-bill-service/?item-code=${itemCode}&biller-code=${props.biller_code}&customer=${customer}`,
+        {headers: {
+          Authorization: `Token ${localStorage.getItem("token")}`,
+        }}
+      )
+      .then((response) => {
+        return response;
+      })
+      .catch((error) => {
+        return error;
+      }).finally(()=>{
+        setIsLoading(false)
+      });
+    console.log(validate);
+    if (validate?.data?.data?.response_message === "Successful") {
+      console.log(validate.data.data.response_message)
+      setCustomerDetails(`${validate.data.data.name}`)
+    } else {
+      setIsLoading(false);
+      toast({
+        title: "Could not verify meter number",
+        status: "warning",
+      });
+    }
+    }else{
+      setIsLoading(false)
+      setCustomerDetails("")
+    }
+    
+  }
+
   const buyCable = async (data) => {
     data.country = "NG";
     data.bill_type = data.plan.split(",")[0];
@@ -195,21 +249,6 @@ const CableForm = (props) => {
       toast({ title: "insufficient balance", status: "warning" });
     } else {
       setIsLoading(true);
-      const validate = await axios
-      .get(
-        `${process.env.REACT_APP_BASE_URL}utilities/v2/validate-bill-service/?item-code=${itemCode}&biller-code=${props.cable}&customer=${data.customer}`,{headers: {
-          Authorization: `Token ${localStorage.getItem("token")}`,
-        },}
-      )
-      .then((response) => {
-        return response;
-      })
-      .catch((error) => {
-        return error;
-      });
-    console.log(validate);
-
-    if (validate?.data?.data?.response_message === "Successful"){
       await axios
         .post(
           `${process.env.REACT_APP_BASE_URL}utilities/v2/initialize-payment/`,
@@ -232,13 +271,7 @@ const CableForm = (props) => {
             status: "warning",
           });
         });
-    }else {
-      setIsLoading(false);
-      toast({
-        title: "Invalid smart card number",
-        status: "warning",
-      });
-    }
+   
 
       
     }
@@ -314,8 +347,15 @@ const CableForm = (props) => {
               outline={"none"}
               required
               name="customer"
-              {...register("customer",{minLength:{value:10,message:"Smart card number should be 10 digits"},maxLength:{value:10,message:"Smart card number should be 10 digits"}})}
+              {...register("customer",{onChange:validateSmartCard,minLength:{value:10,message:"Smart card number should be 10 digits"},maxLength:{value:10,message:"Smart card number should be 10 digits"}})}
             />
+             <HStack width={"fulll"} mt={"5px"} justifyContent={"space-between"}>
+              <Text fontSize={"xs"} color={"blackAlpha.700"}>
+                {customerDetails}
+              </Text>
+              <Text color={"red"} fontSize={"xs"}>
+                {errors.customer && errors.customer.message}
+              </Text></HStack>
           </FormControl>
           <FormControl>
             <FormLabel fontSize={"sm"} color={"blackAlpha.700"}>
