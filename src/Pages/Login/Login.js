@@ -51,7 +51,7 @@ function Login() {
           })
         }else{
           toast({
-            title: `${error.message}` ||`${error?.response?.data?.response}` ||  `An error occurred`,
+            title: `${error?.response?.data?.error}` ||`${error.message}` ||  `An error occurred`,
             status: "error",
           })
         }

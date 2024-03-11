@@ -24,6 +24,7 @@ const useWallets = () => {
           const element = cryptowallets[i][0];
           t.push(element);
         }
+  
 
         setNewWallets(
           supportedWallets.filter((n) => {
@@ -32,6 +33,7 @@ const useWallets = () => {
         );
         setWalletsLoading(false);
         setUserWallets(entries);
+        console.log(entries)
       })
       .catch((error) => {
         setWalletsLoading(false);

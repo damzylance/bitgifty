@@ -206,7 +206,7 @@ const CableForm = (props) => {
     if(customer.length===10){
       const validate = await axios
       .get(
-        `${process.env.REACT_APP_BASE_URL}utilities/v2/validate-bill-service/?item-code=${itemCode}&biller-code=${props.biller_code}&customer=${customer}`,
+        `${process.env.REACT_APP_BASE_URL}utilities/v2/validate-bill-service/?item-code=${itemCode}&biller-code=${props.cable}&customer=${customer}`,
         {headers: {
           Authorization: `Token ${localStorage.getItem("token")}`,
         }}
