@@ -483,7 +483,7 @@ import {
                     Privacy Policy
                   </NavLink>{" "}
                   <NavLink to={"/aml"} style={{ fontSize: "14px" }}>AML</NavLink>                  
-                  <NavLink style={{ fontSize: "14px" }}>Terms and Condition</NavLink>
+                  <NavLink to={"/tnc"} style={{ fontSize: "14px" }}>Terms and Condition</NavLink>
                 </VStack>
                 <VStack width={"full"} alignItems={"flex-start"}>
                   <Text fontSize={["16px", "16px", "24px"]} fontWeight={"700"}>
