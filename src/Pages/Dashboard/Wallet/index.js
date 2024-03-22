@@ -760,7 +760,7 @@ const AddWalletModal2 = (props) => {
       .catch(function (error) {
         setIsLoading(false);
         toast({
-          title: "An error occured",
+          title: error?.response?.data?.error||"An error occured",
           status: "warning",
         });
       });
@@ -792,7 +792,7 @@ const AddWalletModal2 = (props) => {
           navigate("/login");
         } else {
           toast({
-            title: "An error occured",
+            title: error?.response?.data?.error||"An error occured",
             status: "warning",
           });
         }
@@ -856,7 +856,7 @@ const AddWalletModal = (props) => {
       .catch(function (error) {
         setIsLoading(false);
         toast({
-          title: "An error occured",
+          title: error?.response?.data?.error||"An error occured",
           status: "warning",
         });
       });
@@ -888,7 +888,7 @@ const AddWalletModal = (props) => {
           navigate("/login");
         } else {
           toast({
-            title: "An error occured",
+            title: error?.response?.data?.error||"An error occured",
             status: "warning",
           });
         }
@@ -1090,7 +1090,7 @@ const WalletModal = (props) => {
           console.log(error);
           setIsLoading(false);
           toast({
-            title: "An error occured",
+            title: error?.response?.data?.error||"An error occured",
             status: "warning",
           });
         });
