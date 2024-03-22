@@ -222,11 +222,13 @@ export const PayoutModal = (props) => {
         props.onClose();
       })
       .catch(function (error) {
-        if (error.response?.status === 400) {
-          if (error.response?.data?.email) {
-            toast({ title: "An error occured", status: "error" });
-          }
-        }
+        console.log(error)
+        toast({ title: error.response.data.error||"An error occured", status: "error" });
+        // if (error.response?.status === 400) {
+        //   if (error.response?.data?.email) {
+        //     toast({ title: "An error occured", status: "error" });
+        //   }
+        // }
 
         setIsLoading(false);
       });
