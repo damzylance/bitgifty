@@ -10,6 +10,7 @@ import {
   FormLabel,
   HStack,
   Input,
+  Select,
   Spinner,
   Text,
   VStack,
@@ -204,7 +205,9 @@ export const PayoutModal = (props) => {
   const { register, handleSubmit } = useForm();
   const toast = useToast();
   const [isloading, setIsLoading] = useState(false);
-
+  const [banks,setBanks] = useState([])
+   
+  
   const onSubmit = async (data) => {
     setIsLoading(true);
     await axios
@@ -233,6 +236,18 @@ export const PayoutModal = (props) => {
         setIsLoading(false);
       });
   };
+  useEffect(()=>{
+    const fetchBanks =async()=>{
+     await axios.get("https://nigerianbanks.xyz/").then((response)=>{
+        console.log(response)
+        setBanks(response.data)
+        
+      }).catch((error)=>{
+        console.log(error)
+      })
+    }
+    fetchBanks()
+  },[])
 
   return (
     <Modal isOpen={props.isOpen} onClose={props.onClose}>
@@ -276,12 +291,18 @@ export const PayoutModal = (props) => {
                 </FormControl>
                 <FormControl>
                   <FormLabel>Bank name</FormLabel>
-                  <Input
+                  <Select name="bank_name"
+                    {...register("bank_name")}>
+                    {banks.length>0&&banks.map((bank)=>{
+                      return <option value={bank.name}>{bank.name}</option>
+                    })}
+                  </Select>
+                  {/* <Input
                     name="bank_name"
                     {...register("bank_name")}
                     required
                     placeholder={"Bank Name"}
-                  />
+                  /> */}
                 </FormControl>
               </VStack>
               <HStack width={"full"} mt={"40px"}>
