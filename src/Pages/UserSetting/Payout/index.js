@@ -64,9 +64,13 @@ const Payout = () => {
         setBankAccounts(response.data.results);
         setLoading(false);
       })
-      .catch((error) => {});
+      .catch((error) => {
+        setLoading(false)
+        toast({ title: error.response.data.error||"An error occured", status: "error" });
+      });
   };
   useEffect(() => {
+
     fetchBankAccounts();
   }, []);
 
