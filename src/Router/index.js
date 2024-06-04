@@ -33,6 +33,8 @@ function Router() {
         <Route exact path="/tnc" element={<TermsAndConditions/>} />
         <Route exact path="/login" element={<Login />} />
         <Route exact path="/register" element={<Signup />} />
+        <Route exact path="/register/:referral_code" element={<Signup />} />
+
         <Route
           exact
           path="/auth/email-confirm/:token"

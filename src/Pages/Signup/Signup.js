@@ -13,7 +13,7 @@ import {
   InputRightAddon,
   InputRightElement,
 } from "@chakra-ui/react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate,useParams } from "react-router-dom";
 import { ArrowForwardIcon, CheckCircleIcon } from "@chakra-ui/icons";
 import { useForm } from "react-hook-form";
 import axios from "axios";
@@ -28,6 +28,7 @@ function Signup() {
     watch,
     formState: { errors },
   } = useForm();
+  const {referral_code} = useParams()
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [serverError, setServerError] = useState("");
@@ -36,6 +37,9 @@ function Signup() {
   const toast = useToast();
   const onSubmit = async (data) => {
     setIsLoading(true);
+    if(referral_code){
+      data.referral_code = referral_code
+    }
     await axios
       .post(`${process.env.REACT_APP_BASE_URL}auth/registration/`, data)
       .then(function (response) {

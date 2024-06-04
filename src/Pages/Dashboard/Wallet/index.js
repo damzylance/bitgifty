@@ -990,6 +990,7 @@ const WalletModal = (props) => {
       })
       .catch((error) => {
         setAccountsLoading(false);
+        toast({ title: error.response.data.error||"An error occured", status: "error" });
       });
   };
   const [exchangeRate, setExchangeRate] = useState();
@@ -1008,7 +1009,10 @@ const WalletModal = (props) => {
           setIsLoading(false);
           rate = response.data;
         })
-        .catch((error) => {});
+        .catch((error) => {
+          setIsLoading(false)
+          toast({ title: error.response.data.error||"Error Fetching Rates", status: "error" });
+        });
     } else {
       if (coin === "btc") {
         coin = "bitcoin";
@@ -1024,7 +1028,10 @@ const WalletModal = (props) => {
           setIsLoading(false);
           rate = response.data;
         })
-        .catch((error) => {});
+        .catch((error) => {
+          setIsLoading(false)
+          toast({ title: error.response.data.error||"An error occured", status: "error" });
+        });
     }
 
     return rate;
