@@ -30,9 +30,11 @@ import { AddIcon, DeleteIcon, PlusSquareIcon } from "@chakra-ui/icons";
 import { AiFillPlusSquare } from "react-icons/ai";
 import axios from "axios";
 const Payout = () => {
+  const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [loading, setLoading] = useState(true);
   const [bankAccounts, setBankAccounts] = useState([]);
+
   const closeModal = () => {
     onClose();
     fetchBankAccounts();
