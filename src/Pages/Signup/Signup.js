@@ -52,18 +52,7 @@ function Signup() {
         setSuccess(true);
       })
       .catch(function (error) {
-        if (error.response?.status === 400) {
-          if (error.response?.data?.email) {
-            toast({ title: "User with email already exist", status: "error" });
-          }
-          if (error.response?.data?.username) {
-            toast({
-              title: "User with username already exist",
-              status: "error",
-            });
-          }
-        }
-
+          toast({title:error.response?.data?.error,status:"warning"})   
         setIsLoading(false);
       });
   };
