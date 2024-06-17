@@ -66,6 +66,8 @@ function Reedeem() {
           } else {
             toast({ title: error.response?.data?.error, status: "error" });
           }
+        }else{
+          toast({ title: error.response?.data?.error, status: "error" });
         }
         setIsLoading(false);
       });
