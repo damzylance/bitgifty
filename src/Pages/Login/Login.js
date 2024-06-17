@@ -51,8 +51,8 @@ function Login() {
           })
         }else{
           toast({
-            title: `${error?.response?.data?.error}` ||`${error.message}` ||  `An error occurred`,
-            status: "error",
+            title: `${error?.response?.data?.error}` ||`${error.message}` ||  `An error  occurred`,
+            status: "warning",
           })
         }
         // if (error.response?.data?.non_field_errors) {
