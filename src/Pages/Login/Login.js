@@ -52,7 +52,7 @@ function Login() {
         }else{
           toast({
             title: `${error?.response?.data?.error}` ||`${error.message}` ||  `An error  occurred`,
-            status: "warning",
+            status: "error",
           })
         }
         // if (error.response?.data?.non_field_errors) {
