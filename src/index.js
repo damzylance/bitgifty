@@ -14,11 +14,9 @@ const tagManagerArgs = {
 TagManager.initialize(tagManagerArgs)
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <Provider store={store}>
-    <ChakraProvider theme={theme}>
+  
       <App />
-    </ChakraProvider>
-  </Provider>
+   
 );
 
 // If you want to start measuring performance in your app, pass a function
