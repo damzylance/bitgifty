@@ -8,10 +8,10 @@ import "./Theme/style.css";
 import store from "./Store/store";
 import "./constants/i18n";
 import TagManager from "react-gtm-module";
-const tagManagerArgs = {
-  gtmId: process.env.REACT_APP_GTM_ID
-}
-TagManager.initialize(tagManagerArgs)
+// const tagManagerArgs = {
+//   gtmId: process.env.REACT_APP_GTM_ID
+// }
+// TagManager.initialize(tagManagerArgs)
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   
