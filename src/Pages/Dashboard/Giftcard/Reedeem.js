@@ -26,6 +26,7 @@ function Reedeem() {
     formState: { errors },
   } = useForm();
   const toast = useToast();
+  const [owner,setOwner] = useState("")
   const [confetti, setConfitti] = useState();
   const [windowSize, setWindowSize] = useState({
     width: undefined,
@@ -35,11 +36,50 @@ function Reedeem() {
   const [isLoading, setIsLoading] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [history, setHistory] = useState([]);
+  const [buttonText,setButtonText] = useState("Redeem")
   const handleWindowResize = () => {
     setWindowSize({ width: window.innerWidth, height: window.innerHeight });
   };
+  
+  const createNewWallet = async (chain) => {
+    const data ={manual:true,owner:owner,chain:chain}
+    data.manual = true;
+    data.owner = owner;
+
+    setIsLoading(true);
+    setButtonText("Creating Wallet")
+    await axios
+      .post(
+        `${process.env.REACT_APP_BASE_URL}wallets/virtual-account-create/`,
+        data,
+        {
+          headers: {
+            Authorization: `Token ${localStorage.getItem("token")}`,
+          },
+        }
+      )
+      .then(function (response) {
+        setIsLoading(false);
+        toast({
+          title: "Wallet creation successfull. Click Redeem Button to Redeem",
+          status: "success",
+        });
+      })
+      .catch(function (error) {
+        setIsLoading(false);
+        toast({
+          title: error?.response?.data?.error||"An error occured",
+          status: "warning",
+        });
+      }).finally(()=>{
+        setIsLoading(false)
+        setButtonText("Redeem")
+      });
+  };
+
   const handleRedeem = async (data) => {
     setIsLoading(true);
+    setButtonText("Redeeming")
     await axios
       .post(`${process.env.REACT_APP_BASE_URL}gift_cards/v2/redeem/`, data, {
         headers: {
@@ -59,30 +99,62 @@ function Reedeem() {
           navigate("/wallet");
         }, 5000);
       })
-      .catch(function (error) {
+      .catch(async function (error) {
         if (error.response?.status === 400) {
           if (error.response?.data?.error === "gift card not found") {
             toast({ title: "Gift card code invalid", status: "error" });
           } else {
             toast({ title: error.response?.data?.error, status: "error" });
           }
+        }else if(error.response?.data?.error ==="cusd wallet has not been created yet"){
+          setButtonText("Creating Wallet")
+          await createNewWallet("cusd")
+
         }else{
           toast({ title: error.response?.data?.error, status: "error" });
         }
         setIsLoading(false);
+      }).finally(()=>{
+        setIsLoading(false)
+        setButtonText("Redeem")
       });
   };
-  useEffect(() => {
-    axios
-      .get(`${process.env.REACT_APP_BASE_URL}gift_cards/v2/redeem`, {
+  const fetchUser = async () => {
+    await axios
+      .get(`${process.env.REACT_APP_BASE_URL}auth/user/`, {
         headers: {
           Authorization: `Token ${localStorage.getItem("token")}`,
         },
       })
       .then(function (response) {
-        setHistory(response.data.results);
+        setOwner(response.data.pk);
       })
-      .catch(function (error) {});
+      .catch(function (error) {
+        if (error?.response?.status === 500) {
+          toast({ title: "Server error", status: "error" });
+        } else if (error.response?.status === 403) {
+          toast({
+            title: "session expired. Please sign in again",
+            status: "warning",
+          });
+          navigate("/login");
+        } else if (error.response?.status === 401) {
+          toast({
+            title: "Unautorised. Please sign in again",
+            status: "warning",
+          });
+          navigate("/login");
+        } else {
+          toast({
+            title: error?.response?.data?.error||"An error occured",
+            status: "warning",
+          });
+        }
+      });
+  };
+ 
+  useEffect(() => {
+   fetchUser()
     handleWindowResize();
   }, []);
   return (
@@ -127,9 +199,10 @@ function Reedeem() {
                     "linear-gradient(106deg, #103D96 27.69%, #306FE9 102.01%)",
                 }}
                 variant={"solid"}
+                loadingText={buttonText}
                 isLoading={isLoading}
               >
-                Reedem
+                Redeem
               </Button>
             </VStack>
           </form>

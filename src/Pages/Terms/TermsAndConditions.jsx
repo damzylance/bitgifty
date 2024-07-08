@@ -22,6 +22,8 @@ import {
   import { RxCaretRight, RxCross1, RxHamburgerMenu } from "react-icons/rx";
   import { Link, NavLink, useNavigate } from "react-router-dom";
   import ContactButton from "../../Components/ContactButton";
+import { Footer } from "../../Components/Footer";
+import { NavBar } from "../../Components/Navbar";
   const navHoverStyle = {
     background: "brand.700",
     color: "#fff",
@@ -58,163 +60,7 @@ import {
     return (
       <VStack width={"full"} background={"#FAFCFF"} pt={[0, 0, "0px", "0px"]}>
         <ContactButton/>
-        <Box
-          width={"full"}
-          position={["relative", "relative", "sticky"]}
-          zIndex={"999"}
-          top={["none", "none", "0"]}
-          left={["none", "none", "0"]}
-          p={"10px"}
-          background={["brand.700", "brand.700", "#FAFCFF"]}
-          boxShadow={["none", "none", "1px 3px 5px -1px rgba(169,170,176,0.47)"]}
-        >
-          <Box
-            width={"full"}
-            bg={"brand.700"}
-            color={"#fff"}
-            zIndex={1}
-            display={["block", "block", "none"]}
-          >
-            <HStack
-              justifyContent={"space-between"}
-              alignItems="center"
-              py={"10px"}
-            >
-              <Link to={"/"}>
-                <Box>
-                  <Img
-                    src="/assets/images/logo-inline-transparent.png"
-                    width={"100px"}
-                  />
-                </Box>
-              </Link>
-              {openMenu ? (
-                <RxCross1 onClick={showMobileMenu} fontSize={"24px"} />
-              ) : (
-                <RxHamburgerMenu onClick={showMobileMenu} fontSize={"24px"} />
-              )}
-            </HStack>
-            {openMenu && (
-              <VStack
-                width={"full"}
-                alignItems={"flex-start"}
-                mt="20px"
-                justifyContent={"space-between"}
-              >
-                <VStack width={"full"} alignItems={"flex-start"}>
-                  <HStack
-                    width={"full"}
-                    justifyContent={"space-between"}
-                    alignItems={"center"}
-                    py={"10px"}
-                    borderBottom={"1px solid #eae8e8"}
-                    onClick={() => {
-                      scrollToSection(howItWorks);
-                    }}
-                  >
-                    <Text sx={navStyle} _hover={navHoverStyle}>
-                      How it works
-                    </Text>
-                    <RxCaretRight fontSize={"24px"} />
-                  </HStack>
-  
-                  <HStack
-                    onClick={() => {
-                      scrollToSection(about);
-                    }}
-                    width={"full"}
-                    justifyContent={"space-between"}
-                    alignItems={"center"}
-                    py={"10px"}
-                    borderBottom={"1px solid #eae8e8"}
-                  >
-                    <Text sx={navStyle} _hover={navHoverStyle}>
-                      About
-                    </Text>
-                    <RxCaretRight fontSize={"24px"} />
-                  </HStack>
-  
-                  <HStack
-                    width={"full"}
-                    justifyContent={"space-between"}
-                    alignItems={"center"}
-                    py={"10px"}
-                    borderBottom={"1px solid #eae8e8"}
-                    onClick={() => {
-                      scrollToSection(faq);
-                    }}
-                  >
-                    <Text sx={navStyle} _hover={navHoverStyle}>
-                      FAQ
-                    </Text>
-                    <RxCaretRight fontSize={"24px"} />
-                  </HStack>
-                </VStack>
-              </VStack>
-            )}
-          </Box>
-          <Container maxWidth={["full", "full", "95%", "80%"]}>
-            <VStack width={"full"}>
-              <HStack
-                width={"full"}
-                justifyContent={"space-between"}
-                display={["none", "none", "flex", "flex"]}
-                alignItems={"cener"}
-              >
-                <Link to={"/"}>
-                  <Image
-                    width={"150px"}
-                    src="/assets/images/logo-inline-whitebg.png"
-                  />
-                </Link>
-                <HStack gap={"20px"} alignItems={"center"}>
-                  <Text
-                    onClick={() => {
-                      scrollToSection(about);
-                    }}
-                    sx={navStyle}
-                    _hover={navHoverStyle}
-                  >
-                    About
-                  </Text>
-                  <Text
-                    onClick={() => {
-                      scrollToSection(howItWorks);
-                    }}
-                    sx={navStyle}
-                    _hover={navHoverStyle}
-                  >
-                    How it works
-                  </Text>
-  
-                  <Text
-                    onClick={() => {
-                      scrollToSection(faq);
-                    }}
-                    sx={navStyle}
-                    _hover={navHoverStyle}
-                  >
-                    FAQ
-                  </Text>
-                  <Button
-                    onClick={() => navigate("/register")}
-                    background={"brand.700"}
-                    size={"lg"}
-                  >
-                    Get Started
-                  </Button>
-                  {/* <Text fontSize={"64px"} fontWeight={700}>
-                    SEND THE GIFT OF CRYPTO WITH EASE
-                  </Text>
-                  <Text fontSize={"24px"}>
-                    Give the Gift of Choice: Create and redeem your crypto gift
-                    cards here at Gifty!
-                  </Text> */}
-                </HStack>
-              </HStack>
-            </VStack>
-          </Container>
-        </Box>
+        <NavBar/>
         <Box
           width={"full"}
           position={"relative"}
@@ -437,72 +283,7 @@ import {
             </VStack>
           </Container>
         </Box>
-        <Box width={"full"} py={"40px"} bg={"#103D96"} color={"#fff"}>
-          <Container maxWidth={["full", "full", "95%", "80%"]}>
-            <HStack
-              flexDir={["column", "column", "row", "row"]}
-              gap={"20px"}
-              width={"full"}
-              justifyContent={"space-between"}
-            >
-              <VStack width={"full"} alignItems={"flex-start"} gap={"20px"}>
-                <Text
-                  fontSize={["24px", "24px", "32px"]}
-                  fontWeight={"700"}
-                  textTransform={"uppercase"}
-                >
-                  Bitgifty
-                </Text>
-                <Text fontSize={["14px", "14px", "16px"]} fontWeight={"500"}>
-                  Give the Gift of Choice: Create and redeem your crypto gift
-                  cards here at Gifty!
-                </Text>
-                <HStack width={"full"} alignItems={"center"}>
-                  <a href={"https://twitter.com/BitGifty"}>
-                    <AiFillTwitterSquare fontSize={"24px"} />
-                  </a>
-                  <a href={"https://www.instagram.com/bitgifty/"}>
-                    <AiFillInstagram fontSize={"24px"} />
-                  </a>
-                  <a href={"https://www.linkedin.com/company/bitgifty/"}>
-                    <AiFillLinkedin fontSize={"24px"} />
-                  </a>
-                </HStack>
-              </VStack>
-              <HStack
-                flexDir={["column", "column", "row", "row"]}
-                justifyContent={"space-between"}
-                width={"full"}
-                gap={"20px"}
-              >
-                <VStack width={"full"} alignItems={"flex-start"}>
-                  <Text fontSize={["16px", "16px", "24px"]} fontWeight={"700"}>
-                    Legal
-                  </Text>
-                  <NavLink to={"/privacy-policy"} style={{ fontSize: "14px" }}>
-                    Privacy Policy
-                  </NavLink>{" "}
-                  <NavLink to={"/aml"} style={{ fontSize: "14px" }}>AML</NavLink>                  
-                  <NavLink to={"/tnc"} style={{ fontSize: "14px" }}>Terms and Condition</NavLink>
-                </VStack>
-                <VStack width={"full"} alignItems={"flex-start"}>
-                  <Text fontSize={["16px", "16px", "24px"]} fontWeight={"700"}>
-                    Company
-                  </Text>
-                  <NavLink>FAQ</NavLink>
-                  <Text
-                    onClick={() => {
-                    }}
-                    cursor={"pointer"}
-                  >
-                    About Us
-                  </Text>
-                  <NavLink to={"/contact-us"}>Contact Us</NavLink>
-                </VStack>
-              </HStack>
-            </HStack>
-          </Container>
-        </Box>
+        <Footer/>
       </VStack>
     );
   };
