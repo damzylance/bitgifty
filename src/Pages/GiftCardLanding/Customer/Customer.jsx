@@ -571,11 +571,11 @@ export const CustomerView = () => {
 					<VStack width={"full"} gap={"40px"} py={"100px"} maxW={"1200x"}>
 						<Text
 							color={"#050505"}
-							width={["auto", "auto", "622px"]}
+							width={["auto", "auto", "650px"]}
 							fontSize={["32px", "38px", "48px"]}
 							fontWeight={"600"}
 							textTransform={"capitalize"}
-							textAlign={["center", "center", "left"]}
+							textAlign={"center"}
 							px={"4px"}
 						>
 							The <span style={{ color: "#103D96" }}>crypto</span> gifting
