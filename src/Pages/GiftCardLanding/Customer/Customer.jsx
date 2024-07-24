@@ -445,6 +445,7 @@ export const CustomerView = () => {
 								py={"34px"}
 								width={"full"}
 								bg={"#E8EFFD"}
+								px={"10px"}
 							>
 								<VStack width={"full"}>
 									<Image src="assets/images/client_hero_voucher1.png" />
@@ -454,7 +455,7 @@ export const CustomerView = () => {
 									<Image src="assets/images/client_hero_voucher3.png" />
 								</Box>
 							</HStack>
-							<Box width={"full"} p={"34px"}>
+							<Box width={"full"} py={"34px"}>
 								<VStack
 									gap={"30px"}
 									width={"full"}
