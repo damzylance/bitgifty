@@ -21,6 +21,7 @@ import Reedeem from "../Pages/Dashboard/Giftcard/Reedeem";
 import MyCards from "../Pages/Dashboard/Giftcard/MyCards";
 import SettingsLayout from "../Pages/UserSetting/SettingsLayout";
 import Aml from "../Pages/Aml";
+import { Customer } from "../Pages/GiftCardLanding/Customer";
 import TermsAndConditions from "../Pages/Terms/TermsAndConditions";
 function Router() {
   return (
@@ -47,6 +48,7 @@ function Router() {
           element={<PasswordResetConFirm />}
         />
         <Route exact path="/dashboard" element={<Dashboard />} />
+        <Route exact path="/gift-cards" element={<Customer />} />
         <Route exact path="/giftcard/cards" element={<MyCards />} />
         <Route exact path="/giftcard/create" element={<Create />} />
         <Route exact path="/giftcard/redeem" element={<Reedeem />} />
