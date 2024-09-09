@@ -1,10 +1,10 @@
 import { Button, HStack } from "@chakra-ui/react";
 import React from "react";
 
-const PrimaryButton = ({ title, type }) => {
+const PrimaryButton = ({ title, type, action }) => {
 	return (
 		<Button
-			// onClick={() => navigate("/login")}
+			onClick={action ? () => action() : ""}
 			borderRadius={"none"}
 			border={"1px solid #103D96"}
 			fontSize={"16px"}

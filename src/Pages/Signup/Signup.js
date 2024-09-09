@@ -1,95 +1,97 @@
 import {
-  Container,
-  VStack,
-  Text,
-  Input,
-  Select,
-  Button,
-  Flex,
-  InputGroup,
-  InputLeftAddon,
-  Box,
-  useToast,
-  InputRightAddon,
-  InputRightElement,
+	Container,
+	VStack,
+	Text,
+	Input,
+	Select,
+	Button,
+	Flex,
+	InputGroup,
+	InputLeftAddon,
+	Box,
+	useToast,
+	InputRightAddon,
+	InputRightElement,
+	HStack,
 } from "@chakra-ui/react";
-import { Link, useNavigate,useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { ArrowForwardIcon, CheckCircleIcon } from "@chakra-ui/icons";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import AuthLayout from "../../Components/AuthLayout";
 import React, { useRef, useState } from "react";
 import { RxEyeClosed, RxEyeOpen } from "react-icons/rx";
+import { countries } from "../../utils";
 
 function Signup() {
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm();
-  const {referral_code} = useParams()
-  const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
-  const [serverError, setServerError] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const toast = useToast();
-  const onSubmit = async (data) => {
-    setIsLoading(true);
-    if(referral_code){
-      data.referral_code = referral_code
-    }
-    await axios
-      .post(`${process.env.REACT_APP_BASE_URL}auth/registration/`, data)
-      .then(function (response) {
-        setIsLoading(false);
-        toast({
-          title:
-            "Registration Successful, check your email to verify your account",
-          status: "success",
-        });
-        setSuccess(true);
-      })
-      .catch(function (error) {
-          toast({title:error.response?.data?.error,status:"warning"})   
-        setIsLoading(false);
-      });
-  };
-  const password = useRef({});
-  password.current = watch("password1", "");
-  return (
-    <AuthLayout
-      height={"100vh"}
-      flexDir={"column"}
-      bg={"brand.50"}
-      justifyContent="center"
-    >
-      <Container
-        sx={{
-          background: "#FFFFFF",
-          boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
-          borderRadius: "16px",
-        }}
-        maxW={"480px"}
-        py={10}
-        px={4}
-      >
-        {success ? (
-          <VStack width={"full"} justifyContent={"center"}>
-            <CheckCircleIcon fontSize={"70px"} color={"brand.500"} />
-            <Text textAlign={"center"}>
-              Registration Successful, check your email to verify your account
-            </Text>
-          </VStack>
-        ) : (
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <VStack gap={"10"} w="full" alignItems={"flex-start"}>
-              <Text color={"brand.700"} fontSize={"xl"} fontWeight={"700"}>
-                Create New Account
-              </Text>
-              <VStack w={"full"} gap={"2"}>
-                {/* <Box width={"full"}>
+	const {
+		register,
+		handleSubmit,
+		watch,
+		formState: { errors },
+	} = useForm();
+	const { referral_code } = useParams();
+	const navigate = useNavigate();
+	const [isLoading, setIsLoading] = useState(false);
+	const [serverError, setServerError] = useState("");
+	const [showPassword, setShowPassword] = useState(false);
+	const [success, setSuccess] = useState(false);
+	const toast = useToast();
+	const onSubmit = async (data) => {
+		setIsLoading(true);
+		if (referral_code) {
+			data.referral_code = referral_code;
+		}
+		await axios
+			.post(`${process.env.REACT_APP_BASE_URL}auth/registration/`, data)
+			.then(function (response) {
+				setIsLoading(false);
+				toast({
+					title:
+						"Registration Successful, check your email to verify your account",
+					status: "success",
+				});
+				setSuccess(true);
+			})
+			.catch(function (error) {
+				toast({ title: error.response?.data?.error, status: "warning" });
+				setIsLoading(false);
+			});
+	};
+	const password = useRef({});
+	password.current = watch("password1", "");
+	return (
+		<AuthLayout
+			height={"100vh"}
+			flexDir={"column"}
+			bg={"brand.50"}
+			justifyContent="center"
+		>
+			<Container
+				sx={{
+					background: "#FFFFFF",
+					boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
+					borderRadius: "16px",
+				}}
+				maxW={"480px"}
+				py={10}
+				px={4}
+			>
+				{success ? (
+					<VStack width={"full"} justifyContent={"center"}>
+						<CheckCircleIcon fontSize={"70px"} color={"brand.500"} />
+						<Text textAlign={"center"}>
+							Registration Successful, check your email to verify your account
+						</Text>
+					</VStack>
+				) : (
+					<form onSubmit={handleSubmit(onSubmit)}>
+						<VStack gap={"10"} w="full" alignItems={"flex-start"}>
+							<Text color={"brand.700"} fontSize={"xl"} fontWeight={"700"}>
+								Create New Account
+							</Text>
+							<VStack w={"full"} gap={"2"}>
+								{/* <Box width={"full"}>
                 <Input
                   minLength={5}
                   maxLength={150}
@@ -106,149 +108,184 @@ function Signup() {
                   {errors.username?.message}
                 </Text>
               </Box> */}
-                <Box width={"full"}>
-                  <Input
-                    name="email"
-                    size={"md"}
-                    placeholder={"Enter your email"}
-                    required
-                    type={"email"}
-                    {...register("email", {
-                      pattern: {
-                        value:
-                          /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
-                        message: "Provide a valid email address",
-                      },
-                    })}
-                  />
-                  <Text color={"red.400"} fontSize={"xs"}>
-                    {errors.email?.message}
-                  </Text>
-                </Box>
-                {/* <Box width={"full"}>
-                <InputGroup>
-                  <InputLeftAddon children="+234" />
-                  <Input
-                    name="phone_number"
-                    required
-                    size={"md"}
-                    placeholder="Phone Number "
-                    type={"number"}
-                    {...register("phone_number", {
-                      minLength: { value: 10, message: "invalid format" },
-                      maxLength: { value: 11, message: "invalid format" },
-                    })}
-                    error={errors.phone_number}
-                  />
-                </InputGroup>
-                <Text fontSize={"xs"}>{errors.phone_number?.message}</Text>
-              </Box> */}
+								<HStack width={"full"}>
+									<Box width={"full"}>
+										<Input
+											name="first_name"
+											size={"md"}
+											placeholder={"First Name"}
+											required
+											type={"text"}
+											{...register("first_name", { required: true })}
+										/>
+										<Text color={"red.400"} fontSize={"xs"}>
+											{errors.firt_name?.message}
+										</Text>
+									</Box>
+									<Box width={"full"}>
+										<Input
+											name="last_name"
+											size={"md"}
+											placeholder={"Last Name"}
+											required
+											type={"text"}
+											{...register("last_name", {})}
+										/>
+										<Text color={"red.400"} fontSize={"xs"}>
+											{errors.last_name?.message}
+										</Text>
+									</Box>
+								</HStack>
+								<Box width={"full"}>
+									<Input
+										name="email"
+										size={"md"}
+										placeholder={"Enter your email"}
+										required
+										type={"email"}
+										{...register("email", {
+											pattern: {
+												value:
+													/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
+												message: "Provide a valid email address",
+											},
+										})}
+									/>
+									<Text color={"red.400"} fontSize={"xs"}>
+										{errors.email?.message}
+									</Text>
+								</Box>
+								{/* <Box width={"full"}>
+									<InputGroup>
+										<InputLeftAddon children="+234" />
+										<Input
+											name="phone_number"
+											required
+											size={"md"}
+											placeholder="Phone Number "
+											type={"number"}
+											{...register("phone_number", {
+												minLength: { value: 10, message: "invalid format" },
+												maxLength: { value: 11, message: "invalid format" },
+											})}
+											error={errors.phone_number}
+										/>
+									</InputGroup>
+									<Text fontSize={"xs"}>{errors.phone_number?.message}</Text>
+								</Box> */}
 
-                {/* <Select
-                size={"md"}
-                name="country"
-                placeholder="Select Country"
-                {...register("country")}
-                required
-              >
-                <option value={"nigeria"}>Nigeria</option>
-              </Select> */}
-                <Box width={"full"}>
-                  <InputGroup>
-                    <Input
-                      size={"md"}
-                      name="password1"
-                      placeholder="Password"
-                      {...register("password1", {
-                        minLength: {
-                          value: 8,
-                          message: "Must contain at least 8 characters",
-                        },
-                      })}
-                      type={showPassword ? "text" : "password"}
-                      required
-                      error={errors.password1}
-                    />
+								<Select
+									size={"md"}
+									name="country"
+									placeholder="Select Country"
+									{...register("country")}
+									required
+								>
+									<option value={"nigeria"}>Nigeria</option>
+									{countries.map(({ countryCode, name }, id) => {
+										return (
+											<option key={id} value={countryCode}>
+												{name}
+											</option>
+										);
+									})}
+								</Select>
+								<Box width={"full"}>
+									<InputGroup>
+										<Input
+											size={"md"}
+											name="password1"
+											placeholder="Password"
+											{...register("password1", {
+												minLength: {
+													value: 8,
+													message: "Must contain at least 8 characters",
+												},
+											})}
+											type={showPassword ? "text" : "password"}
+											required
+											error={errors.password1}
+										/>
 
-                    <InputRightElement
-                      onClick={() => {
-                        setShowPassword(!showPassword);
-                      }}
-                    >
-                      {showPassword ? (
-                        <RxEyeClosed color="blue" cursor={"pointer"} />
-                      ) : (
-                        <RxEyeOpen color="blue" cursor={"pointer"} />
-                      )}
-                    </InputRightElement>
-                  </InputGroup>
+										<InputRightElement
+											onClick={() => {
+												setShowPassword(!showPassword);
+											}}
+										>
+											{showPassword ? (
+												<RxEyeClosed color="blue" cursor={"pointer"} />
+											) : (
+												<RxEyeOpen color="blue" cursor={"pointer"} />
+											)}
+										</InputRightElement>
+									</InputGroup>
 
-                  <Text color={"red.400"} fontSize={"xs"}>
-                    {errors.password1?.message}
-                  </Text>
-                </Box>
-                <Box width={"full"}>
-                  <InputGroup>
-                    <Input
-                      name="password2"
-                      size={"md"}
-                      placeholder="Confirm Password"
-                      {...register("password2", {
-                        validate: (value) =>
-                          value === password.current ||
-                          "The passwords do not match",
-                      })}
-                      error={errors.password2}
-                      required
-                      type={showPassword ? "text" : "password"}
-                    />
-                    <InputRightElement
-                      onClick={() => {
-                        setShowPassword(!showPassword);
-                      }}
-                    >
-                      {showPassword ? (
-                        <RxEyeClosed color="blue" cursor={"pointer"} />
-                      ) : (
-                        <RxEyeOpen color="blue" cursor={"pointer"} />
-                      )}
-                    </InputRightElement>
-                  </InputGroup>
+									<Text color={"red.400"} fontSize={"xs"}>
+										{errors.password1?.message}
+									</Text>
+								</Box>
+								<Box width={"full"}>
+									<InputGroup>
+										<Input
+											name="password2"
+											size={"md"}
+											placeholder="Confirm Password"
+											{...register("password2", {
+												validate: (value) =>
+													value === password.current ||
+													"The passwords do not match",
+											})}
+											error={errors.password2}
+											required
+											type={showPassword ? "text" : "password"}
+										/>
+										<InputRightElement
+											onClick={() => {
+												setShowPassword(!showPassword);
+											}}
+										>
+											{showPassword ? (
+												<RxEyeClosed color="blue" cursor={"pointer"} />
+											) : (
+												<RxEyeOpen color="blue" cursor={"pointer"} />
+											)}
+										</InputRightElement>
+									</InputGroup>
 
-                  <Text color={"red.400"} fontSize={"xs"}>
-                    {errors.password2?.message}
-                  </Text>
-                </Box>
-              </VStack>
-              <VStack width={"full"}>
-                <Button
-                  isLoading={isLoading}
-                  loadingText={"Submitting"}
-                  type="submit"
-                  w={"full"}
-                  rightIcon={<ArrowForwardIcon />}
-                  size="md"
-                  colorScheme="brand"
-                  justifyContent={"space-between"}
-                  variant="solid"
-                >
-                  Register
-                </Button>
-                <Flex gap={1}>
-                  <Text fontSize={"sm"}>Already have an account?</Text>
-                  <Link to="/login">
-                    <Text fontSize={"sm"} color={"brand.700"}>
-                      Login
-                    </Text>
-                  </Link>
-                </Flex>
-              </VStack>
-            </VStack>
-          </form>
-        )}
-      </Container>
-    </AuthLayout>
-  );
+									<Text color={"red.400"} fontSize={"xs"}>
+										{errors.password2?.message}
+									</Text>
+								</Box>
+							</VStack>
+							<VStack width={"full"}>
+								<Button
+									isLoading={isLoading}
+									loadingText={"Submitting"}
+									type="submit"
+									w={"full"}
+									rightIcon={<ArrowForwardIcon />}
+									size="md"
+									colorScheme="brand"
+									justifyContent={"space-between"}
+									variant="solid"
+								>
+									Register
+								</Button>
+								<Flex gap={1}>
+									<Text fontSize={"sm"}>Already have an account?</Text>
+									<Link to="/login">
+										<Text fontSize={"sm"} color={"brand.700"}>
+											Login
+										</Text>
+									</Link>
+								</Flex>
+							</VStack>
+						</VStack>
+					</form>
+				)}
+			</Container>
+		</AuthLayout>
+	);
 }
 
 export default Signup;

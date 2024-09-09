@@ -459,6 +459,7 @@ export const CustomerView = () => {
 								<VStack
 									gap={"30px"}
 									width={"full"}
+									pl={["0", "0", "40px"]}
 									alignItems={["center", "center", "flex-start"]}
 								>
 									<Text
