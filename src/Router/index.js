@@ -24,46 +24,52 @@ import Aml from "../Pages/Aml";
 import { Customer } from "../Pages/GiftCardLanding/Customer";
 import TermsAndConditions from "../Pages/Terms/TermsAndConditions";
 function Router() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route exact path="/" element={<Home />} />
-        <Route exact path="/contact-us" element={<ContactUs />} />
-        <Route exact path="/privacy-policy" element={<Privacy />} />
-        <Route exact path="/aml" element={<Aml/>} />
-        <Route exact path="/tnc" element={<TermsAndConditions/>} />
-        <Route exact path="/login" element={<Login />} />
-        <Route exact path="/register" element={<Signup />} />
-        <Route exact path="/register/:referral_code" element={<Signup />} />
+	return (
+		<BrowserRouter>
+			<Routes>
+				<Route exact path="/" element={<Home />} />
+				<Route exact path="/contact-us" element={<ContactUs />} />
+				<Route exact path="/privacy-policy" element={<Privacy />} />
+				<Route exact path="/aml" element={<Aml />} />
+				<Route exact path="/tnc" element={<TermsAndConditions />} />
+				<Route exact path="/login" element={<Login />} />
+				<Route exact path="/register" element={<Signup />} />
+				<Route exact path="/register/:referral_code" element={<Signup />} />
 
-        <Route
-          exact
-          path="/auth/email-confirm/:token"
-          element={<ConfirmEmail />}
-        />
-        <Route exact path="/password-reset" element={<Reset />} />
-        <Route
-          exact
-          path="/auth/password/password-reset-confirm/:uid/:token"
-          element={<PasswordResetConFirm />}
-        />
-        <Route exact path="/dashboard" element={<Dashboard />} />
-        <Route exact path="/gift-cards" element={<Customer />} />
-        <Route exact path="/giftcard/cards" element={<MyCards />} />
-        <Route exact path="/giftcard/create" element={<Create />} />
-        <Route exact path="/giftcard/redeem" element={<Reedeem />} />
-        <Route exact path="/wallet" element={<Wallet />} />
-        <Route exact path="/utilities" element={<Utility />} />
-        <Route exact path="/transaction-history/" element={<CoinDetails />} />
-        <Route exact path="/transaction-history/:currency" element={<CoinDetails />} />
-        <Route exact path="/swap-history" element={<SwapHistory />} />
-        <Route exact path="/fiat-history" element={<FiatHistory />} />
-        <Route exact path="/setting" element={<SettingsLayout />} />
-        <Route exact path="/setting/payout" element={<Payout />} />
-        <Route path="/*" element={<Notfound />} />
-      </Routes>
-    </BrowserRouter>
-  );
+				<Route
+					exact
+					path="/auth/email-confirm/:token"
+					element={<ConfirmEmail />}
+				/>
+				<Route exact path="/password-reset" element={<Reset />} />
+				<Route
+					exact
+					path="/auth/password/password-reset-confirm/:uid/:token"
+					element={<PasswordResetConFirm />}
+				/>
+				<Route exact path="/dashboard" element={<Dashboard />} />
+				<Route exact path="/gift-cards" element={<Customer />} />
+				<Route exact path="/giftcard/cards" element={<MyCards />} />
+				<Route exact path="/giftcard/create" element={<Create />} />
+				<Route exact path="/giftcard/redeem" element={<Reedeem />} />
+				<Route exact path="/wallet" element={<Wallet />} />
+				<Route exact path="/wallet/{status}" element={<Wallet />} />
+
+				<Route exact path="/utilities" element={<Utility />} />
+				<Route exact path="/transaction-history/" element={<CoinDetails />} />
+				<Route
+					exact
+					path="/transaction-history/:currency"
+					element={<CoinDetails />}
+				/>
+				<Route exact path="/swap-history" element={<SwapHistory />} />
+				<Route exact path="/fiat-history" element={<FiatHistory />} />
+				<Route exact path="/setting" element={<SettingsLayout />} />
+				<Route exact path="/setting/payout" element={<Payout />} />
+				<Route path="/*" element={<Notfound />} />
+			</Routes>
+		</BrowserRouter>
+	);
 }
 
 export default Router;

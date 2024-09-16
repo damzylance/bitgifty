@@ -70,7 +70,7 @@ function Wallet() {
 			return wallet[0] === "cusd";
 		});
 		window.open(
-			`https://pay.fonbnk.com/?source=${process.env.REACT_APP_SOURCE_PARAM}&asset=CUSD&country=NG&provider=mobile_money&network=CELO&minAmount=1&address=${cusdWallet[1].address}&freezeWallet=1&freezeNetwork=1&redirectUrl=${process.env.REACT_APP_FRONTEND_BASE_URL}`,
+			`https://pay.fonbnk.com/?source=${process.env.REACT_APP_SOURCE_PARAM}&asset=CUSD&country=NG&provider=mobile_money&network=CELO&minAmount=1&address=${cusdWallet[1].address}&freezeWallet=1&freezeNetwork=1&redirectUrl=${process.env.REACT_APP_FRONTEND_BASE_URL}/wallet/{status}`,
 			"_self"
 		);
 	};
