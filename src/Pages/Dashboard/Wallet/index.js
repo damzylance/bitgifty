@@ -75,12 +75,17 @@ function Wallet() {
 		);
 	};
 	const fetchWallets = async () => {
+		let balance;
 		const labels = [];
 		const balances = [];
 		let sum = 0;
 		for (let index = 0; index < userWallets.length; index++) {
 			const coinWallet = userWallets[index];
-			const balance = coinWallet[1].balance.availableBalance;
+			if (coinWallet[0] === "stellar_usdc") {
+				balance = coinWallet[1];
+			} else {
+				balance = coinWallet[1].balance.availableBalance;
+			}
 			if (coinWallet[0] === "btc") {
 				const btcInDollar = await BalanceToDollar(
 					`BTC`,
@@ -89,6 +94,14 @@ function Wallet() {
 				sum += btcInDollar;
 				balances.push(btcInDollar);
 				labels.push("BTC");
+			} else if (coinWallet[0] === "stellar_usdc") {
+				const cusdInDollar = await BalanceToDollar(
+					`CUSD`,
+					isNaN(balance) ? 0 : balance
+				);
+				sum += cusdInDollar;
+				balances.push(cusdInDollar);
+				labels.push("USDC");
 			} else if (coinWallet[0] === "celo") {
 				const celoInDollar = await BalanceToDollar(
 					`CELO`,
@@ -419,15 +432,26 @@ function Wallet() {
 										.map((wallet, index) => {
 											// const { address, network } = wallet;
 											const coinWallet = wallet;
+
 											const balance = parseFloat(
 												coinWallet[1].balance.availableBalance
 											).toFixed(4);
 											return (
 												<CoinRow
 													key={index}
-													currency={coinWallet[0].toUpperCase()}
+													currency={
+														coinWallet[0] === "stellar_usdc"
+															? "USDC"
+															: coinWallet[0].toUpperCase()
+													}
 													address={coinWallet[1].address}
-													amount={isNaN(balance) ? 0 : balance}
+													amount={
+														coinWallet[0] === "stellar_usdc"
+															? parseFloat(coinWallet[1].balance).toFixed(2)
+															: isNaN(balance)
+															? 0
+															: balance
+													}
 													network={coinWallet[0]}
 													qr={coinWallet[1].qrcode}
 													type={"crypto"}
@@ -1204,7 +1228,8 @@ const WalletModal = (props) => {
 							textAlign={"center"}
 							textTransform={"uppercase"}
 						>
-							{props.network} Wallet Address
+							{props.network === "stellar_usdc" ? "USDC" : props.network} Wallet
+							Address
 						</DrawerHeader>
 						<DrawerBody>
 							<Box textAlign={"center"} mt={"40px"}>
@@ -1214,6 +1239,7 @@ const WalletModal = (props) => {
 										fontSize={["sm", "md", "lg"]}
 										color={"brand.500"}
 										fontWeight={"bold"}
+										width={"90%"}
 									>
 										{props.address}
 									</Text>

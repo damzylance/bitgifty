@@ -142,7 +142,7 @@ const AirtimeForm = (props) => {
 	const handleAmountChange = (e) => {
 		const tempNairaAmount = e.target.value;
 		setNairaAmount(tempNairaAmount);
-		if (currency === "usdt_tron" || currency === "cusd") {
+		if (currency === "stellar_usdc" || currency === "cusd") {
 			setTokenAmount(tempNairaAmount / tokenToNairaRate);
 		} else {
 			setTokenAmount(tokenToNairaRate * tempNairaAmount);
@@ -210,7 +210,11 @@ const AirtimeForm = (props) => {
 		setCurrency(e.target.value);
 		for (let index = 0; index < userWallets.length; index++) {
 			if (userWallets[index][0] === network) {
-				setWalletBalance(userWallets[index][1].balance.availableBalance);
+				if (userWallets[index][0] === "stellar_usdc") {
+					setWalletBalance(userWallets[index][1].balance);
+				} else {
+					setWalletBalance(userWallets[index][1].balance.availableBalance);
+				}
 			}
 		}
 		if (network === "btc") {
@@ -218,9 +222,9 @@ const AirtimeForm = (props) => {
 		} else {
 			setMinAmount(100);
 		}
-		const rate = await fetchRate(e.target.value);
+		const rate = await fetchRate(network === "stellar_usdc" ? "cusd" : network);
 		// alert(currency);
-		if (network === "usdt_tron" || network === "cusd") {
+		if (network === "usdc" || network === "cusd") {
 			setTokenAmount(nairaAmount / rate);
 		} else {
 			setTokenAmount(rate * nairaAmount);
@@ -301,7 +305,7 @@ const AirtimeForm = (props) => {
 								{currency === "btc"
 									? tokenAmount.toFixed(6)
 									: tokenAmount.toFixed(4)}{" "}
-								{currency}
+								{currency === "stellar_usdc" ? "USDC" : currency}
 							</Text>
 							<Text color={"red"} fontSize={"xx-small"}>
 								{errors.amount && errors.amount.message}
@@ -319,6 +323,7 @@ const AirtimeForm = (props) => {
 
 						<Select
 							fontSize={"16px"}
+							textTransform={"uppercase"}
 							{...register("chain", { onChange: handleCurrencyChange })}
 							required
 						>
@@ -327,10 +332,11 @@ const AirtimeForm = (props) => {
 								.filter((wallet) => {
 									return wallet[0] !== "eth";
 								})
+								.reverse()
 								.map((wallet, index) => {
 									return (
 										<option value={wallet[0]} key={index}>
-											{wallet[0].toUpperCase()}
+											{wallet[0] === "stellar_usdc" ? "USDC" : wallet[0]}
 										</option>
 									);
 								})}
